@@ -10,6 +10,11 @@ const authRoutes = require("./routes/users");
 
 const { json, urlencoded } = express;
 
+const cookieConfig = {
+  httpOnly: true,
+  maxAge: 31556926, //1 yr
+};
+
 var app = express();
 
 app.use(logger("dev"));
