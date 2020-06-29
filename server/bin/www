@@ -5,10 +5,12 @@ require("dotenv").config();
 
 /* Sets up the PostgreSQL database connection. */
 const { Sequelize } = require('sequelize');
-const sequelize = new Sequelize('postgres', 'postgres', '11111111', {
-  host: 'localhost',
-  dialect: 'postgres'
-});
+const sequelize = new Sequelize(
+  process.env.DB_name,
+  process.env.DB_username,
+  process.env.DB_password,
+  {host: 'localhost', dialect: 'postgres'}
+);
 async function databaseTest(){
   try {
     await sequelize.authenticate();
