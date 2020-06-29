@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/ usr / bin / env node
 
 /* Sets up the environment variables from your .env file*/
 require("dotenv").config();
@@ -9,6 +9,19 @@ require("dotenv").config();
 
 var app = require("../app");
 var http = require("http");
+var db = require("../db");
+
+const force = false;
+db.authenticate()
+  .then(() => {
+    console.log("[Postgres] Database connected successfully");
+    db.sync({ force }).then(() => {
+      console.log(`[Postgres] Database is sync'd (force = ${force})`);
+    });
+  })
+  .catch((e) => {
+    console.log("[Postgres] Unable to connect to the database: ", e);
+  });
 
 /**
  * Get port from environment and store in Express.
