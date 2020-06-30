@@ -13,6 +13,9 @@ const { json, urlencoded } = express;
 
 var app = express();
 
+// prevent password from showing up in responses?
+app.set("json replacer", (k, v) => (k === "password" ? undefined : v));
+
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
