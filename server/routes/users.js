@@ -2,23 +2,20 @@ const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const validateRegisterInput = require("../validators/register");
-const validateLoginInput = require("../validators/login");
-
+const {
+  validateLogin,
+  validateRegister,
+} = require("./middleware/requiresFormValidation");
 const { User } = require("../models");
 const cookieConfig = require("../cookie-config");
 
-router.post("/register", async (req, res) => {
+router.post("/register", validateRegister, async (req, res) => {
   const hashPassword = async (password) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPw = await bcrypt.hash(password, salt);
 
     return hashedPw;
   };
-  const { errors, isValid } = validateRegisterInput(req.body);
-  if (!isValid) {
-    return res.status(400).json(errors);
-  }
 
   const existingUser = await User.findOne({ where: { email: req.body.email } });
 
@@ -36,12 +33,7 @@ router.post("/register", async (req, res) => {
   res.json(newUser);
 });
 
-router.post("/login", async (req, res) => {
-  const { errors, isValid } = validateLoginInput(req.body);
-  if (!isValid) {
-    res.status(400).json(errors);
-  }
-
+router.post("/login", validateLogin, async (req, res) => {
   const user = await User.findOne({ where: { email: req.body.email } });
 
   // a note about bcrypt.compare: arg position is important,
