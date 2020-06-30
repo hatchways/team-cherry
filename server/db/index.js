@@ -3,14 +3,13 @@ const { Sequelize } = require("sequelize");
 const dbName =
   process.env.NODE_ENV === "test"
     ? "test-db"
-    : process.env.DB_NAME || "db name not set";
+    : process.env.DB_name || "db name not set";
 
-const db = new Sequelize(
-  //   process.env.DB_NAME || "db name not set",
+const sequelize = new Sequelize(
   dbName,
-  process.env.DB_USERNAME || "postgres",
-  process.env.DB_PASSWORD || "password",
+  process.env.DB_username || "postgres",
+  process.env.DB_password || "password",
   { host: "localhost", dialect: "postgres" }
 );
 
-module.exports = db;
+module.exports = sequelize;
