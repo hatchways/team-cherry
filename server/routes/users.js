@@ -53,7 +53,7 @@ router.post("/login", validateLogin, async (req, res) => {
       (err, token) =>
         res
           .cookie("token", token, cookieConfig) // cookie is viewable in PostMan
-          .json({ success: true, user, token: "Bearer " + token })
+          .json({ success: true, user })
     );
   } else {
     return res.status(400).json({
