@@ -8,12 +8,15 @@ const {
 } = require("./middleware/requiresFormValidation");
 const { User } = require("../models");
 const cookieConfig = require("../cookie-config");
+const { createErrorResponse } = require("./middleware/util");
 
 router.post("/register", validateRegister, async (req, res) => {
   const existingUser = await User.findOne({ where: { email: req.body.email } });
 
   if (existingUser) {
-    return res.status(400).json({ email: "That email already exists" });
+    return createErrorResponse(res, 400, {
+      email: "That email already exists",
+    });
   }
 
   const newUser = await User.create({
@@ -30,7 +33,7 @@ router.post("/login", validateLogin, async (req, res) => {
   });
 
   if (!user) {
-    return res.status(400).json({ status: 400, message: "User doesn't exist" });
+    return createErrorResponse(res, 400, { user: "User doesn't exist" });
   }
 
   const isMatch = await user.checkPassword(req.body.password);
@@ -51,8 +54,8 @@ router.post("/login", validateLogin, async (req, res) => {
           .json({ success: true, user })
     );
   } else {
-    return res.status(400).json({
-      passwordIncorrect: "Password does not match",
+    return createErrorResponse(res, 400, {
+      password: "Password does not match",
     });
   }
 });

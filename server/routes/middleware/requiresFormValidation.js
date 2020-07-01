@@ -3,10 +3,12 @@ const {
   validateRegisterInput,
 } = require("../../validators");
 
+const { createErrorResponse } = require("./util");
+
 const validateLogin = (req, res, next) => {
   const { errors, isValid } = validateLoginInput(req.body);
   if (!isValid) {
-    res.status(400).json(errors);
+    createErrorResponse(res, 400, errors);
   }
 
   next();
@@ -15,7 +17,7 @@ const validateLogin = (req, res, next) => {
 const validateRegister = (req, res, next) => {
   const { errors, isValid } = validateRegisterInput(req.body);
   if (!isValid) {
-    return res.status(400).json(errors);
+    createErrorResponse(res, 400, errors);
   }
 
   next();
