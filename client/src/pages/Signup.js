@@ -6,6 +6,7 @@ import Container from '@material-ui/core/Container';
 import Snackbar from '@material-ui/core/Snackbar';
 import SubmitButton from '../components/SubmitButton'
 import CustomTextField from '../components/CustomTextField'
+import axios from 'axios'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -39,24 +40,23 @@ export default function Signup(props) {
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('')
 
-
-
   const createAccount = async (event) => {
     try {
       event.preventDefault()
-      console.log(email, company, password)
       let passedFields = true
-      if (email === '' || company === '' || password === '') {
-        setErrorMessage('Please fill in all fields')
-        passedFields = false
-      }
 
+      //error handling here for fields
       if (!validateEmail(email)) {
         setErrorMessage('Please enter a valid email')
         passedFields = false
+
       }
       if (password.length < 7) {
         setErrorMessage('Please enter a password longer than 7 characters')
+        passedFields = false
+      }
+      if (email === '' || company === '' || password === '') {
+        setErrorMessage('Please fill in all fields')
         passedFields = false
       }
       if (!passedFields) {
@@ -64,8 +64,23 @@ export default function Signup(props) {
         return
       }
 
+      //if frontend validations pass, make server call here
+      const res = await axios.post('api/users/register', {
+        email: email,
+        password: password,
+        company: company
+      })
+      if (res.status === 400) {
+        setErrorMessage('That email already exists. Please choose another')
+        setOpen(true)
+        return
+      }
+
+
+      //redirect after all validations pass happen here
       const { history } = props
       history.push('/login')
+
     } catch (error) {
       console.error(error)
     }
