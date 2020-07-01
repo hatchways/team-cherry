@@ -4,23 +4,33 @@
 require("dotenv").config();
 
 /* Sets up the PostgreSQL database connection. */
-const { Sequelize } = require('sequelize');
+const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize(
   process.env.DB_name,
   process.env.DB_username,
   process.env.DB_password,
-  {host: 'localhost', dialect: 'postgres'}
+  { host: "localhost", dialect: "postgres" }
 );
-async function databaseTest(){
+async function databaseTest() {
   try {
     await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-  } 
-  catch (error) {
-    console.error('Unable to connect to the database:', error);
+    console.log("Connection has been established successfully.");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
   }
 }
 databaseTest();
+
+/* Sets up the PostgreSQL database connection. */
+const redditCrawler = require("../crawlers/redditCrawler");
+
+async function testReddit() {
+  await redditCrawler.initialize();
+  let results = await redditCrawler.getResults(2);
+
+  console.log(results);
+}
+testReddit();
 
 /**
  * Module dependencies.
