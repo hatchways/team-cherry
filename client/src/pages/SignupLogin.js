@@ -1,11 +1,11 @@
 import React, { useState, } from 'react';
-import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Snackbar from '@material-ui/core/Snackbar';
+import SubmitButton from '../components/SubmitButton'
+import CustomTextField from '../components/CustomTextField'
 
 
 
@@ -16,16 +16,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main
-  },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: '100%',
     marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
   },
   mainContainer: {
     border: '1px solid white',
@@ -34,7 +27,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'white',
     marginTop: '100px',
     width: '900px',
-  }
+  },
+  // field: {
+  //   borderRadius: '25px',
+  // }
 }));
 
 export default function SignupLogin(props) {
@@ -47,30 +43,34 @@ export default function SignupLogin(props) {
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('')
 
-  const createAccount = event => {
-    event.preventDefault()
-    // console.log(email, company, password)
-    let passedFields = true
-    if (email === '' || company === '' || password === '') {
-      setErrorMessage('Please fill in all fields')
-      passedFields = false
-    }
+  const createAccount = async (event) => {
+    try {
+      event.preventDefault()
+      console.log(email, company, password)
+      let passedFields = true
+      if (email === '' || company === '' || password === '') {
+        setErrorMessage('Please fill in all fields')
+        passedFields = false
+      }
 
-    if (!validateEmail(email)) {
-      setErrorMessage('incorrect email')
-      passedFields = false
-    }
-    if (password.length < 6) {
-      setErrorMessage('Please enter a password longer than 6 characters')
-      passedFields = false
-    }
-    if (!passedFields) {
-      setOpen(true)
-      return
-    }
+      if (!validateEmail(email)) {
+        setErrorMessage('Please enter a valid email')
+        passedFields = false
+      }
+      if (password.length < 7) {
+        setErrorMessage('Please enter a password longer than 7 characters')
+        passedFields = false
+      }
+      if (!passedFields) {
+        setOpen(true)
+        return
+      }
 
-    const { history } = props
-    history.push('/login')
+      const { history } = props
+      history.push('/login')
+    } catch (error) {
+      console.error(error)
+    }
   }
   return (
     <Container className={classes.mainContainer} component="main" maxWidth="xs">
@@ -93,24 +93,16 @@ export default function SignupLogin(props) {
           </React.Fragment>
         }
         <form className={classes.form} onSubmit={createAccount} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
+          <CustomTextField
             id="email"
             label="Email Address"
             name="email"
             autoComplete="email"
-            autoFocus
+
             onChange={event => { setEmail(event.target.value) }}
           />
           {loginSignup === '/signup' ?
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
+            <CustomTextField
               name="CompanyName"
               label="Company Name"
               id="CompanyName"
@@ -119,28 +111,16 @@ export default function SignupLogin(props) {
             :
             ''
           }
-
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
+          <CustomTextField
             name="password"
             label="Password"
             type="password"
             id="password"
             onChange={event => { setPassword(event.target.value) }}
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="outlined"
-            color="primary"
-            className={classes.submit}
-          >
+          <SubmitButton>
             {loginSignup === '/signup' ? 'Create' : 'Log In'}
-
-          </Button>
+          </SubmitButton>
         </form>
       </div>
       <Snackbar

@@ -16,10 +16,6 @@ const useStyles = makeStyles(() => ({
   leftContainer: {
     display: 'flex'
   },
-  // login: {
-  //   color: 'white',
-  //   border: '1px solid white'
-  // }
 }));
 
 export default function ButtonAppBar(props) {
