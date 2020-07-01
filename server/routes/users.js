@@ -10,13 +10,6 @@ const { User } = require("../models");
 const cookieConfig = require("../cookie-config");
 
 router.post("/register", validateRegister, async (req, res) => {
-  const hashPassword = async (password) => {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPw = await bcrypt.hash(password, salt);
-
-    return hashedPw;
-  };
-
   const existingUser = await User.findOne({ where: { email: req.body.email } });
 
   if (existingUser) {
@@ -28,17 +21,19 @@ router.post("/register", validateRegister, async (req, res) => {
     password: req.body.password,
   });
 
-  newUser.password = await hashPassword(newUser.password);
-  await newUser.save();
   res.json(newUser);
 });
 
 router.post("/login", validateLogin, async (req, res) => {
-  const user = await User.findOne({ where: { email: req.body.email } });
+  const user = await User.findOne({
+    where: { email: req.body.email },
+  });
 
-  // a note about bcrypt.compare: arg position is important,
-  // the function signature states plaintext pw should be the first arg THEN the hashed pw comes after
-  const isMatch = await bcrypt.compare(req.body.password, user.password);
+  if (!user) {
+    return res.status(400).json({ status: 400, message: "User doesn't exist" });
+  }
+
+  const isMatch = await user.checkPassword(req.body.password);
   if (isMatch) {
     // what gets sent and decoded on client side
     const payload = {
