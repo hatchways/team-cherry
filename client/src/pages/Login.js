@@ -8,7 +8,6 @@ import SubmitButton from '../components/SubmitButton'
 import CustomTextField from '../components/CustomTextField'
 
 
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -28,17 +27,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '100px',
     width: '900px',
   },
-  // field: {
-  //   borderRadius: '25px',
-  // }
 }));
 
-export default function SignupLogin(props) {
+export default function Login(props) {
   const classes = useStyles();
-  const loginSignup = props.location.pathname
 
   const [email, setEmail] = useState('')
-  const [company, setCompany] = useState('')
   const [password, setPassword] = useState('')
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('')
@@ -46,26 +40,25 @@ export default function SignupLogin(props) {
   const createAccount = async (event) => {
     try {
       event.preventDefault()
-      console.log(email, company, password)
+      console.log(email, password)
       let passedFields = true
-      if (email === '' || company === '' || password === '') {
+      if (email === '' || password === '') {
         setErrorMessage('Please fill in all fields')
         passedFields = false
       }
 
       if (!validateEmail(email)) {
-        setErrorMessage('Please enter a valid email')
+        setErrorMessage('Please enter your email')
         passedFields = false
       }
       if (password.length < 7) {
-        setErrorMessage('Please enter a password longer than 7 characters')
+        setErrorMessage('Please enter your password')
         passedFields = false
       }
       if (!passedFields) {
         setOpen(true)
         return
       }
-
       const { history } = props
       history.push('/login')
     } catch (error) {
@@ -76,22 +69,11 @@ export default function SignupLogin(props) {
     <Container className={classes.mainContainer} component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        {loginSignup === '/signup' ?
-          <React.Fragment>
-            <Typography variant="h1">
-              Lets Get Started!
+        <React.Fragment>
+          <Typography variant="h1">
+            Welcome Back!
         </Typography>
-            <Typography >
-              Create an account
-        </Typography>
-          </React.Fragment>
-          :
-          <React.Fragment>
-            <Typography variant="h1">
-              Welcome Back!
-        </Typography>
-          </React.Fragment>
-        }
+        </React.Fragment>
         <form className={classes.form} onSubmit={createAccount} noValidate>
           <CustomTextField
             id="email"
@@ -101,16 +83,6 @@ export default function SignupLogin(props) {
 
             onChange={event => { setEmail(event.target.value) }}
           />
-          {loginSignup === '/signup' ?
-            <CustomTextField
-              name="CompanyName"
-              label="Company Name"
-              id="CompanyName"
-              onChange={event => { setCompany(event.target.value) }}
-            />
-            :
-            ''
-          }
           <CustomTextField
             name="password"
             label="Password"
@@ -119,7 +91,7 @@ export default function SignupLogin(props) {
             onChange={event => { setPassword(event.target.value) }}
           />
           <SubmitButton>
-            {loginSignup === '/signup' ? 'Create' : 'Log In'}
+            Log In
           </SubmitButton>
         </form>
       </div>

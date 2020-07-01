@@ -3,7 +3,8 @@ import { MuiThemeProvider } from "@material-ui/core";
 import { BrowserRouter, Route } from "react-router-dom";
 
 import { theme } from "./themes/theme";
-import SignupLogin from "./pages/SignupLogin";
+import Signup from "./pages/Signup";
+import Login from './pages/Login'
 import Header from "./pages/Header"
 
 import "./App.css";
@@ -13,8 +14,8 @@ function App() {
     <MuiThemeProvider theme={theme}>
       <BrowserRouter>
         <Header />
-        <Route path='/login' component={SignupLogin} />
-        <Route path="/signup" component={SignupLogin} />
+        <Route path='/login' component={Login} />
+        <Route path="/signup" component={Signup} />
 
       </BrowserRouter>
     </MuiThemeProvider>
