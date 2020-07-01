@@ -1,19 +1,19 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+const { createErrorResponse } = require("./util");
 
 module.exports = async (req, res, next) => {
-  const create4xxResponse = (status, msg) =>
-      res.status(status).json({error: msg});
-  const {token} = req.cookies;
+  const { token } = req.cookies;
+
   if (!token) {
-    return create4xxResponse(403, 'Forbidden');
+    return createErrorResponse(res, 403, "Forbidden");
   } else {
     jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
       if (err) {
-        return create4xxResponse(401, 'Unable to decode token');
+        return createErrorResponse(res, 401, "Unable to decode token");
       } else if (decodedToken.exp <= Date.now() / 1000) {
-        return create4xxResponse(401, 'Token Expired');
+        return createErrorResponse(res, 401, "Token Expired");
       } else {
-        req.user = {id: decodedToken.id};
+        req.user = { id: decodedToken.id };
         next();
       }
     });
