@@ -6,8 +6,8 @@ import Container from '@material-ui/core/Container';
 import Snackbar from '@material-ui/core/Snackbar';
 import SubmitButton from '../components/SubmitButton'
 import CustomTextField from '../components/CustomTextField'
-import { setToken } from '../utils/localStorage'
 import axios from 'axios'
+import { storeToken } from '../utils/localStorage'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -65,7 +65,7 @@ export default function Login(props) {
         password: password,
       })
 
-      // setToken(res.body.token)//this is untested right now, but general idea is to just set token received from server to localstorage
+      storeToken(res.body.token)//this is untested right now, but general idea is to just set token received from server to localstorage
 
       const { history } = props
       history.push('/main')
