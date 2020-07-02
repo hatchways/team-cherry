@@ -6,6 +6,8 @@ import Container from '@material-ui/core/Container';
 import Snackbar from '@material-ui/core/Snackbar';
 import SubmitButton from '../components/SubmitButton'
 import CustomTextField from '../components/CustomTextField'
+import { setToken } from '../utils/localStorage'
+import axios from 'axios'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -37,10 +39,9 @@ export default function Login(props) {
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('')
 
-  const createAccount = async (event) => {
+  const login = async (event) => {
     try {
       event.preventDefault()
-      console.log(email, password)
       let passedFields = true
       if (email === '' || password === '') {
         setErrorMessage('Please fill in all fields')
@@ -59,8 +60,15 @@ export default function Login(props) {
         setOpen(true)
         return
       }
+      const res = await axios.post('api/users/register', {
+        email: email,
+        password: password,
+      })
+
+      // setToken(res.body.token)//this is untested right now, but general idea is to just set token received from server to localstorage
+
       const { history } = props
-      history.push('/login')
+      history.push('/main')
     } catch (error) {
       console.error(error)
     }
@@ -74,7 +82,7 @@ export default function Login(props) {
             Welcome Back!
         </Typography>
         </React.Fragment>
-        <form className={classes.form} onSubmit={createAccount} noValidate>
+        <form className={classes.form} onSubmit={login} noValidate>
           <CustomTextField
             id="email"
             label="Email Address"
