@@ -5,12 +5,14 @@ import Grid from "@material-ui/core/Grid";
 import SwitchSelector from "react-switch-selector";
 import { withStyles } from "@material-ui/core/styles";
 
-const styles = (theme) => ({
-  typography: {
-    fontFamily: theme.typography.fontFamily,
+const useStyles = () => ({
+  RootGridContainer: {
+    marginTop: "25px",
   },
-  palette: {
-    background: theme.palette.primary.main,
+  SwitchSelector: {
+    height: "2.8em",
+    width: "30%",
+    fontWeight: 400,
   },
 });
 
@@ -21,7 +23,7 @@ class Main extends Component {
     return (
       <div>
         <Header />
-        <Grid container spacing={0} style={{ marginTop: "25px" }}>
+        <Grid container spacing={0} className={classes.RootGridContainer}>
           <Grid item xs={4} container></Grid>
 
           <Grid item xs={6} container direction={"column"} spacing={2}>
@@ -32,8 +34,8 @@ class Main extends Component {
               justify="space-between"
               alignItems="center"
             >
-              <h1 className={classes.typography}>My mentions</h1>
-              <div style={{ height: "2.5em", width: "30%" }}>
+              <h1>My mentions</h1>
+              <div className={classes.SwitchSelector}>
                 <SwitchSelector
                   // onChange={onChange}
                   options={[
@@ -42,18 +44,18 @@ class Main extends Component {
                       value: {
                         foo: true,
                       },
-                      selectedBackgroundColor: "#4169E1",
+                      selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
                     {
                       label: "Most popular",
                       value: "bar",
-                      selectedBackgroundColor: "#4169E1",
+                      selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
                   ]}
-                  backgroundColor={"#D6EAF8"}
-                  fontColor={"#4169E1"}
+                  backgroundColor={"#eaeefd"}
+                  fontColor={"#6583f2"}
                 />
               </div>
             </Grid>
@@ -118,4 +120,4 @@ class Main extends Component {
   }
 }
 
-export default withStyles(styles)(Main);
+export default withStyles(useStyles)(Main);

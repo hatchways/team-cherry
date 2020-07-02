@@ -7,9 +7,11 @@ export const theme = createMuiTheme({
     h1: {
       // could customize the h1 variant as well
     },
-    
   },
   palette: {
-    primary: { main: "#4169E1" }
-  }
+    primary: { main: "#6583f2" },
+    background: {
+      default: "#fafbff",
+    },
+  },
 });

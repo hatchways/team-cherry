@@ -1,36 +1,52 @@
 import React from "react";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@material-ui/core/styles";
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Typography,
+  Grid,
+} from "@material-ui/core";
+
+const useStyles = makeStyles(() => ({
+  Card: {
+    height: "200px",
+    boxShadow: 0,
+  },
+  CardMedia: {
+    width: "220px",
+    maxWidth: "90%",
+    height: "190px",
+    display: "inline-block",
+    margin: "5px",
+  },
+  CardContent: { padding: 0, margin: "16px 16px 16px 0px" },
+  paragraphInMentions: {
+    display: "-webkit-box",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    WebkitLineClamp: 5,
+    WebkitBoxOrient: "vertical",
+  },
+  fontColorForPlatform: {
+    color: "#D3D3D3",
+  },
+}));
 
 export default function Mention(props) {
+  const classes = useStyles();
+
   return (
-    <Card style={{ height: "200px" }}>
+    <Card className={classes.Card} elevation={0}>
       <CardActionArea>
         <Grid container>
           <Grid item xs={4}>
-            <CardMedia
-              style={{
-                width: "220px",
-                maxWidth: "90%",
-                height: "190px",
-                display: "inline-block",
-                margin: "5px",
-              }}
-              image={props.image}
-            />
+            <CardMedia className={classes.CardMedia} image={props.image} />
           </Grid>
 
           <Grid item xs={8}>
-            <CardContent
-              style={{
-                padding: 0,
-                margin: "16px 16px 16px 0px",
-              }}
-            >
+            <CardContent className={classes.CardContent}>
               <Typography noWrap gutterBottom variant="h5" component="h2">
                 {props.title}
               </Typography>
@@ -39,22 +55,12 @@ export default function Mention(props) {
                 gutterBottom
                 variant="subtitle1"
                 component="small"
-                style={{ color: "#D3D3D3" }}
+                className={classes.fontColorForPlatform}
               >
                 {props.platform}
               </Typography>
 
-              <p
-                style={{
-                  display: "-webkit-box",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  WebkitLineClamp: 5,
-                  WebkitBoxOrient: "vertical",
-                }}
-              >
-                {props.content}
-              </p>
+              <p className={classes.paragraphInMentions}>{props.content}</p>
             </CardContent>
           </Grid>
         </Grid>
