@@ -33,6 +33,7 @@ const Mention = db.define("Mention", {
   popularity: {
     type: DataTypes.ENUM,
     values: ["High", "Average", "Low"],
+    defaultValue: "Average",
   },
 });
 
