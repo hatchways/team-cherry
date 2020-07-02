@@ -21,17 +21,6 @@ async function databaseTest() {
 }
 databaseTest();
 
-/* Sets up the PostgreSQL database connection. */
-const redditCrawler = require("../crawlers/redditCrawler");
-
-async function testReddit() {
-  await redditCrawler.initialize();
-  let results = await redditCrawler.getResults(2);
-
-  console.log(results);
-}
-testReddit();
-
 /**
  * Module dependencies.
  */
