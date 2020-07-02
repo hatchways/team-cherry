@@ -1,12 +1,14 @@
-import axios from 'axios'
-import { getToken } from './localStorage'
+import axios from "axios";
 
 
-const authToken = getToken()
-const authAxios = axios.create({
-  headers: {
-    Authorization: authToken
+export default function AxiosInterceptor(unauth) {
+  axios.interceptors.response.use((response) => {
+    return response
+  }, error => {
+    if (error.response.status === 401) {
+      unauth()
+    }
+    return Promise.reject(error);
   }
-})
-
-export default authAxios
+  );
+}

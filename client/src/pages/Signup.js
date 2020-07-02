@@ -65,7 +65,7 @@ export default function Signup(props) {
       }
 
       //if frontend validations pass, make server call here to create user
-      const res = await axios.post('api/users/register', {
+      const res = await axios.get('welcome', {
         email: email,
         password: password,
         company: company
@@ -75,10 +75,10 @@ export default function Signup(props) {
         setOpen(true)
         return
       }
-
-      //redirect to login after creation successful
-      const { history } = props
-      history.push('/login')
+      if (res.data.user) {
+        const { history } = props
+        history.push('/main')
+      }
 
     } catch (error) {
       console.error(error)
