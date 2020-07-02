@@ -8,6 +8,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: `${theme.palette.primary.main}`,
     color: `${theme.palette.primary.contrastText}`,
   },
+  root: {
+    borderRadius: '25px'
+  }
 }));
 
 
@@ -21,7 +24,11 @@ const SubmitButton = ({ children }) => {
       variant='contained'
       color='primary'
       className={`${classes.button}`}
+      classes={{
+        root: classes.root
+      }}
     >{children}</Button>
+
   );
 };
 
