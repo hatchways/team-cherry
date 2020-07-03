@@ -5,7 +5,7 @@ module.exports = async (req, res, next) => {
   const { token } = req.cookies;
 
   if (!token) {
-    return createErrorResponse(res, 403, { message: "Forbidden" });
+    return createErrorResponse(res, 401, { message: "Forbidden" });
   } else {
     jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
       if (err) {

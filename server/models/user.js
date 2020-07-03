@@ -8,6 +8,11 @@ const User = db.define("User", {
     allowNull: false,
     unique: true,
   },
+  company: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
   password: {
     type: DataTypes.STRING,
     allowNull: false,
