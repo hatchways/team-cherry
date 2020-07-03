@@ -6,6 +6,8 @@ const logger = require("morgan");
 
 const indexRouter = require("./routes/index");
 const pingRouter = require("./routes/ping");
+const authRoutes = require("./routes/users");
+const testMiddleware = require("./routes/testMiddleware");
 
 const { json, urlencoded } = express;
 
@@ -19,14 +21,16 @@ app.use(express.static(join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/ping", pingRouter);
+app.use("/api/users", authRoutes);
+app.use("/test", testMiddleware);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
