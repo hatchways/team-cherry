@@ -43,7 +43,6 @@ function App() {
             <Route path='/main' component={Main} />
             :
             ''}
-
           <Route path="/" exact component={Signup} />
           <Route render={() => <Redirect to="/" />} />
         </Switch>
