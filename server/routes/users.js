@@ -22,7 +22,23 @@ router.post("/register", validateRegister, async (req, res) => {
   const newUser = await User.create({
     email: req.body.email,
     password: req.body.password,
+    company: req.body.company,
   });
+
+  // token payload
+  const payload = {
+    id: newUser.id,
+    email: newUser.email,
+  };
+
+  jwt.sign(
+    payload,
+    process.env.JWT_SECRET,
+    { expiresIn: 31556926 },
+    (err, token) => {
+      res.cookie("token", token, cookieConfig).json({ success: true, user });
+    }
+  );
 
   res.json(newUser);
 });
