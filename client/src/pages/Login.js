@@ -5,7 +5,7 @@ import Container from '@material-ui/core/Container';
 import SubmitButton from '../components/SubmitButton'
 import CustomTextField from '../components/CustomTextField'
 import axios from 'axios'
-import { storeUser } from '../utils/localStorage'
+import { storeUser, getUser } from '../utils/localStorage'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -40,6 +40,12 @@ export default function Login(props) {
   const [passwordErrMsg, setpasswordErrMsg] = useState('')
 
   const login = async (event) => {
+
+    //this could be for a redirect if there is already a user in localstorage
+    if (getUser()) {
+      const { history } = props
+      history.push('/main')
+    }
     try {
       event.preventDefault()
       setEmailErr(false)

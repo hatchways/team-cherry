@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const SubmitButton = ({ children }) => {
+const SubmitButton = ({ children, onClick }) => {
   const classes = useStyles();
 
   return (
@@ -27,6 +27,7 @@ const SubmitButton = ({ children }) => {
       classes={{
         root: classes.root
       }}
+      onClick={onClick}
     >{children}</Button>
 
   );

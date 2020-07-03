@@ -5,7 +5,7 @@ import { CssBaseline, Typography, makeStyles, Container } from '@material-ui/cor
 import SubmitButton from '../components/SubmitButton'
 import CustomTextField from '../components/CustomTextField'
 import axios from 'axios'
-import { storeUser } from '../utils/localStorage';
+import { storeUser, getUser } from '../utils/localStorage';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -53,29 +53,30 @@ export default function Signup(props) {
       if (!validateEmail(email)) {
         setEmailErr(true)
         setEmailErrMsg('Please enter a valid email address')
+        return
       }
       if (company === '') {
         setCompanyErr(true)
+        return
       }
       if (password.length < 7) {
         setPasswordErr(true)
+        return
       }
 
-      if (companyErr || emailErr || passwordErr) return
-
       //if frontend validations pass, make server call here to create user
-      const res = await axios.post('/api/users/register', {
+      const res = await axios.post('api/user/register', {
         email: email,
         password: password,
         company: company
       })
+
       if (res.status === 400) {
         setEmailErr(true)
         setEmailErrMsg(res.data.email)
         return
       }
-      storeUser(res.data.user)
-      //idea is to set user received from server to localstorage. This would assumedly enough to use as authentication at this stage to direct to main page as mentioned in prev comments.
+
       const { history } = props
       history.push('/main')
 
