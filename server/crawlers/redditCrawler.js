@@ -9,7 +9,7 @@ async function redditCrawler(companyName, numOfMentionsToObtain) {
   });
 
   const subreddit = await scraper.getSubreddit("all");
-  const topPosts = await subreddit.getTop({
+  const topPosts = await subreddit.getHot({
     time: "all",
     limit: numOfMentionsToObtain,
   });
