@@ -37,7 +37,7 @@ router.post("/", requiresAuth, async (req, res) => {
     user.addMention(mention);
     res.json(mention);
   } else {
-    res.status(204);
+    res.sendStatus(204);
   }
 });
 
