@@ -6,7 +6,7 @@ async function scrapeReddit(companyName, countOfPagesToScrape) {
 }
 
 async function test() {
-  let results = await scrapeReddit("", 1000);
+  let results = await scrapeReddit("Twitter");
   console.log(results);
 }
 test();

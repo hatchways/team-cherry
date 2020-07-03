@@ -1,6 +1,6 @@
 const snoowrap = require("snoowrap");
 
-async function redditCrawler(companyName, numOfMentionsToObtain) {
+async function redditCrawler(companyName) {
   const scraper = new snoowrap({
     userAgent: process.env.Reddit_userAgent,
     clientId: process.env.Reddit_clientId,
@@ -9,15 +9,16 @@ async function redditCrawler(companyName, numOfMentionsToObtain) {
   });
 
   const subreddit = await scraper.getSubreddit("all");
-  const topPosts = await subreddit.getHot({
+  const topPosts = await subreddit.search({
+    query: companyName,
     time: "all",
-    limit: numOfMentionsToObtain,
+    sort: "relevance",
   });
 
   let data = [];
 
   topPosts.forEach((post) => {
-    // If a post doesn't have any content, just ignore it.
+    // If a post's title doesn't contain the specified company name, or it doesn't have any content, just ignore it.
     if (post.title.includes(companyName) && post.selftext) {
       // If a post doesn't have a thumbnail picture, just use Reddit's logo.
       if (post.thumbnail.substr(0, 8) !== "https://") {
