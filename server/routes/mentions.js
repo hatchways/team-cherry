@@ -1,22 +1,26 @@
 const router = require("express").Router();
-const { Mention } = require("../models");
+
+const requiresAuth = require("./middleware/requiresAuth");
+const { Mention, User } = require("../models");
 
 // TODO test mentions in action
-// TODO Create database relationship between mentions and user
 
-router.get("/", async (req, res) => {
-  const mentions = await Mention.findAll();
+router.get("/", requiresAuth, async (req, res) => {
+  const user = await User.findByPk(req.user.id);
+  // note that the getter method for n-m can accept options
+  // as if it were a regular query
+  const mentions = await user.getMentions();
 
   res.json(mentions);
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", requiresAuth, async (req, res) => {
   const mention = await Mention.findByPk(req.params.id);
 
   res.json(mention);
 });
 
-router.post("/", async (req, res) => {
+router.post("/", requiresAuth, async (req, res) => {
   const [mention, isNew] = await Mention.findOrCreate({
     where: {
       title: req.body.title,
@@ -28,17 +32,29 @@ router.post("/", async (req, res) => {
 
   // send if new, else no content
   if (isNew) {
+    const user = await User.findByPk(req.user.id);
+    // https://sequelize.org/master/manual/assocs.html ctrl-f to "Foo.hasMany(Bar)"
+    user.addMention(mention);
     res.json(mention);
   } else {
     res.status(204);
   }
 });
 
-router.delete("/:id", async (req, res) => {
-  const mention = await Mention.findByPk(req.params.id);
-  await mention.destroy();
+router.delete("/:id", requiresAuth, async (req, res) => {
+  const user = await User.findByPk(req.user.id);
+  const mentions = await user.getMentions({
+    where: {
+      id: req.params.id,
+    },
+  });
 
-  return res.status(204);
+  if (mentions.length) {
+    const mention = mentions[0];
+    await mention.destroy();
+  }
+
+  res.sendStatus(204);
 });
 
 module.exports = router;
