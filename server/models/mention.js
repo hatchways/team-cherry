@@ -29,11 +29,9 @@ const Mention = db.define("Mention", {
   // differently, which makes storing it somewhat challenging. Might have to
   // implement a helper function that uses different strats in order to score
   // popularity depeneding on each platforms metric, What data type is stored is
-  // up for discussion, but as a placeholder, we'll use String enums
+  // up for discussion, but as a placeholder, we'll use upvote score(reddit)
   popularity: {
-    type: DataTypes.ENUM,
-    values: ["High", "Average", "Low"],
-    defaultValue: "Average",
+    type: DataTypes.INTEGER,
   },
 });
 
