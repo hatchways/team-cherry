@@ -43,15 +43,12 @@ router.post("/", requiresAuth, async (req, res) => {
 
 router.delete("/:id", requiresAuth, async (req, res) => {
   const user = await User.findByPk(req.user.id);
-  const mentions = await user.getMentions({
-    where: {
-      id: req.params.id,
-    },
-  });
 
-  if (mentions.length) {
-    const mention = mentions[0];
-    await mention.destroy();
+  // found a way to untag a given mention from user,
+  // while preserving the mention on its own separate table
+  const mention = await Mention.findByPk(req.params.id);
+  if (mention) {
+    user.removeMention(mention);
   }
 
   res.sendStatus(204);
