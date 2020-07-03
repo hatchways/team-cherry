@@ -1,9 +1,7 @@
 import React, { useState, } from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { CssBaseline, Typography, makeStyles } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
-import Snackbar from '@material-ui/core/Snackbar';
+
 import SubmitButton from '../components/SubmitButton'
 import CustomTextField from '../components/CustomTextField'
 import axios from 'axios'
@@ -35,37 +33,44 @@ export default function Login(props) {
   const classes = useStyles();
 
   const [email, setEmail] = useState('')
+  const [emailErr, setEmailErr] = useState(false)
+  const [emailErrMsg, setEmailErrMsg] = useState('')
   const [password, setPassword] = useState('')
-  const [open, setOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('')
+  const [passwordErr, setPasswordErr] = useState(false)
+  const [passwordErrMsg, setpasswordErrMsg] = useState('')
 
   const login = async (event) => {
     try {
       event.preventDefault()
-      let passedFields = true
-      if (email === '' || password === '') {
-        setErrorMessage('Please fill in all fields')
-        passedFields = false
-      }
-
+      setEmailErr(false)
+      setPasswordErr(false)
       if (!validateEmail(email)) {
-        setErrorMessage('Please enter your email')
-        passedFields = false
+        setEmailErr(true)
+        setEmailErrMsg('Please enter a valid email')
       }
       if (password.length < 7) {
-        setErrorMessage('Please enter your password')
-        passedFields = false
+        setPasswordErr(true)
+        setpasswordErrMsg('Please enter a password with at least 7 characters')
       }
-      if (!passedFields) {
-        setOpen(true)
-        return
-      }
-      const res = await axios.post('api/users/register', {
+      if (emailErr || passwordErr) return
+
+      const res = await axios.post('api/users/login', {
         email: email,
         password: password,
       })
+      if (res.status === 400) {
+        if (res.data.user) {
+          setEmailErr(true)
+          setEmailErrMsg(res.data.user)
+          return
+        }
+        if (res.data.password)
+          setPasswordErr(true)
+        setpasswordErrMsg(res.data.password)
+        return
+      }
 
-      storeUser(res.body.user)//this is untested right now, but general idea is to just set token received from server to localstorage
+      storeUser(res.data.user)
 
       const { history } = props
       history.push('/main')
@@ -88,7 +93,8 @@ export default function Login(props) {
             label="Email Address"
             name="email"
             autoComplete="email"
-
+            error={emailErr}
+            helperText={emailErr ? emailErrMsg : ''}
             onChange={event => { setEmail(event.target.value) }}
           />
           <CustomTextField
@@ -96,6 +102,8 @@ export default function Login(props) {
             label="Password"
             type="password"
             id="password"
+            error={passwordErr}
+            helperText={passwordErr ? passwordErrMsg : ''}
             onChange={event => { setPassword(event.target.value) }}
           />
           <SubmitButton>
@@ -103,16 +111,6 @@ export default function Login(props) {
           </SubmitButton>
         </form>
       </div>
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        onClose={() => setOpen(false)}
-        autoHideDuration={6000}
-        open={open}
-        message={errorMessage}
-      />
     </Container>
   );
 }

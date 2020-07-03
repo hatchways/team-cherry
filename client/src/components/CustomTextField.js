@@ -10,7 +10,7 @@ const useStyles = makeStyles({
   }
 });
 
-const CustomTextField = ({ name, label, id, type, onChange }) => {
+const CustomTextField = ({ name, label, id, type, onChange, error, helperText }) => {
   const classes = useStyles()
 
   return (
@@ -27,6 +27,8 @@ const CustomTextField = ({ name, label, id, type, onChange }) => {
       margin='normal'
       fullWidth
       onChange={onChange}
+      error={error}
+      helperText={helperText}
     />
   )
 }
