@@ -100,9 +100,14 @@ const IOSSwitch = withStyles((theme) => ({
 class Main extends Component {
   constructor(props) {
     super(props);
+
+    // Get the params in the URL so we can know which platforms are selected.
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    let selectedPlatformsInURL = currentUrlParams.get("platforms").split(",");
+
     this.state = {
       allPlatforms: ["Reddit", "Twitter", "Facebook"],
-      platformSelected: [],
+      platformSelected: [...selectedPlatformsInURL],
     };
   }
 
