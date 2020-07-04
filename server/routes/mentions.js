@@ -3,6 +3,8 @@ const router = require("express").Router();
 const requiresAuth = require("./middleware/requiresAuth");
 const { Mention, User } = require("../models");
 
+const callScraper = require("../scraper");
+
 // TODO test mentions in action
 
 router.get("/", requiresAuth, async (req, res) => {
@@ -21,24 +23,41 @@ router.get("/:id", requiresAuth, async (req, res) => {
 });
 
 router.post("/", requiresAuth, async (req, res) => {
-  const [mention, isNew] = await Mention.findOrCreate({
-    where: {
-      title: req.body.title,
-    },
-    defaults: {
-      ...req.body,
-    },
-  });
+  // NOTE I think this is better served as just a test route in order to test the scraper
+  // This shouldn't be placed in the final PR as there will be another means to post new data
+  // into the database.
+  const user = await User.findByPk(req.user.id);
 
-  // send if new, else no content
-  if (isNew) {
-    const user = await User.findByPk(req.user.id);
-    // https://sequelize.org/master/manual/assocs.html ctrl-f to "Foo.hasMany(Bar)"
-    user.addMention(mention);
-    res.json(mention);
-  } else {
-    res.sendStatus(204);
+  let mentions = callScraper(req.user.company, 100);
+
+  let result = [];
+  for (let m of mentions) {
+    let userMentions = await user.getMentions({
+      where: {
+        title: m.title,
+      },
+    });
+
+    // if this is new
+    if (!userMentions.length) {
+      [mention, isNew] = await Mention.findOrCreate({
+        where: {
+          title: m.title,
+        },
+        defaults: {
+          title: m.title,
+          platform: m.platform,
+          date: m.date,
+          content: m.content || "",
+          popularity: m.popularity,
+          imageUrl: m.image,
+        },
+      });
+      result.push(mention);
+      user.addMention(mention);
+    }
   }
+  res.json({ mentions: result });
 });
 
 router.delete("/:id", requiresAuth, async (req, res) => {
