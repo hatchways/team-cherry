@@ -29,7 +29,7 @@ router.post("/register", validateRegister, async (req, res) => {
   const payload = {
     id: newUser.id,
     email: newUser.email,
-    comapny: newUser.company,
+    company: newUser.company,
   };
 
   jwt.sign(
@@ -59,7 +59,7 @@ router.post("/login", validateLogin, async (req, res) => {
     const payload = {
       id: user.id,
       email: user.email,
-      company: user.comapny,
+      company: user.company,
     };
 
     jwt.sign(
