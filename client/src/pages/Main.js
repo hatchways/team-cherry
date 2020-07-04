@@ -1,12 +1,23 @@
 import React, { Component } from "react";
 import Header from "../Components/Header";
 import Mention from "../Components/Mention";
-import Grid from "@material-ui/core/Grid";
 import SwitchSelector from "react-switch-selector";
 import { withStyles } from "@material-ui/core/styles";
+import {
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  Switch,
+  Avatar,
+  ListItemAvatar,
+  Divider,
+  Grid,
+  ListItemSecondaryAction,
+} from "@material-ui/core/";
 
-const useStyles = () => ({
-  RootGridContainer: {
+const useStyles = (theme) => ({
+  rightPart: {
     marginTop: "25px",
   },
   SwitchSelector: {
@@ -14,19 +25,162 @@ const useStyles = () => ({
     width: "30%",
     fontWeight: 400,
   },
+  leftPanel: {
+    background: "white",
+    width: "100%",
+  },
+  platformItem: {
+    height: "6em",
+  },
+  platformFont: {
+    fontWeight: 800,
+  },
+  platformListItemAvatar: {
+    marginRight: "7px",
+  },
+  platformAvatar: {
+    width: theme.spacing(6),
+    height: theme.spacing(6),
+  },
+});
+
+const IOSSwitch = withStyles((theme) => ({
+  root: {
+    width: 36,
+    height: 19,
+    padding: 0,
+    margin: theme.spacing(1),
+  },
+  switchBase: {
+    padding: 1,
+    "&$checked": {
+      transform: "translateX(17px)",
+      color: theme.palette.common.white,
+      "& + $track": {
+        backgroundColor: "#6583f2",
+        opacity: 1,
+        border: "none",
+      },
+    },
+    "&$focusVisible $thumb": {
+      color: "#6583f2",
+      border: "6px solid #fff",
+    },
+  },
+  thumb: {
+    width: 17,
+    height: 17,
+  },
+  track: {
+    borderRadius: 26 / 2,
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: "#bdc7d4",
+    opacity: 1,
+    transition: theme.transitions.create(["background-color", "border"]),
+  },
+  checked: {},
+  focusVisible: {},
+}))(({ classes, ...props }) => {
+  return (
+    <Switch
+      focusVisibleClassName={classes.focusVisible}
+      disableRipple
+      classes={{
+        root: classes.root,
+        switchBase: classes.switchBase,
+        thumb: classes.thumb,
+        track: classes.track,
+        checked: classes.checked,
+      }}
+      {...props}
+    />
+  );
 });
 
 class Main extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      allPlatforms: ["Reddit", "Twitter", "Facebook"],
+      platformSelected: [],
+    };
+  }
+
   render() {
     const { classes } = this.props;
+
+    const handlePlatformToggle = (value) => {
+      // If a platform is already in "platformSelected", remove it.
+      // Otherwise, add it.
+      let index = this.state.platformSelected.indexOf(value.target.name);
+      if (index !== -1) {
+        let temp = this.state.platformSelected;
+        temp.splice(index, 1);
+        this.setState({
+          platformSelected: temp,
+        });
+      } else {
+        this.setState({
+          platformSelected: [...this.state.platformSelected, value.target.name],
+        });
+      }
+    };
 
     return (
       <div>
         <Header />
-        <Grid container spacing={0} className={classes.RootGridContainer}>
-          <Grid item xs={4} container></Grid>
+        <Grid container>
+          <Grid item xs={4} container>
+            <List dense className={classes.leftPanel}>
+              {this.state.allPlatforms.map((platform) => {
+                return (
+                  <div key={platform}>
+                    <ListItem className={classes.platformItem}>
+                      <ListItemAvatar
+                        className={classes.platformListItemAvatar}
+                      >
+                        <Avatar
+                          className={classes.platformAvatar}
+                          src={`/imgs/${platform}_icon.png`}
+                        />
+                      </ListItemAvatar>
 
-          <Grid item xs={6} container direction={"column"} spacing={2}>
+                      <ListItemText
+                        disableTypography
+                        primary={
+                          <Typography className={classes.platformFont}>
+                            {platform}
+                          </Typography>
+                        }
+                      />
+
+                      <ListItemSecondaryAction>
+                        <IOSSwitch
+                          name={platform}
+                          checked={this.state.platformSelected.includes(
+                            platform
+                          )}
+                          onChange={handlePlatformToggle}
+                        />
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                    <Divider variant="middle" light />
+                  </div>
+                );
+              })}
+            </List>
+          </Grid>
+
+          <Grid item xs={1}></Grid>
+
+          <Grid
+            item
+            xs={6}
+            className={classes.rightPart}
+            container
+            direction={"column"}
+            spacing={2}
+          >
             <Grid
               item
               container

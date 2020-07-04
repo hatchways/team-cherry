@@ -3,7 +3,6 @@ import { MuiThemeProvider } from "@material-ui/core";
 import { BrowserRouter, Route } from "react-router-dom";
 import { theme } from "./themes/theme";
 import Main from "./pages/Main";
-import "fontsource-roboto";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 import "./App.css";
