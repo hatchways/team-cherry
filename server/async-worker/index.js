@@ -4,13 +4,14 @@ const { Mention, User } = require("../models");
 // A rough draft of how new mentions would get pulled into the db
 // without using an explicit /POST route as well as using
 // a given user's credentials.
-module.exports = async function () {
+module.exports = async function asyncWorker() {
   console.log("[Scraper] Calling async scraper");
+
   const users = await User.findAll();
   for (let user of users) {
-    // TODO: add await when this func call becomes async
-    let mentions = callScraper(user.company);
+    let mentions = await callScraper(user.company);
     let count = 0;
+
     for (let m of mentions) {
       let userMentions = await user.getMentions({
         where: {
@@ -33,6 +34,7 @@ module.exports = async function () {
             imageUrl: m.image,
           },
         });
+
         user.addMention(mention);
         count++;
       }
