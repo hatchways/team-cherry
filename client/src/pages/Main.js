@@ -103,11 +103,15 @@ class Main extends Component {
 
     // Get the params in the URL so we can know which platforms are selected.
     let currentUrlParams = new URLSearchParams(window.location.search);
-    let selectedPlatformsInURL = currentUrlParams.get("platforms").split(",");
+    let selectedPlatformsInURL = currentUrlParams.get("platforms");
+    let splitSelectedPlatforms = [];
+    if (selectedPlatformsInURL) {
+      splitSelectedPlatforms = selectedPlatformsInURL.split(",");
+    }
 
     this.state = {
       allPlatforms: ["Reddit", "Twitter", "Facebook"],
-      platformSelected: [...selectedPlatformsInURL],
+      platformSelected: [...splitSelectedPlatforms],
     };
   }
 
@@ -131,7 +135,7 @@ class Main extends Component {
       }
 
       // Add the selected platforms in to the query params.
-      let currentUrlParams = new URLSearchParams(window.location.search);
+      let currentUrlParams = new URLSearchParams();
       currentUrlParams.set("platforms", this.state.platformSelected);
       this.props.history.push(
         window.location.pathname + "?" + currentUrlParams.toString()
