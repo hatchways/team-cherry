@@ -1,8 +1,11 @@
-module.exports = function duddScraper() {
-  // placeholder function for an actually scraper
-  this.run = function run(companyName, pagesToScrape) {
+const { redditScraper, twitterScraper } = require("../crawlers");
+
+module.exports = function ScraperManager() {
+  this.run = async function run(companyName) {
     const date = new Date(Date.now());
     console.log(`Scraper is running: ${date.toString()} `);
+
+    let results = [];
 
     const dummyData = [
       {
@@ -34,6 +37,11 @@ module.exports = function duddScraper() {
       },
     ];
 
-    return dummyData;
+    const redditMentions = await redditScraper(companyName);
+    const twitterMentions = await twitterScraper(companyName);
+
+    results = results.concat(redditMentions, twitterMentions, dummyData);
+
+    return results;
   };
 };

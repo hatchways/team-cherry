@@ -1,9 +1,7 @@
-const Scraper = require("./scraper");
-const scraper = new Scraper();
+const ScraperManager = require("./scraper");
+const scraper = new ScraperManager();
 
-module.exports = function callScraper(companyName, pagesToScrape) {
-  // dudd function that would be calling the actual scraper;
-  // import this into /server/bin/www and setInterval to periodically scrape
-  let data = scraper.run(companyName, pagesToScrape);
+module.exports = async function callScraper(companyName) {
+  let data = await scraper.run(companyName);
   return data;
 };
