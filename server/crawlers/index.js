@@ -1,8 +1,8 @@
 const redditCrawler = require("./redditCrawler");
 require("dotenv").config();
 
-async function scrapeReddit(companyName, countOfPagesToScrape) {
-  return await redditCrawler(companyName, countOfPagesToScrape);
+async function scrapeReddit(companyName) {
+  return await redditCrawler(companyName);
 }
 
 async function test() {
