@@ -109,21 +109,28 @@ class Main extends Component {
   render() {
     const { classes } = this.props;
 
-    const handlePlatformToggle = (value) => {
+    const handlePlatformToggle = async (value) => {
       // If a platform is already in "platformSelected", remove it.
       // Otherwise, add it.
       let index = this.state.platformSelected.indexOf(value.target.name);
       if (index !== -1) {
         let temp = this.state.platformSelected;
         temp.splice(index, 1);
-        this.setState({
+        await this.setState({
           platformSelected: temp,
         });
       } else {
-        this.setState({
+        await this.setState({
           platformSelected: [...this.state.platformSelected, value.target.name],
         });
       }
+
+      // Add the selected platforms in to the query params.
+      let currentUrlParams = new URLSearchParams(window.location.search);
+      currentUrlParams.set("platforms", this.state.platformSelected);
+      this.props.history.push(
+        window.location.pathname + "?" + currentUrlParams.toString()
+      );
     };
 
     return (
