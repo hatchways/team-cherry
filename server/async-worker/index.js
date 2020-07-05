@@ -15,25 +15,26 @@ module.exports = async function asyncWorker() {
     let count = 0;
 
     for (let m of mentions) {
+      let col, val;
+      // if this is a twitter mention
+      if (m.platform == "Twitter") {
+        col = "content";
+        val = m.content;
+      }
+      // if this is a reddit mention
+      else if (m.platform == "Reddit") {
+        col = "title";
+        val = m.title;
+      }
+
       let userMentions = await user.getMentions({
         where: {
-          title: m.title,
+          [col]: val,
         },
       });
 
       // if this is new
       if (!userMentions.length) {
-        let col, val;
-        // if this is a twitter mention
-        if (m.platform == "Twitter") {
-          col = "content";
-          val = m.content;
-        }
-        // if this is a reddit mention
-        else if (m.platform == "Reddit") {
-          col = "title";
-          val = m.title;
-        }
         [mention, isNew] = await Mention.findOrCreate({
           where: {
             [col]: val,
