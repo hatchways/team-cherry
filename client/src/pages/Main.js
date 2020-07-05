@@ -18,14 +18,19 @@ import {
 
 const useStyles = (theme) => ({
   rightPart: {
-    marginTop: "25px",
+    marginTop: "8em",
   },
   SwitchSelector: {
     height: "2.8em",
     width: "30%",
     fontWeight: 400,
   },
-  leftPanel: {
+  leftPanelGrid: {
+    height: "calc(100vh - 5.4em)",
+    position: "fixed",
+    marginTop: "5.4em",
+  },
+  leftPanelList: {
     background: "white",
     width: "100%",
   },
@@ -41,6 +46,9 @@ const useStyles = (theme) => ({
   platformAvatar: {
     width: theme.spacing(6),
     height: theme.spacing(6),
+  },
+  instruction: {
+    textAlign: "center",
   },
 });
 
@@ -112,6 +120,105 @@ class Main extends Component {
     this.state = {
       allPlatforms: ["Reddit", "Twitter", "Facebook"],
       platformSelected: [...splitSelectedPlatforms],
+      mentions: [],
+      mentions: [
+        {
+          title: "PalPay invested $500 million in Company ABC",
+          platform: "Reddit",
+          content:
+            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
+            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
+            "and cook, stirring occasionally until lightly browned, 6 to 8" +
+            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
+            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
+            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
+            "often until thickened and fragrant, about 10 minutes. Add" +
+            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil.",
+          image: "/imgs/dog.jpg",
+        },
+        {
+          title: "PalPay invested $500 million in Company ABC",
+          platform: "Reddit",
+          content:
+            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
+            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
+            "and cook, stirring occasionally until lightly browned, 6 to 8" +
+            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
+            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
+            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
+            "often until thickened and fragrant, about 10 minutes. Add" +
+            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil.",
+          image: "/imgs/dog.jpg",
+        },
+        {
+          title: "PalPay invested $500 million in Company ABC",
+          platform: "Reddit",
+          content:
+            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
+            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
+            "and cook, stirring occasionally until lightly browned, 6 to 8" +
+            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
+            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
+            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
+            "often until thickened and fragrant, about 10 minutes. Add" +
+            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil.",
+          image: "/imgs/dog.jpg",
+        },
+        {
+          title: "PalPay invested $500 million in Company ABC",
+          platform: "Reddit",
+          content:
+            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
+            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
+            "and cook, stirring occasionally until lightly browned, 6 to 8" +
+            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
+            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
+            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
+            "often until thickened and fragrant, about 10 minutes. Add" +
+            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil.",
+          image: "/imgs/dog.jpg",
+        },
+        {
+          title: "PalPay invested $500 million in Company ABC",
+          platform: "Reddit",
+          content:
+            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
+            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
+            "and cook, stirring occasionally until lightly browned, 6 to 8" +
+            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
+            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
+            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
+            "often until thickened and fragrant, about 10 minutes. Add" +
+            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil.",
+          image: "/imgs/dog.jpg",
+        },
+        {
+          title: "PalPay invested $500 million in Company ABC",
+          platform: "Reddit",
+          content:
+            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
+            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
+            "and cook, stirring occasionally until lightly browned, 6 to 8" +
+            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
+            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
+            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
+            "often until thickened and fragrant, about 10 minutes. Add" +
+            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
+            "boil.",
+          image: "/imgs/dog.jpg",
+        },
+      ],
     };
   }
 
@@ -146,8 +253,8 @@ class Main extends Component {
       <div>
         <Header />
         <Grid container>
-          <Grid item xs={4} container>
-            <List dense className={classes.leftPanel}>
+          <Grid item xs={4} container className={classes.leftPanelGrid}>
+            <List dense className={classes.leftPanelList}>
               {this.state.allPlatforms.map((platform) => {
                 return (
                   <div key={platform}>
@@ -187,7 +294,7 @@ class Main extends Component {
             </List>
           </Grid>
 
-          <Grid item xs={1}></Grid>
+          <Grid item xs={5}></Grid>
 
           <Grid
             item
@@ -229,60 +336,25 @@ class Main extends Component {
                 />
               </div>
             </Grid>
-
-            <Grid item>
-              <Mention
-                title="PalPay invested $500 million in Company ABC"
-                platform="Reddit"
-                content="Heat oil in a (14- to 16-inch) paella pan or a large, deep
-                skillet over medium-high heat. Add chicken, shrimp and chorizo,
-                and cook, stirring occasionally until lightly browned, 6 to 8
-                minutes. Transfer shrimp to a large plate and set aside, leaving
-                chicken and chorizo in the pan. Add pimentón, bay leaves,
-                garlic, tomatoes, onion, salt and pepper, and cook, stirring
-                often until thickened and fragrant, about 10 minutes. Add
-                saffron broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil. broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil."
-                image="/imgs/dog.jpg"
-              />
-            </Grid>
-
-            <Grid item>
-              <Mention
-                title="PalPay invested $500 million in Company ABC"
-                platform="Facebook"
-                content="Heat oil in a (14- to 16-inch) paella pan or a large, deep
-                skillet over medium-high heat. Add chicken, shrimp and chorizo,
-                and cook, stirring occasionally until lightly browned, 6 to 8
-                minutes. Transfer shrimp to a large plate and set aside, leaving
-                chicken and chorizo in the pan. Add pimentón, bay leaves,
-                garlic, tomatoes, onion, salt and pepper, and cook, stirring
-                often until thickened and fragrant, about 10 minutes. Add
-                saffron broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil. broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil."
-                image="/imgs/dog.jpg"
-              />
-            </Grid>
-
-            <Grid item>
-              <Mention
-                title="PalPay invested $500 million in Company ABC"
-                platform="Twitter"
-                content="Heat oil in a (14- to 16-inch) paella pan or a large, deep
-                skillet over medium-high heat. Add chicken, shrimp and chorizo,
-                and cook, stirring occasionally until lightly browned, 6 to 8
-                minutes. Transfer shrimp to a large plate and set aside, leaving
-                chicken and chorizo in the pan. Add pimentón, bay leaves,
-                garlic, tomatoes, onion, salt and pepper, and cook, stirring
-                often until thickened and fragrant, about 10 minutes. Add
-                saffron broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil. broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil."
-                image="/imgs/dog.jpg"
-              />
-            </Grid>
+            {this.state.mentions.length === 0 ? (
+              <h3 className={classes.instruction}>
+                Please enter a company name in the search bar, and toggle one or
+                more platforms in the left panel.
+              </h3>
+            ) : (
+              this.state.mentions.map((mention, index) => {
+                return (
+                  <Grid item key={index}>
+                    <Mention
+                      image={mention.image}
+                      title={mention.title}
+                      platform={mention.platform}
+                      content={mention.content}
+                    />
+                  </Grid>
+                );
+              })
+            )}
           </Grid>
         </Grid>
       </div>
