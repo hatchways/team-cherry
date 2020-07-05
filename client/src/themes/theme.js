@@ -16,5 +16,8 @@ export const theme = createMuiTheme({
       dark: '#465ba9',
       contrastText: '#fff',
     },
+    background: {
+      default: "#fafbff",
+    },
   },
 });
