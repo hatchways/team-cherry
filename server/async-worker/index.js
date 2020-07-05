@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const callScraper = require("../scraper");
 const { Mention, User } = require("../models");
 
@@ -23,10 +24,10 @@ module.exports = async function asyncWorker() {
       if (!userMentions.length) {
         [mention, isNew] = await Mention.findOrCreate({
           where: {
-            title: m.title,
+            [Op.or]: [{ title: m.title }, { content: m.content }],
           },
           defaults: {
-            title: m.title,
+            title: m.title || "",
             platform: m.platform,
             date: m.date * 1000, // convert unix timestamp
             content: m.content || "",
