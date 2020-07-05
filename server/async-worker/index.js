@@ -6,6 +6,7 @@ const { Mention, User } = require("../models");
 // without using an explicit /POST route as well as using
 // a given user's credentials.
 module.exports = async function asyncWorker() {
+  // TODO refactor this into smaller functions
   console.log("[Scraper] Calling async scraper");
 
   const users = await User.findAll();
@@ -22,9 +23,20 @@ module.exports = async function asyncWorker() {
 
       // if this is new
       if (!userMentions.length) {
+        let col, val;
+        // if this is a twitter mention
+        if (m.platform == "Twitter") {
+          col = "content";
+          val = m.content;
+        }
+        // if this is a reddit mention
+        else if (m.platform == "Reddit") {
+          col = "title";
+          val = m.title;
+        }
         [mention, isNew] = await Mention.findOrCreate({
           where: {
-            [Op.or]: [{ title: m.title }, { content: m.content }],
+            [col]: val,
           },
           defaults: {
             title: m.title || "",
