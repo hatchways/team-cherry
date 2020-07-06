@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import Header from "../Components/Header";
-import Mention from "../Components/Mention";
+import Header from "../components/Header";
+import Mention from "../components/Mention";
 import SwitchSelector from "react-switch-selector";
 import { withStyles } from "@material-ui/core/styles";
 import {
@@ -15,6 +15,7 @@ import {
   Grid,
   ListItemSecondaryAction,
 } from "@material-ui/core/";
+import axios from 'axios'
 
 const useStyles = (theme) => ({
   rightPart: {
@@ -118,9 +119,11 @@ class Main extends Component {
     }
 
     this.state = {
+      sortBy: '',
       allPlatforms: ["Reddit", "Twitter", "Facebook"],
       platformSelected: [...splitSelectedPlatforms],
-      mentions: [],
+      allMentions: [],
+      displayMentions: [],
       mentions: [
         {
           title: "PalPay invested $500 million in Company ABC",
@@ -222,6 +225,24 @@ class Main extends Component {
     };
   }
 
+  componentDidMount() {
+    const dbMentions = axios.get('api/mentions') //gets all mentions from db on mount
+    this.setState({
+      allMentions: dbMentions
+    })
+  }
+
+  sortMentions() {
+    const criteria = this.state.sortBy
+    if (criteria === 'Most Popular') {
+      //sort function on popularity criteria
+    }
+
+    if (criteria === 'Most Recent') {
+      //sort function based on time
+    }
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -232,13 +253,18 @@ class Main extends Component {
       if (index !== -1) {
         let temp = this.state.platformSelected;
         temp.splice(index, 1);
-        await this.setState({
+        this.setState({
           platformSelected: temp,
         });
       } else {
-        await this.setState({
+        this.setState({
           platformSelected: [...this.state.platformSelected, value.target.name],
         });
+        const newMentions = this.state.allMentions.filter((current) => {
+          return current.platform === value.target.name
+        })
+        const newStateMentions = this.state.displayMentions.concat(newMentions)
+
       }
 
       // Add the selected platforms in to the query params.
@@ -248,7 +274,7 @@ class Main extends Component {
         window.location.pathname + "?" + currentUrlParams.toString()
       );
     };
-
+    console.log(this.state.platformSelected)
     return (
       <div>
         <Header />
@@ -342,19 +368,19 @@ class Main extends Component {
                 more platforms in the left panel.
               </h3>
             ) : (
-              this.state.mentions.map((mention, index) => {
-                return (
-                  <Grid item key={index}>
-                    <Mention
-                      image={mention.image}
-                      title={mention.title}
-                      platform={mention.platform}
-                      content={mention.content}
-                    />
-                  </Grid>
-                );
-              })
-            )}
+                this.state.mentions.map((mention, index) => {
+                  return (
+                    <Grid item key={index}>
+                      <Mention
+                        image={mention.image}
+                        title={mention.title}
+                        platform={mention.platform}
+                        content={mention.content}
+                      />
+                    </Grid>
+                  );
+                })
+              )}
           </Grid>
         </Grid>
       </div>
