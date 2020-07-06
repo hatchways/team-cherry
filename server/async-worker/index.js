@@ -6,8 +6,6 @@ const { Mention, User } = require("../models");
 // without using an explicit /POST route as well as using
 // a given user's credentials.
 module.exports = async function asyncWorker() {
-  const SECONDS = 1;
-  const MILLISECONDS = 1000;
   // TODO refactor this into smaller functions
   console.log("[Scraper] Calling async scraper");
 
@@ -17,23 +15,9 @@ module.exports = async function asyncWorker() {
     let count = 0;
 
     for (let m of mentions) {
-      let col, val, timeConvention;
-      // if this is a twitter mention
-      if (m.platform == "Twitter") {
-        col = "content";
-        val = m.content;
-        timeConvention = SECONDS;
-      }
-      // if this is a reddit mention
-      else if (m.platform == "Reddit") {
-        col = "title";
-        val = m.title;
-        timeConvention = MILLISECONDS;
-      }
-
       let userMentions = await user.getMentions({
         where: {
-          [col]: val,
+          title: m.title,
         },
       });
 
@@ -46,7 +30,7 @@ module.exports = async function asyncWorker() {
           defaults: {
             title: m.title || "",
             platform: m.platform,
-            date: m.date * timeConvention, // convert unix timestamp
+            date: m.date,
             content: m.content || "",
             popularity: m.popularity,
             imageUrl: m.image,
