@@ -18,6 +18,7 @@ async function redditCrawler(companyName) {
   let data = [];
 
   topPosts.forEach((post) => {
+    // console.log(post);
     // If a post's title doesn't contain the specified company name, or it doesn't have any content, just ignore it.
     if (post.title.includes(companyName) && post.selftext) {
       // If a post doesn't have a thumbnail picture, just use Reddit's logo.
@@ -25,6 +26,7 @@ async function redditCrawler(companyName) {
         post.thumbnail = "/imgs/reddit_icon.png";
       }
       data.push({
+        id: post.id,
         image: post.thumbnail,
         title: post.title,
         popularity: post.score,
