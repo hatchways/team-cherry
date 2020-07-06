@@ -1,49 +1,33 @@
-const { Op } = require("sequelize");
 const callScraper = require("../scraper");
-const { Mention, User } = require("../models");
+const { Mention, Company } = require("../models");
+const User = require("../models/user");
 
-// A rough draft of how new mentions would get pulled into the db
-// without using an explicit /POST route as well as using
-// a given user's credentials.
 module.exports = async function asyncWorker() {
-  // TODO refactor this into smaller functions
   console.log("[Scraper] Calling async scraper");
 
-  const users = await User.findAll();
-  for (let user of users) {
-    let mentions = await callScraper(user.company);
-    let count = 0;
+  const companies = await Company.findAll();
+  for (let company of companies) {
+    let mentions = await callScraper(company.name);
 
     for (let m of mentions) {
-      let userMentions = await user.getMentions({
+      [mention, isNew] = await Mention.findOrCreate({
         where: {
-          title: m.title,
+          id: m.id,
+        },
+        defaults: {
+          id: m.id,
+          title: m.title || "",
+          platform: m.platform,
+          date: m.date,
+          content: m.content || "",
+          popularity: m.popularity,
+          imageUrl: m.image,
         },
       });
 
-      // if this is new
-      if (!userMentions.length) {
-        [mention, isNew] = await Mention.findOrCreate({
-          where: {
-            [col]: val,
-          },
-          defaults: {
-            title: m.title || "",
-            platform: m.platform,
-            date: m.date,
-            content: m.content || "",
-            popularity: m.popularity,
-            imageUrl: m.image,
-          },
-        });
-
-        user.addMention(mention);
-        count++;
-      }
+      await company.addMention(mention);
     }
 
-    console.log(
-      `[Scraper] Finished adding ${count} mentions for ${user.company}`
-    );
+    console.log(`[Scraper] Finished adding mentions for ${company.name}`);
   }
 };

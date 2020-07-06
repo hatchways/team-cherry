@@ -1,13 +1,19 @@
 const User = require("./user");
 const Mention = require("./mention");
-const UserMentions = require("./userMentions");
+const Company = require("./Company");
+const CompanyMentions = require("./companyMentions");
+const UserCompanies = require("./userCompanies");
 
-// create database association(N-M) between users and mentions
-Mention.belongsToMany(User, { through: UserMentions });
-User.belongsToMany(Mention, { through: UserMentions });
+// create database associations
+User.belongsToMany(Company, { through: UserCompanies });
+Company.belongsToMany(User, { through: UserCompanies });
+
+Mention.belongsToMany(Company, { through: CompanyMentions });
+Company.belongsToMany(Mention, { through: CompanyMentions });
 
 module.exports = {
   User,
   Mention,
-  UserMentions,
+  CompanyMentions,
+  Company,
 };

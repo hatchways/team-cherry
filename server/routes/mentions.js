@@ -8,10 +8,15 @@ const callScraper = require("../scraper");
 // TODO test mentions in action
 
 router.get("/", requiresAuth, async (req, res) => {
+  // this can be possibly refactored by including the user company
+  // on the token payload
   const user = await User.findByPk(req.user.id);
-  // note that the getter method for n-m can accept options
-  // as if it were a regular query
-  const mentions = await user.getMentions();
+
+  // get company associated with the user
+  const company = await user.getCompany();
+
+  // get mentions associated with the company
+  const mentions = await company.getMentions();
 
   res.json(mentions);
 });
