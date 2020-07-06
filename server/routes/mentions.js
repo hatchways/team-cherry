@@ -12,13 +12,17 @@ router.get("/", requiresAuth, async (req, res) => {
   // on the token payload
   const user = await User.findByPk(req.user.id);
 
-  // get company associated with the user
-  const company = await user.getCompany();
+  // get companies associated with the user
+  const companies = await user.getCompanies();
 
-  // get mentions associated with the company
-  const mentions = await company.getMentions();
+  // get mentions associated with the companies
+  output = [];
+  for (let company of companies) {
+    let mentions = await company.getMentions();
+    output = output.concat(mentions);
+  }
 
-  res.json(mentions);
+  res.json({ mentions: output });
 });
 
 router.get("/:id", requiresAuth, async (req, res) => {
