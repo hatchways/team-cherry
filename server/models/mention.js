@@ -2,6 +2,10 @@ const { DataTypes } = require("sequelize");
 const db = require("../db");
 
 const Mention = db.define("Mention", {
+  id: {
+    types: DataTypes.STRING,
+    primaryKey: true,
+  },
   title: {
     type: DataTypes.STRING,
   },
