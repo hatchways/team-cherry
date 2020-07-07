@@ -15,7 +15,7 @@ module.exports = async (req, res, next) => {
       } else if (decodedToken.exp <= Date.now() / 1000) {
         return createErrorResponse(res, 401, { message: "Token Expired" });
       } else {
-        req.user = { id: decodedToken.id, company: decodedToken.company };
+        req.user = { id: decodedToken.id };
         next();
       }
     });
