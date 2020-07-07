@@ -22,7 +22,6 @@ router.post("/register", validateRegister, async (req, res) => {
   const newUser = await User.create({
     email: req.body.email,
     password: req.body.password,
-    company: req.body.company,
   });
 
   // token payload
