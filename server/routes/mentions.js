@@ -28,11 +28,14 @@ router.get("/:query", requiresAuth, async (req, res) => {
   // const mention = await Mention.findByPk(req.params.id);
   const mentions = await Mention.findAll({
     where: {
-      [Op.iLike]: "%" + req.params.query + "%",
+      title: {
+        // checks if the search queried exists at some point in the title
+        [Op.iLike]: "%" + req.params.query + "%",
+      },
     },
   });
 
-  res.json(mention);
+  res.json(mentions);
 });
 
 module.exports = router;
