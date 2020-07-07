@@ -22,14 +22,12 @@ router.post("/register", validateRegister, async (req, res) => {
   const newUser = await User.create({
     email: req.body.email,
     password: req.body.password,
-    company: req.body.company,
   });
 
   // token payload
   const payload = {
     id: newUser.id,
     email: newUser.email,
-    company: newUser.company,
   };
 
   jwt.sign(
@@ -59,7 +57,6 @@ router.post("/login", validateLogin, async (req, res) => {
     const payload = {
       id: user.id,
       email: user.email,
-      company: user.company,
     };
 
     jwt.sign(
