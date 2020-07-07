@@ -31,7 +31,7 @@ async function redditCrawler(companyName) {
         title: post.title,
         popularity: post.score,
         content: post.selftext,
-        date: post.created, // In Unix time format(in milisecond).
+        date: post.created * 1000, // In Unix time format(in milisecond).
         platform: "Reddit",
       });
     }
