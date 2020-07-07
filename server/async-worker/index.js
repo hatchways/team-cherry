@@ -16,10 +16,10 @@ module.exports = async function asyncWorker() {
         },
         defaults: {
           id: m.id,
-          title: m.title || "",
+          title: m.title,
           platform: m.platform,
           date: m.date,
-          content: m.content || "",
+          content: m.content,
           popularity: m.popularity,
           imageUrl: m.image,
         },
