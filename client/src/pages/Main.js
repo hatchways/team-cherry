@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import Header from "../Components/Header";
-import Mention from "../Components/Mention";
+import Mention from "../components/Mention";
 import Grid from "@material-ui/core/Grid";
 import SwitchSelector from "react-switch-selector";
 import { withStyles } from "@material-ui/core/styles";
@@ -22,7 +21,6 @@ class Main extends Component {
 
     return (
       <div>
-        <Header />
         <Grid container spacing={0} className={classes.RootGridContainer}>
           <Grid item xs={4} container></Grid>
 
@@ -121,4 +119,3 @@ class Main extends Component {
 }
 
 export default withStyles(useStyles)(Main);
-

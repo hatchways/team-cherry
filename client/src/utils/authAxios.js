@@ -1,5 +1,5 @@
 import axios from "axios";
-import { storeUser } from './localStorage'
+import { storeUser, } from './localStorage'
 
 export function AxiosInterceptor(unauth, hideRoutes) {
   axios.interceptors.response.use((response) => {
@@ -16,13 +16,14 @@ export function AxiosInterceptor(unauth, hideRoutes) {
 
 export function loginInterceptor(setProtectedRoutes) {
   axios.interceptors.response.use((response) => {
-    storeUser(response.data.user)
+    storeUser(response.data)
     setProtectedRoutes()
     return response
-  }, error => {
-    console.log('something went wrong')
-
-    return Promise.reject(error);
+  }, (error) => {
+    const stringError = JSON.stringify(error)
+    if (stringError.includes('409')) return 'That email already exists'
+    if (stringError.includes('404')) return "User doesn't exist"
+    if (stringError.includes('403')) return 'Password does not match'
   }
   );
 }
