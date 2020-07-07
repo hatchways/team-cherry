@@ -67,7 +67,7 @@ async function twitterCrawler(companyName) {
       title = startingEllipsis + title + endingEllipsis;
 
       data.push({
-        id: tweet.id,
+        id: "" + tweet.id,
         image: "/imgs/twitter_icon.png",
         title,
         popularity: tweet.favorite_count,
