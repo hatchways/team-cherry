@@ -225,18 +225,16 @@ class Main extends Component {
     const { classes } = this.props;
 
     const handlePlatformToggle = async (value) => {
-      // If a platform is already in "platformSelected", remove it.
-      // Otherwise, add it.
-      let index = this.state.platformSelected.indexOf(value.target.name);
-      if (index !== -1) {
+      if (value.target.checked) {
+        await this.setState({
+          platformSelected: [...this.state.platformSelected, value.target.name],
+        });
+      } else {
+        let index = this.state.platformSelected.indexOf(value.target.name);
         let temp = this.state.platformSelected;
         temp.splice(index, 1);
         await this.setState({
           platformSelected: temp,
-        });
-      } else {
-        await this.setState({
-          platformSelected: [...this.state.platformSelected, value.target.name],
         });
       }
 

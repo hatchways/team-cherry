@@ -5,7 +5,7 @@ import { Typography } from "@material-ui/core";
 const useStyles = makeStyles(() => ({
   Card: {
     height: "200px",
-    boxShadow: 0,
+    borderRadius: "5px",
     background: "white",
     display: "flex",
     alignItems: "center",
@@ -22,6 +22,7 @@ const useStyles = makeStyles(() => ({
   },
   thumbnailImg: {
     maxWidth: "90%",
+    maxHeight: "90%",
   },
   contentDiv: {
     width: "69%",
@@ -45,11 +46,12 @@ export default function Mention(props) {
     <div className={classes.Card}>
       <div className={classes.thumbnailDiv}>
         {props.image ? (
-          <img className={classes.thumbnailImg} src={props.image} />
+          <img className={classes.thumbnailImg} src={props.image} alt="" />
         ) : (
           <img
             className={classes.thumbnailImg}
             src={`/imgs/${props.platform}_icon.png`}
+            alt=""
           />
         )}
       </div>
