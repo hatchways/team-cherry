@@ -3,7 +3,7 @@ const db = require("../db");
 
 const Mention = db.define("Mention", {
   id: {
-    types: DataTypes.STRING,
+    type: DataTypes.STRING,
     primaryKey: true,
   },
   title: {

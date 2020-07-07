@@ -9,6 +9,7 @@ const {
 const { User } = require("../models");
 const cookieConfig = require("../cookie-config");
 const { createErrorResponse } = require("./middleware/util");
+const requiresAuth = require("./middleware/requiresAuth");
 
 router.post("/register", validateRegister, async (req, res) => {
   const existingUser = await User.findOne({ where: { email: req.body.email } });
@@ -74,6 +75,10 @@ router.post("/login", validateLogin, async (req, res) => {
       password: "Password does not match",
     });
   }
+});
+
+router.post("/logout", requiresAuth, async (req, res, next) => {
+  res.clearCookie("token").sendStatus(200);
 });
 
 module.exports = router;
