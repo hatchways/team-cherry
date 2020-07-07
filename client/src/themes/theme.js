@@ -5,13 +5,21 @@ export const theme = createMuiTheme({
     fontFamily: '"Roboto"',
     fontSize: 12,
     h1: {
-      // could customize the h1 variant as well
-    },
+      fontWeight: '900',
+      fontSize: '25px'
+    }
   },
   palette: {
-    primary: { main: "#6583f2" },
+    primary: {
+      light: '#839bf4',
+      main: '#6582f2',
+      dark: '#465ba9',
+      contrastText: '#fff',
+      //could customize the h1 variant as well
+    },
     background: {
       default: "#fafbff",
-    },
+    }
   },
+
 });
