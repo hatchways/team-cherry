@@ -1,9 +1,8 @@
 const router = require("express").Router();
+const { Op } = require("sequelize");
 
 const requiresAuth = require("./middleware/requiresAuth");
 const { Mention, User } = require("../models");
-
-const callScraper = require("../scraper");
 
 // TODO test mentions in action
 
@@ -25,8 +24,13 @@ router.get("/", requiresAuth, async (req, res) => {
   res.json({ mentions: output });
 });
 
-router.get("/:id", requiresAuth, async (req, res) => {
-  const mention = await Mention.findByPk(req.params.id);
+router.get("/:query", requiresAuth, async (req, res) => {
+  // const mention = await Mention.findByPk(req.params.id);
+  const mentions = await Mention.findAll({
+    where: {
+      [Op.iLike]: "%" + req.params.query + "%",
+    },
+  });
 
   res.json(mention);
 });
