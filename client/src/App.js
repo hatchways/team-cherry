@@ -4,43 +4,42 @@ import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
 import { theme } from "./themes/theme";
 import Signup from "./pages/Signup";
-import Login from './pages/Login'
-import Main from './pages/Main'
-import Header from "./pages/Header"
-import { eraseUser } from './utils/localStorage'
-import { loginInterceptor, AxiosInterceptor } from './utils/authAxios'
-import Snackbar from '@material-ui/core/Snackbar';
+import Login from "./pages/Login";
+import Main from "./pages/Main";
+import Header from "./pages/Header";
+import { eraseUser } from "./utils/localStorage";
+import { loginInterceptor, AxiosInterceptor } from "./utils/authAxios";
+import Snackbar from "@material-ui/core/Snackbar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import "fontsource-roboto";
-
 
 import "./App.css";
 
 function App() {
   const [open, setOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('')
-  const [protectedRoutes, unhideProtectedRoutes] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("");
+  const [protectedRoutes, unhideProtectedRoutes] = useState(false);
   //adds an interceptor to check requests. If a request is sent with a 401, user is erased and send back to login
   const unauthorized = () => {
-    eraseUser()
-    setOpen(true)
-    setErrorMessage('Logged out due to authorization failure')
+    eraseUser();
+    setOpen(true);
+    setErrorMessage("Logged out due to authorization failure");
     //user is erased, which should lead them back to login, they will not have access to routes if their localstorage is empty.Snackbar should also open up telling them what happened.
-    console.log('logging out due to authorization failure')
-  }
+    console.log("logging out due to authorization failure");
+  };
 
   const userLogin = () => {
-    unhideProtectedRoutes(true)
-  }
+    unhideProtectedRoutes(true);
+  };
 
   const unsetProtectedRoutes = () => {
-    unhideProtectedRoutes(false)
-  }
+    unhideProtectedRoutes(false);
+  };
   //this interceptor catches 401s
-  AxiosInterceptor(unauthorized, unsetProtectedRoutes)
+  AxiosInterceptor(unauthorized, unsetProtectedRoutes);
 
   //this interceptor stores user on storage, then unhides protected routes.
-  loginInterceptor(userLogin)
+  loginInterceptor(userLogin);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -50,19 +49,19 @@ function App() {
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={Signup} />
-          { /* routes should be inaccessible after here if token doesn't exist*/}
-          {protectedRoutes ?
-            <Route exact path='/main' component={Main} />
-            :
-            <Redirect to="/signup" />}
+          {/* routes should be inaccessible after here if token doesn't exist*/}
+          {protectedRoutes ? (
+            <Route exact path="/main" component={Main} />
+          ) : (
+            <Redirect to="/signup" />
+          )}
           <Route render={() => <Redirect to="/login" />} />
         </Switch>
-
       </BrowserRouter>
       <Snackbar
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
+          vertical: "bottom",
+          horizontal: "left",
         }}
         onClose={() => setOpen(false)}
         autoHideDuration={6000}
