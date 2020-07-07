@@ -15,6 +15,11 @@ export const theme = createMuiTheme({
       main: '#6582f2',
       dark: '#465ba9',
       contrastText: '#fff',
+      //could customize the h1 variant as well
     },
+    background: {
+      default: "#fafbff",
+    }
   },
+
 });

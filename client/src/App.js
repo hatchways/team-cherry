@@ -10,6 +10,9 @@ import Header from "./pages/Header"
 import { eraseUser } from './utils/localStorage'
 import { loginInterceptor, AxiosInterceptor } from './utils/authAxios'
 import Snackbar from '@material-ui/core/Snackbar';
+import CssBaseline from "@material-ui/core/CssBaseline";
+import "fontsource-roboto";
+
 
 import "./App.css";
 
@@ -41,6 +44,7 @@ function App() {
 
   return (
     <MuiThemeProvider theme={theme}>
+      <CssBaseline />
       <BrowserRouter>
         <Header />
         <Switch>
