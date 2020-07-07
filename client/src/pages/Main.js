@@ -120,7 +120,6 @@ class Main extends Component {
     this.state = {
       allPlatforms: ["Reddit", "Twitter", "Facebook"],
       platformSelected: [...splitSelectedPlatforms],
-      mentions: [],
       mentions: [
         {
           title: "PalPay invested $500 million in Company ABC",
@@ -136,11 +135,11 @@ class Main extends Component {
             "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
             "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
             "boil.",
-          image: "/imgs/dog.jpg",
+          image: null,
         },
         {
           title: "PalPay invested $500 million in Company ABC",
-          platform: "Reddit",
+          platform: "Twitter",
           content:
             "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
             "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
@@ -152,11 +151,11 @@ class Main extends Component {
             "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
             "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
             "boil.",
-          image: "/imgs/dog.jpg",
+          image: "",
         },
         {
           title: "PalPay invested $500 million in Company ABC",
-          platform: "Reddit",
+          platform: "Facebook",
           content:
             "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
             "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
@@ -168,7 +167,7 @@ class Main extends Component {
             "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
             "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
             "boil.",
-          image: "/imgs/dog.jpg",
+          image: "",
         },
         {
           title: "PalPay invested $500 million in Company ABC",
@@ -253,7 +252,7 @@ class Main extends Component {
       <div>
         <Header />
         <Grid container>
-          <Grid item xs={4} container className={classes.leftPanelGrid}>
+          <Grid item xs={3} container className={classes.leftPanelGrid}>
             <List dense className={classes.leftPanelList}>
               {this.state.allPlatforms.map((platform) => {
                 return (
@@ -294,7 +293,7 @@ class Main extends Component {
             </List>
           </Grid>
 
-          <Grid item xs={5}></Grid>
+          <Grid item xs={4}></Grid>
 
           <Grid
             item

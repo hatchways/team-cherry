@@ -1,27 +1,31 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Typography,
-  Grid,
-} from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
   Card: {
     height: "200px",
     boxShadow: 0,
+    background: "white",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
-  CardMedia: {
-    width: "220px",
+  thumbnailDiv: {
+    width: "25%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dividerDiv: {
+    width: "3%",
+  },
+  thumbnailImg: {
     maxWidth: "90%",
-    height: "190px",
-    display: "inline-block",
-    margin: "5px",
   },
-  CardContent: { padding: 0, margin: "16px 16px 16px 0px" },
+  contentDiv: {
+    width: "69%",
+  },
   paragraphInMentions: {
     display: "-webkit-box",
     overflow: "hidden",
@@ -38,33 +42,36 @@ export default function Mention(props) {
   const classes = useStyles();
 
   return (
-    <Card className={classes.Card} elevation={0}>
-      <CardActionArea>
-        <Grid container>
-          <Grid item xs={4}>
-            <CardMedia className={classes.CardMedia} image={props.image} />
-          </Grid>
+    <div className={classes.Card}>
+      <div className={classes.thumbnailDiv}>
+        {props.image ? (
+          <img className={classes.thumbnailImg} src={props.image} />
+        ) : (
+          <img
+            className={classes.thumbnailImg}
+            src={`/imgs/${props.platform}_icon.png`}
+          />
+        )}
+      </div>
 
-          <Grid item xs={8}>
-            <CardContent className={classes.CardContent}>
-              <Typography noWrap gutterBottom variant="h5" component="h2">
-                {props.title}
-              </Typography>
+      <div className={classes.dividerDiv}></div>
 
-              <Typography
-                gutterBottom
-                variant="subtitle1"
-                component="small"
-                className={classes.fontColorForPlatform}
-              >
-                {props.platform}
-              </Typography>
+      <div className={classes.contentDiv}>
+        <Typography noWrap gutterBottom variant="h5" component="h2">
+          {props.title}
+        </Typography>
 
-              <p className={classes.paragraphInMentions}>{props.content}</p>
-            </CardContent>
-          </Grid>
-        </Grid>
-      </CardActionArea>
-    </Card>
+        <Typography
+          gutterBottom
+          variant="subtitle1"
+          component="small"
+          className={classes.fontColorForPlatform}
+        >
+          {props.platform}
+        </Typography>
+
+        <p className={classes.paragraphInMentions}>{props.content}</p>
+      </div>
+    </div>
   );
 }
