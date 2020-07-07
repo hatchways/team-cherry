@@ -68,7 +68,9 @@ async function twitterCrawler(companyName) {
 
       data.push({
         id: "" + tweet.id,
-        image: "/imgs/twitter_icon.png",
+        // Since most tweets don't have an image and the Twitter APIs don't return an image field,
+        // the "image" is set to be null.
+        image: null,
         title,
         popularity: tweet.favorite_count,
         content,
