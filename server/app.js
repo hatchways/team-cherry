@@ -11,6 +11,7 @@ const testMiddleware = require("./routes/testMiddleware");
 
 const { json, urlencoded } = express;
 
+
 var app = express();
 
 app.use(logger("dev"));
@@ -23,6 +24,8 @@ app.use("/", indexRouter);
 app.use("/ping", pingRouter);
 app.use("/api/users", authRoutes);
 app.use("/test", testMiddleware);
+
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
