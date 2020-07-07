@@ -23,7 +23,6 @@ router.get("/", requiresAuth, async (req, res) => {
 });
 
 router.get("/search/:query", requiresAuth, async (req, res) => {
-  // const mention = await Mention.findByPk(req.params.id);
   const mentions = await Mention.findAll({
     where: {
       title: {
@@ -34,6 +33,14 @@ router.get("/search/:query", requiresAuth, async (req, res) => {
   });
 
   res.json(mentions);
+});
+
+router.get("/email-list", async (req, res) => {
+  res.json({ message: "Endpoint for email list" });
+});
+
+router.get("/toggle", async (req, res) => {
+  res.json({ message: "Endpoint for mention toggles" });
 });
 
 module.exports = router;
