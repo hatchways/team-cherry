@@ -11,6 +11,8 @@ import SearchIcon from "@material-ui/icons/Search";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/Input";
 
+import { Link } from "react-router-dom";
+
 const useStyles = makeStyles(() => ({
   fontColorForMentions: {
     color: "white",
@@ -80,9 +82,11 @@ export default function Header() {
             </Grid>
 
             <Grid item xs={2} className={classes.SettingsIcon}>
-              <IconButton color="inherit">
-                <SettingsIcon />
-              </IconButton>
+              <Link to="/settings">
+                <IconButton color="inherit">
+                  <SettingsIcon />
+                </IconButton>
+              </Link>
             </Grid>
           </Grid>
         </Toolbar>

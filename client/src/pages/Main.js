@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import Header from "../Components/Header";
-import Mention from "../Components/Mention";
+import Header from "../components/Header";
+import Mention from "../components/Mention";
 import SwitchSelector from "react-switch-selector";
 import { withStyles } from "@material-ui/core/styles";
 import {
@@ -360,4 +360,3 @@ class Main extends Component {
 }
 
 export default withStyles(useStyles)(Main);
-

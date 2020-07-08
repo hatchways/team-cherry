@@ -6,8 +6,8 @@ import {
   Container,
 } from "@material-ui/core/";
 
-import SubmitButton from "../Components/SubmitButton";
-import CustomTextField from "../Components/CustomTextField";
+import SubmitButton from "../components/SubmitButton";
+import CustomTextField from "../components/CustomTextField";
 import axios from "axios";
 import { storeUser, getUser } from "../utils/localStorage";
 
