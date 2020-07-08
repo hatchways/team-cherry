@@ -44,7 +44,7 @@ router.post("/register", validateRegister, async (req, res) => {
     (err, token) => {
       res
         .cookie("token", token, cookieConfig)
-        .json({ success: true, user, company });
+        .json({ success: true, newUser, company });
     }
   );
 
