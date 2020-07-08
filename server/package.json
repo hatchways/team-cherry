@@ -6,7 +6,7 @@
     "dev": "nodemon ./bin/www",
     "debug": "nodemon  --inspect ./bin/www",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --exit --timeout 30000",
-    "scrapeTwitter": "nodemon ./crawlers/index"
+    "scraper": "nodemon ./crawlers/index"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -21,6 +21,7 @@
     "nodemon": "^1.19.1",
     "pg": "^8.2.1",
     "pg-hstore": "^2.3.3",
+    "snoowrap": "^1.21.0"
     "sequelize": "^6.2.3",
     "twitter": "^1.7.1",
     "validator": "^13.1.1"
