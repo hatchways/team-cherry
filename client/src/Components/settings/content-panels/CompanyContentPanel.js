@@ -14,6 +14,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
+  fieldLabel: {
+    width: "30%",
+  },
   formsWrapper: {
     display: "flex",
     flexDirection: "column",
@@ -31,9 +34,6 @@ const useStyles = makeStyles((theme) => ({
     },
     marginLeft: "10px",
     width: "100%",
-  },
-  fieldLabel: {
-    width: "30%",
   },
   inputWrapper: {
     width: "70%",

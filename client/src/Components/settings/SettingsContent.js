@@ -25,6 +25,12 @@ const SettingsContent = ({ currentTabIndex }) => {
       <TabPanel currentTabIndex={currentTabIndex} index={1}>
         <SecurityContentPanel />
       </TabPanel>
+      <TabPanel currentTabIndex={currentTabIndex} index={2}>
+        <h1>
+          When you click me I'm supposed to log you out but okay here's some
+          element display
+        </h1>
+      </TabPanel>
     </Grid>
   );
 };
