@@ -6,4 +6,6 @@ router.get("/", requiresAuth, async (req, res, next) => {
   res.json({ user: req.user });
 });
 
+
+
 module.exports = router;

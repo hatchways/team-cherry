@@ -76,4 +76,13 @@ router.post("/login", validateLogin, async (req, res) => {
   }
 });
 
+// router.get('/emails', async (req, res, next) => {
+//   const emails = await User.findAll({
+//     attributes: ['email']
+//   })
+//   res.json(emails)
+// })
+
+
+
 module.exports = router;
