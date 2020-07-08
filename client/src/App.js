@@ -12,6 +12,7 @@ import { loginInterceptor, AxiosInterceptor } from "./utils/authAxios";
 import Snackbar from "@material-ui/core/Snackbar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import "./App.css";
+import "./index.css";
 // import "fontsource-roboto";
 
 function App() {
