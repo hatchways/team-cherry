@@ -6,6 +6,7 @@ const useStyles = makeStyles((theme) => ({
   sidePanel: {
     display: "flex",
     flexDirection: "column",
+    marginTop: "3%",
   },
   sidePanelIcon: {
     marginTop: ".6em",
