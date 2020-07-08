@@ -21,6 +21,8 @@ const useStyles = makeStyles(() => ({
   },
   AppBar: {
     height: "5.4em",
+    boxShadow: "none",
+    position: "fixed",
   },
   LogoGrid: {
     display: "flex",

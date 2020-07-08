@@ -4,10 +4,9 @@ const { join } = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
-const indexRouter = require("./routes/index");
-const pingRouter = require("./routes/ping");
 const authRoutes = require("./routes/users");
-const testMiddleware = require("./routes/testMiddleware");
+const mentionsRoutes = require("./routes/mentions");
+const companyRoutes = require("./routes/company");
 
 const { json, urlencoded } = express;
 
@@ -19,10 +18,9 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
-app.use("/", indexRouter);
-app.use("/ping", pingRouter);
 app.use("/api/users", authRoutes);
-app.use("/test", testMiddleware);
+app.use("/api/mentions", mentionsRoutes);
+app.use("/api/company", companyRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
