@@ -1,25 +1,7 @@
-#!/usr/bin/env node
+#!/ usr / bin / env node
 
 /* Sets up the environment variables from your .env file*/
 require("dotenv").config();
-
-/* Sets up the PostgreSQL database connection. */
-const { Sequelize } = require("sequelize");
-const sequelize = new Sequelize(
-  process.env.DB_name,
-  process.env.DB_username,
-  process.env.DB_password,
-  { host: "localhost", dialect: "postgres" }
-);
-async function databaseTest() {
-  try {
-    await sequelize.authenticate();
-    console.log("Connection has been established successfully.");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-}
-databaseTest();
 
 /**
  * Module dependencies.
@@ -27,6 +9,23 @@ databaseTest();
 
 var app = require("../app");
 var http = require("http");
+var db = require("../db");
+const asyncWorker = require("../async-worker");
+
+/* Sets up the PostgreSQL database connection. */
+
+const force = false;
+async function databaseTest() {
+  try {
+    await db.authenticate();
+    console.log("Connection has been established successfully.");
+    await db.sync({ force });
+    console.log(`Database is sync'd(force=${force})`);
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+}
+databaseTest();
 
 /**
  * Get port from environment and store in Express.
@@ -104,4 +103,5 @@ function onListening() {
   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
 
   console.log("Listening on " + bind);
+  setInterval(asyncWorker, 3000);
 }

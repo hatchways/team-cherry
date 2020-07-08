@@ -1,14 +1,7 @@
-const redditCrawler = require("./redditCrawler");
-require("dotenv").config();
+const redditScraper = require("./redditScraper");
+const twitterScraper = require("./twitterScraper");
 
-async function scrapeReddit(companyName) {
-  return await redditCrawler(companyName);
-}
-
-async function test() {
-  let results = await scrapeReddit("Twitter");
-  console.log(results);
-}
-test();
-
-module.exports = { scrapeReddit };
+module.exports = {
+  redditScraper,
+  twitterScraper,
+};
