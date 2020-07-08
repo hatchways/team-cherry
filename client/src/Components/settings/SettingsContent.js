@@ -1,14 +1,15 @@
 import React from "react";
-import { Grid, makeStyles } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+
+import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
+import HomeIcon from "@material-ui/icons/Home";
 
 import TabPanel from "./TabPanel";
 import CompanyContentPanel from "./content-panels/CompanyContentPanel";
 import SecurityContentPanel from "./content-panels/SecurityContentPanel";
-
 const useStyles = makeStyles((theme) => ({
   content: {
-    paddingLeft: "10%",
-    paddingTop: "3%",
+    padding: "3%",
     backgroundColor: "#d3f5f5",
     display: "flex",
     flexDirection: "column",
@@ -17,8 +18,15 @@ const useStyles = makeStyles((theme) => ({
 
 const SettingsContent = ({ currentTabIndex }) => {
   const classes = useStyles();
+  const history = useHistory();
   return (
     <Grid item container xs={9} className={classes.content}>
+      <Grid xs={1}>
+        <Button onClick={() => history.goBack()}>
+          <HomeIcon />
+          <Typography>Go Back</Typography>
+        </Button>
+      </Grid>
       <TabPanel currentTabIndex={currentTabIndex} index={0}>
         <CompanyContentPanel />
       </TabPanel>
