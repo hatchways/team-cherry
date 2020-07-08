@@ -13,9 +13,10 @@ const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",
+    paddingRight: "10%",
   },
   fieldLabel: {
-    width: "30%",
+    width: "15%",
   },
   formsWrapper: {
     display: "flex",
@@ -24,7 +25,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
   },
   formFieldContainer: {
-    width: "60%",
     display: "flex",
     marginBottom: "40px",
   },
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "10px",
   },
   btn: {
-    width: "10%",
+    width: "12%",
     borderRadius: "25px",
   },
 }));
@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
 const CompanyContentPanel = (props) => {
   const classes = useStyles();
   return (
-    <Grid container className={classes.container}>
-      <Grid className={classes.formFieldContainer}>
+    <Grid item container sm={12} className={classes.container}>
+      <Grid item sm={12} className={classes.formFieldContainer}>
         <Grid className={classes.fieldLabel}>
           <InputLabel>
             <h2>Your Companies</h2>
@@ -107,7 +107,7 @@ const CompanyContentPanel = (props) => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid className={classes.formFieldContainer}>
+      <Grid item sm={12} className={classes.formFieldContainer}>
         <Grid className={classes.fieldLabel}>
           <InputLabel>
             <h2>Weekly Report</h2>

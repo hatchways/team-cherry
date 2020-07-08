@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: ".2em",
   },
   panelHeader: {
-    marginLeft: "20%",
+    marginLeft: "40%",
     display: "flex",
     flexDirection: "row",
   },
@@ -41,6 +41,7 @@ const SettingsSidePanel = ({ setTabIndex, currentTabIndex }) => {
           indicatorColor="primary"
           value={currentTabIndex}
           onChange={setTabIndex}
+          variant="fullWidth"
         >
           <Tab label="Company" />
           <Tab label="Security" />
