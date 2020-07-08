@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
   formFieldContainer: {
     width: "60%",
     display: "flex",
+    marginBottom: "40px",
   },
   formField: {
     "& .MuiOutlinedInput-root": {
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
   inputWrapper: {
     width: "70%",
     display: "flex",
+    marginBottom: "10px",
   },
   btn: {
     width: "10%",
