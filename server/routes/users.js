@@ -23,7 +23,7 @@ router.post("/register", validateRegister, async (req, res) => {
     password: req.body.password,
   });
 
-  const company = await Company.create({ name: req.body.company });
+  const company = await Company.findOrCreate({ name: req.body.company });
 
   await newUser.addCompany(company);
 
