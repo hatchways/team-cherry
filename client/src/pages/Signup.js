@@ -2,8 +2,8 @@ import React, { useState, } from 'react';
 import { CssBaseline, Typography, makeStyles, Container } from '@material-ui/core/';
 
 
-import SubmitButton from '../components/SubmitButton'
-import CustomTextField from '../components/CustomTextField'
+import SubmitButton from '../Components/SubmitButton'
+import CustomTextField from '../Components/CustomTextField'
 import axios from 'axios'
 import { getUser } from '../utils/localStorage'
 

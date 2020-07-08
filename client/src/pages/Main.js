@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 
-import Mention from "../components/Mention";
-import Grid from "@material-ui/core/Grid";
-
+import Mention from "../Components/Mention";
+import axios from 'axios'
 import SwitchSelector from "react-switch-selector";
 import { withStyles } from "@material-ui/core/styles";
 import {
@@ -222,6 +221,34 @@ class Main extends Component {
       ],
     };
   }
+  // async componentDidMount() {//will get mentions on mount and set to mention state
+  //   const res = await axios.get('/api/mentions')
+  //   const allMentions = res.data.mentions
+  //   this.setState({
+  //     mentions: allMentions
+  //   })
+  // }
+
+  sortBy(event) {
+    if (event === 'Most popular') {
+      const allMentions = this.state.mentions
+      allMentions.sort((a, b) => {
+        return b.popularity - a.popularity
+      })
+      this.setState({
+        mentions: allMentions
+      })
+    }
+    else {
+      const allMentions = this.state.mentions
+      allMentions.sort((a, b) => {
+        return a.date - b.date
+      })
+      this.setState({
+        mentions: allMentions
+      })
+    }
+  }
 
   render() {
     const { classes } = this.props;
@@ -264,19 +291,17 @@ class Main extends Component {
               <h1>My mentions</h1>
               <div className={classes.SwitchSelector}>
                 <SwitchSelector
-                  // onChange={onChange}
+                  onChange={(event) => { this.sortBy(event) }}
                   options={[
                     {
                       label: "Most recent",
-                      value: {
-                        foo: true,
-                      },
+                      value: "Most Recent",
                       selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
                     {
                       label: "Most popular",
-                      value: "bar",
+                      value: "Most popular",
                       selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
