@@ -16,8 +16,11 @@ export function AxiosInterceptor(unauth, hideRoutes) {
 
 export function loginInterceptor(setProtectedRoutes) {
   axios.interceptors.response.use((response) => {
-    storeUser(response.data)
-    setProtectedRoutes()
+    if (response.data.user) {
+      console.log('login')
+      storeUser(response.data)
+      setProtectedRoutes()
+    }
     return response
   }, (error) => {
     const stringError = JSON.stringify(error)

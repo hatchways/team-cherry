@@ -139,7 +139,6 @@ class Main extends Component {
     mentions.sort((a, b) => {
       return b.popularity - a.popularity
     })
-    console.log('mentions in date func', mentions)
     return mentions
   }
 
