@@ -10,6 +10,7 @@ import {
 import SearchIcon from "@material-ui/icons/Search";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/Input";
+import { getUser } from '../utils/localStorage'
 
 import { Link } from "react-router-dom";
 
@@ -32,7 +33,8 @@ const useStyles = makeStyles(() => ({
   SearchBarGrid: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
+
   },
   SeacrhBarDiv: {
     borderRadius: 50,
@@ -55,15 +57,19 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
     justifyContent: "flex-end",
   },
+  spacing: {
+    justifyContent: 'space-between'
+  }
+
 }));
 
 export default function Header() {
   const classes = useStyles();
   return (
     <div>
-      <AppBar position="static" className={classes.AppBar}>
+      <AppBar position="static" className={classes.AppBar} >
         <Toolbar>
-          <Grid container spacing={0}>
+          <Grid container className={classes.spacing} spacing={0}>
             <Grid item xs={4} className={classes.LogoGrid}>
               <Typography variant="h6">
                 <span className={classes.fontColorForMentions}>mentions</span>
@@ -71,7 +77,7 @@ export default function Header() {
               </Typography>
             </Grid>
 
-            <Grid item xs={6} className={classes.SearchBarGrid}>
+            {getUser() ? <Grid item xs={6} className={classes.SearchBarGrid}>
               <div className={classes.SeacrhBarDiv}>
                 <TextField
                   disableUnderline={true}
@@ -79,7 +85,8 @@ export default function Header() {
                 />
                 <SearchIcon className={classes.SearchIcon} />
               </div>
-            </Grid>
+            </Grid> : <Grid><div></div></Grid>}
+
 
             <Grid item xs={2} className={classes.SettingsIcon}>
               <Link to="/settings">

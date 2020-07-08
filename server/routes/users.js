@@ -15,7 +15,7 @@ router.post("/register", validateRegister, async (req, res) => {
   const existingUser = await User.findOne({ where: { email: req.body.email } });
 
   if (existingUser) {
-    return createErrorResponse(res, 400, {
+    return createErrorResponse(res, 409, {
       email: "That email already exists",
     });
   }
@@ -50,7 +50,7 @@ router.post("/login", validateLogin, async (req, res) => {
   });
 
   if (!user) {
-    return createErrorResponse(res, 400, { user: "User doesn't exist" });
+    return createErrorResponse(res, 404, { user: "User doesn't exist" });
   }
 
   const isMatch = await user.checkPassword(req.body.password);
@@ -71,7 +71,7 @@ router.post("/login", validateLogin, async (req, res) => {
           .json({ success: true, user })
     );
   } else {
-    return createErrorResponse(res, 400, {
+    return createErrorResponse(res, 403, {
       password: "Password does not match",
     });
   }

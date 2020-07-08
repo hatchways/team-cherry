@@ -18,7 +18,7 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
-app.use("/api/user", authRoutes);
+app.use("/api/users", authRoutes);
 app.use("/api/mentions", mentionsRoutes);
 app.use("/api/company", companyRoutes);
 

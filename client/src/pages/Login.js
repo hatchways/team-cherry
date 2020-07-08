@@ -58,7 +58,7 @@ export default function Login(props) {
       }
       if (emailErr || passwordErr) return;
 
-      const res = await axios.post("api/user/login", {
+      const res = await axios.post("api/users/login", {
         email: email,
         password: password,
       });
