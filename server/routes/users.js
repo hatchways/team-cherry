@@ -23,7 +23,11 @@ router.post("/register", validateRegister, async (req, res) => {
     password: req.body.password,
   });
 
-  const company = await Company.findOrCreate({ name: req.body.company });
+  const [company, isNew] = await Company.findOrCreate({
+    where: {
+      name: req.body.company,
+    },
+  });
 
   await newUser.addCompany(company);
 
