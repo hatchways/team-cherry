@@ -5,7 +5,7 @@ import { CssBaseline, Typography, makeStyles, Container } from '@material-ui/cor
 import SubmitButton from '../components/SubmitButton'
 import CustomTextField from '../components/CustomTextField'
 import axios from 'axios'
-import { storeUser, getUser } from '../utils/localStorage';
+import { getUser } from '../utils/localStorage'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,7 +41,11 @@ export default function Signup(props) {
   const [password, setPassword] = useState('')
   const [passwordErr, setPasswordErr] = useState(false)
 
-
+  //helps with persisted login status
+  if (getUser()) {
+    const { history } = props
+    history.push('/main')
+  }
   const createAccount = async (event) => {
     try {
       event.preventDefault()
@@ -65,15 +69,14 @@ export default function Signup(props) {
       }
 
       //if frontend validations pass, make server call here to create user
-      const res = await axios.post('api/user/register', {
+      const res = await axios.post('api/users/register', {
         email: email,
         password: password,
         company: company
       })
-
-      if (res.status === 400) {
+      if (res === 'That email already exists') {
         setEmailErr(true)
-        setEmailErrMsg(res.data.email)
+        setEmailErrMsg('That email already exists')
         return
       }
 

@@ -9,4 +9,3 @@ export const storeUser = (user) => {
 export const eraseUser = () => {
   localStorage.removeItem('user')
 }
-
