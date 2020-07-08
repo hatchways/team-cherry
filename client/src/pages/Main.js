@@ -121,133 +121,46 @@ class Main extends Component {
     this.state = {
       allPlatforms: ["Reddit", "Twitter", "Facebook"],
       platformSelected: [...splitSelectedPlatforms],
-      mentions: [
-        {
-          title: "PalPay invested $500 million in Company ABC",
-          platform: "Reddit",
-          content:
-            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
-            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
-            "and cook, stirring occasionally until lightly browned, 6 to 8" +
-            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
-            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
-            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
-            "often until thickened and fragrant, about 10 minutes. Add" +
-            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil.",
-          image: null,
-        },
-        {
-          title: "PalPay invested $500 million in Company ABC",
-          platform: "Twitter",
-          content:
-            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
-            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
-            "and cook, stirring occasionally until lightly browned, 6 to 8" +
-            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
-            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
-            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
-            "often until thickened and fragrant, about 10 minutes. Add" +
-            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil.",
-          image: "",
-        },
-        {
-          title: "PalPay invested $500 million in Company ABC",
-          platform: "Facebook",
-          content:
-            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
-            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
-            "and cook, stirring occasionally until lightly browned, 6 to 8" +
-            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
-            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
-            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
-            "often until thickened and fragrant, about 10 minutes. Add" +
-            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil.",
-          image: "",
-        },
-        {
-          title: "PalPay invested $500 million in Company ABC",
-          platform: "Reddit",
-          content:
-            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
-            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
-            "and cook, stirring occasionally until lightly browned, 6 to 8" +
-            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
-            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
-            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
-            "often until thickened and fragrant, about 10 minutes. Add" +
-            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil.",
-          image: "/imgs/dog.jpg",
-        },
-        {
-          title: "PalPay invested $500 million in Company ABC",
-          platform: "Reddit",
-          content:
-            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
-            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
-            "and cook, stirring occasionally until lightly browned, 6 to 8" +
-            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
-            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
-            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
-            "often until thickened and fragrant, about 10 minutes. Add" +
-            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil.",
-          image: "/imgs/dog.jpg",
-        },
-        {
-          title: "PalPay invested $500 million in Company ABC",
-          platform: "Reddit",
-          content:
-            "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
-            "skillet over medium-high heat. Add chicken, shrimp and chorizo," +
-            "and cook, stirring occasionally until lightly browned, 6 to 8" +
-            "minutes. Transfer shrimp to a large plate and set aside, leaving" +
-            "chicken and chorizo in the pan. Add pimentón, bay leaves," +
-            "garlic, tomatoes, onion, salt and pepper, and cook, stirring" +
-            "often until thickened and fragrant, about 10 minutes. Add" +
-            "saffron broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil. broth and remaining 4 1/2 cups chicken broth; bring to a" +
-            "boil.",
-          image: "/imgs/dog.jpg",
-        },
-      ],
+      mentions: [],
     };
   }
-  async componentDidMount() {//will get mentions on mount and set to mention state
+  async componentDidMount() {
     const res = await axios.get('/api/mentions')
-    const allMentions = res.data.mentions
+    console.log(res.data.mentions)
+    const allMentionsSorted = this.sortByDate(res.data.mentions)
+    console.log(allMentionsSorted)
     this.setState({
-      mentions: allMentions
+      mentions: allMentionsSorted
     })
+
   }
 
-  sortBy(event) {
-    if (event === 'Most popular') {
-      const allMentions = this.state.mentions
-      allMentions.sort((a, b) => {
-        return b.popularity - a.popularity
-      })
-      this.setState({
-        mentions: allMentions
-      })
+  sortByPopularity(mentions) {
+    mentions.sort((a, b) => {
+      return b.popularity - a.popularity
+    })
+    console.log('mentions in date func', mentions)
+    return mentions
+  }
+
+  sortByDate(mentions) {
+    mentions.sort((a, b) => {
+      return new Date(b.date) - new Date(a.date)
+    })
+    return mentions
+  }
+
+  sortToggle(event) {
+    let sortedMentions = this.state.mentions
+    if (event === 'Most Recent') {
+      sortedMentions = this.sortByDate(this.state.mentions)
     }
     else {
-      const allMentions = this.state.mentions
-      allMentions.sort((a, b) => {
-        return a.date - b.date
-      })
-      this.setState({
-        mentions: allMentions
-      })
+      sortedMentions = this.sortByPopularity(this.state.mentions)
     }
+    this.setState({
+      mentions: sortedMentions
+    })
   }
 
   render() {
@@ -291,7 +204,7 @@ class Main extends Component {
               <h1>My mentions</h1>
               <div className={classes.SwitchSelector}>
                 <SwitchSelector
-                  onChange={(event) => { this.sortBy(event) }}
+                  onChange={(event) => { this.sortToggle(event) }}
                   options={[
                     {
                       label: "Most recent",
@@ -315,42 +228,6 @@ class Main extends Component {
             <Grid item>
               <Mention
                 title="PalPay invested $500 million in Company ABC"
-                platform="Reddit"
-                content="Heat oil in a (14- to 16-inch) paella pan or a large, deep
-                skillet over medium-high heat. Add chicken, shrimp and chorizo,
-                and cook, stirring occasionally until lightly browned, 6 to 8
-                minutes. Transfer shrimp to a large plate and set aside, leaving
-                chicken and chorizo in the pan. Add pimentón, bay leaves,
-                garlic, tomatoes, onion, salt and pepper, and cook, stirring
-                often until thickened and fragrant, about 10 minutes. Add
-                saffron broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil. broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil."
-                image="/imgs/dog.jpg"
-              />
-            </Grid>
-
-            <Grid item>
-              <Mention
-                title="PalPay invested $500 million in Company ABC"
-                platform="Facebook"
-                content="Heat oil in a (14- to 16-inch) paella pan or a large, deep
-                skillet over medium-high heat. Add chicken, shrimp and chorizo,
-                and cook, stirring occasionally until lightly browned, 6 to 8
-                minutes. Transfer shrimp to a large plate and set aside, leaving
-                chicken and chorizo in the pan. Add pimentón, bay leaves,
-                garlic, tomatoes, onion, salt and pepper, and cook, stirring
-                often until thickened and fragrant, about 10 minutes. Add
-                saffron broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil. broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil."
-                image="/imgs/dog.jpg"
-              />
-            </Grid>
-
-            <Grid item>
-              <Mention
-                title="PalPay invested $500 million in Company ABC"
                 platform="Twitter"
                 content="Heat oil in a (14- to 16-inch) paella pan or a large, deep
                 skillet over medium-high heat. Add chicken, shrimp and chorizo,
@@ -365,6 +242,19 @@ class Main extends Component {
                 image="/imgs/dog.jpg"
               />
             </Grid>
+
+            {this.state.mentions.map((current) => {
+              return (
+                <Grid>
+                  <Mention
+                    title={current.title}
+                    platform={current.platform}
+                    content={current.content}
+                    image={current.image}
+                  />
+                </Grid>
+              )
+            })}
           </Grid>
         </Grid>
       </div>
