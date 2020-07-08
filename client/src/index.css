@@ -8,6 +8,14 @@ body {
   background-color:	rgb(250, 251, 255)
 }
 
+html, body {
+  height: 100%
+}
+
+#root {
+  height: 100%;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
