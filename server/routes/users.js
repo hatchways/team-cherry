@@ -1,12 +1,11 @@
 const router = require("express").Router();
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const {
   validateLogin,
   validateRegister,
 } = require("./middleware/requiresFormValidation");
-const { User } = require("../models");
+const { User, Company } = require("../models");
 const cookieConfig = require("../cookie-config");
 const { createErrorResponse } = require("./middleware/util");
 
@@ -24,6 +23,14 @@ router.post("/register", validateRegister, async (req, res) => {
     password: req.body.password,
   });
 
+  const [company, isNew] = await Company.findOrCreate({
+    where: {
+      name: req.body.company,
+    },
+  });
+
+  await newUser.addCompany(company);
+
   // token payload
   const payload = {
     id: newUser.id,
@@ -35,7 +42,9 @@ router.post("/register", validateRegister, async (req, res) => {
     process.env.JWT_SECRET,
     { expiresIn: 31556926 },
     (err, token) => {
-      res.cookie("token", token, cookieConfig).json({ success: true, user });
+      res
+        .cookie("token", token, cookieConfig)
+        .json({ success: true, user, company });
     }
   );
 
