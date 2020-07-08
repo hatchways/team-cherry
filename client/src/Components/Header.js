@@ -10,7 +10,7 @@ import {
 import SearchIcon from "@material-ui/icons/Search";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/Input";
-import { getUser } from '../utils/localStorage'
+import { getUser } from "../utils/localStorage";
 
 import { Link } from "react-router-dom";
 
@@ -24,7 +24,6 @@ const useStyles = makeStyles(() => ({
   AppBar: {
     height: "5.4em",
     boxShadow: "none",
-    position: "fixed",
   },
   LogoGrid: {
     display: "flex",
@@ -34,7 +33,6 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-
   },
   SeacrhBarDiv: {
     borderRadius: 50,
@@ -58,16 +56,15 @@ const useStyles = makeStyles(() => ({
     justifyContent: "flex-end",
   },
   spacing: {
-    justifyContent: 'space-between'
-  }
-
+    justifyContent: "space-between",
+  },
 }));
 
 export default function Header() {
   const classes = useStyles();
   return (
     <div>
-      <AppBar position="static" className={classes.AppBar} >
+      <AppBar position="static" className={classes.AppBar}>
         <Toolbar>
           <Grid container className={classes.spacing} spacing={0}>
             <Grid item xs={4} className={classes.LogoGrid}>
@@ -77,16 +74,21 @@ export default function Header() {
               </Typography>
             </Grid>
 
-            {getUser() ? <Grid item xs={6} className={classes.SearchBarGrid}>
-              <div className={classes.SeacrhBarDiv}>
-                <TextField
-                  disableUnderline={true}
-                  className={classes.TextField}
-                />
-                <SearchIcon className={classes.SearchIcon} />
-              </div>
-            </Grid> : <Grid><div></div></Grid>}
-
+            {getUser() ? (
+              <Grid item xs={6} className={classes.SearchBarGrid}>
+                <div className={classes.SeacrhBarDiv}>
+                  <TextField
+                    disableUnderline={true}
+                    className={classes.TextField}
+                  />
+                  <SearchIcon className={classes.SearchIcon} />
+                </div>
+              </Grid>
+            ) : (
+              <Grid>
+                <div></div>
+              </Grid>
+            )}
 
             <Grid item xs={2} className={classes.SettingsIcon}>
               <Link to="/settings">
