@@ -21,7 +21,7 @@
     "nodemon": "^1.19.1",
     "pg": "^8.2.1",
     "pg-hstore": "^2.3.3",
-    "snoowrap": "^1.21.0"
+    "snoowrap": "^1.21.0",
     "sequelize": "^6.2.3",
     "twitter": "^1.7.1",
     "validator": "^13.1.1"
