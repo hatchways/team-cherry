@@ -221,13 +221,13 @@ class Main extends Component {
       ],
     };
   }
-  // async componentDidMount() {//will get mentions on mount and set to mention state
-  //   const res = await axios.get('/api/mentions')
-  //   const allMentions = res.data.mentions
-  //   this.setState({
-  //     mentions: allMentions
-  //   })
-  // }
+  async componentDidMount() {//will get mentions on mount and set to mention state
+    const res = await axios.get('/api/mentions')
+    const allMentions = res.data.mentions
+    this.setState({
+      mentions: allMentions
+    })
+  }
 
   sortBy(event) {
     if (event === 'Most popular') {
