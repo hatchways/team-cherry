@@ -1,17 +1,11 @@
 //TODO This file is getting huge... need to refacting into smaller pieces
 
 import React from "react";
-import {
-  Button,
-  TextField,
-  Grid,
-  makeStyles,
-  InputLabel,
-} from "@material-ui/core";
+import { Grid, makeStyles } from "@material-ui/core";
 
-import CompanyForms from "./forms/CompanyForms";
-import SubscriberEmailForm from "./forms/SubscriberEmailForm";
-import FormButton from "./forms/FormButton";
+import CompanyForms from "../forms/CompanyForms";
+import SubscriberEmailForm from "../forms/SubscriberEmailForm";
+import FormButton from "../forms/FormButton";
 
 const useStyles = makeStyles((theme) => ({
   container: {

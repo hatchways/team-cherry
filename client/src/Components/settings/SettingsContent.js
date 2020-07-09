@@ -4,9 +4,10 @@ import { useHistory } from "react-router-dom";
 import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
 
-import TabPanel from "./TabPanel";
+import TabPanel from "./content-panels/TabPanel";
 import CompanyContentPanel from "./content-panels/CompanyContentPanel";
 import SecurityContentPanel from "./content-panels/SecurityContentPanel";
+
 const useStyles = makeStyles((theme) => ({
   content: {
     padding: "3%",
@@ -34,10 +35,7 @@ const SettingsContent = ({ currentTabIndex }) => {
         <SecurityContentPanel />
       </TabPanel>
       <TabPanel currentTabIndex={currentTabIndex} index={2}>
-        <h1>
-          When you click me I'm supposed to log you out but okay here's some
-          element display
-        </h1>
+        <h1>You are logging off..</h1>
       </TabPanel>
     </Grid>
   );
