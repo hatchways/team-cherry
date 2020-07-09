@@ -54,10 +54,12 @@ function App() {
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={Signup} />
-          <Route exact path="/settings" component={Settings} />
           {/* routes should be inaccessible after here if token doesn't exist*/}
           {protectedRoutes === "unhide" ? (
-            <Route exact path="/main" component={Main} />
+            <>
+              <Route exact path="/main" component={Main} />
+              <Route exact path="/settings" component={Settings} />
+            </>
           ) : (
             <Redirect to="/signup" />
           )}
