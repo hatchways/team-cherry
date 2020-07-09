@@ -24,7 +24,10 @@ const AddCompanyForm = ({ classes, addCompany }) => {
           endAdornment: (
             <FormButton
               label="Add"
-              onClick={() => addCompany(input)}
+              onClick={() => {
+                addCompany(input);
+                setInput("");
+              }}
               color="primary"
               classes={classes}
             />
