@@ -4,7 +4,8 @@ import { Grid, InputLabel } from "@material-ui/core";
 import AddCompanyForm from "./AddCompanyForm";
 import UserCompany from "./UserCompany";
 
-const CompanyForms = ({ classes }) => {
+const CompanyForms = ({ classes, userCompanies }) => {
+  console.log(userCompanies);
   return (
     <Grid item sm={12} className={classes.formFieldContainer}>
       <Grid className={classes.fieldLabel}>
@@ -13,7 +14,9 @@ const CompanyForms = ({ classes }) => {
         </InputLabel>
       </Grid>
       <Grid className={classes.formsWrapper}>
-        <UserCompany classes={classes} />
+        {userCompanies.map((company) => (
+          <UserCompany classes={classes} name={company.name} key={company.id} />
+        ))}
         <AddCompanyForm classes={classes} />
       </Grid>
     </Grid>

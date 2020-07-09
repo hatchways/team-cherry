@@ -28,8 +28,6 @@ const Settings = (props) => {
     getCompanies();
   }, []);
 
-  console.log(userCompanies);
-
   const onChangeTabs = (event, newValue) => {
     setTabIndex(newValue);
   };
@@ -37,7 +35,10 @@ const Settings = (props) => {
   return (
     <Grid container className={classes.container}>
       <SidePanel setTabIndex={onChangeTabs} currentTabIndex={currentTabIndex} />
-      <SettingsContent currentTabIndex={currentTabIndex} />
+      <SettingsContent
+        currentTabIndex={currentTabIndex}
+        userCompanies={userCompanies}
+      />
     </Grid>
   );
 };
