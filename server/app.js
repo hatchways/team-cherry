@@ -49,7 +49,7 @@ app.use(function (err, req, res, next) {
   res.json({ error: err });
 });
 
-//async tasks
+////////async tasks/////////
 
 
 // const weeklyEmailQueue = new Queue('sendMail', { //Make sure redis is set on your end. default port should be 6379
@@ -116,11 +116,15 @@ weeklyMentionScraper.process(async () => {
 
         await company.addMention(mention);
       }
-      console.log(`[Scraper] Finished adding mentions for ${company.name}`);
+      // console.log(`[Scraper] Finished adding mentions for ${company.name}`);
     }
   } catch (error) {
     console.error(error)
   }
+})
+
+weeklyMentionScraper.on('completed', (job, result) => {
+  console.log('database updated with new mentions')
 })
 
 // weeklyEmailQueue.process(async () => {
