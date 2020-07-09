@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles, Grid } from "@material-ui/core";
+
+import axios from "axios";
 
 import SidePanel from "../components/settings/SidePanel";
 import SettingsContent from "../components/settings/SettingsContent";
@@ -15,6 +17,18 @@ const useStyles = makeStyles((theme) => ({
 const Settings = (props) => {
   const classes = useStyles();
   const [currentTabIndex, setTabIndex] = useState(0);
+  const [userCompanies, setUserCompanies] = useState([]);
+
+  // api fetch
+  useEffect(() => {
+    async function getCompanies() {
+      const res = await axios.get("/api/company");
+      setUserCompanies(res.data.companies);
+    }
+    getCompanies();
+  }, []);
+
+  console.log(userCompanies);
 
   const onChangeTabs = (event, newValue) => {
     setTabIndex(newValue);

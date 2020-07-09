@@ -17,6 +17,13 @@ router.post("/", requiresAuth, async (req, res) => {
   res.json(company);
 });
 
+router.get("/", requiresAuth, async (req, res) => {
+  const user = await User.findByPk(req.user.id);
+  const companies = await user.getCompanies();
+
+  res.json({ companies });
+});
+
 // test route to validate that 1-n relationship is working properly
 router.get("/:company/users", async (req, res) => {
   const company = await Company.findOne({
