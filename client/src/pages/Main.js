@@ -16,6 +16,7 @@ import {
   Grid,
   ListItemSecondaryAction,
 } from "@material-ui/core/";
+import { uuid } from 'uuidv4';
 
 const useStyles = (theme) => ({
   rightPart: {
@@ -236,6 +237,7 @@ class Main extends Component {
               return (
                 <Grid>
                   <Mention
+                    key={uuid()}
                     title={current.title}
                     platform={current.platform}
                     content={current.content}
