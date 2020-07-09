@@ -2,7 +2,6 @@ import React from "react";
 import { Box } from "@material-ui/core";
 
 const TabPanel = ({ children, currentTabIndex, index, props }) => {
-  console.log(currentTabIndex, index);
   return (
     <div
       role="tabpanel"

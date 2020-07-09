@@ -9,6 +9,10 @@ import {
   InputLabel,
 } from "@material-ui/core";
 
+import CompanyForms from "./forms/CompanyForms";
+import SubscriberEmailForm from "./forms/SubscriberEmailForm";
+import FormButton from "./forms/FormButton";
+
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
@@ -50,83 +54,13 @@ const CompanyContentPanel = (props) => {
   const classes = useStyles();
   return (
     <Grid item container sm={12} className={classes.container}>
-      <Grid item sm={12} className={classes.formFieldContainer}>
-        <Grid className={classes.fieldLabel}>
-          <InputLabel>
-            <h2>Your Companies</h2>
-          </InputLabel>
-        </Grid>
-        <Grid className={classes.formsWrapper}>
-          <Grid className={classes.inputWrapper}>
-            <TextField
-              variant="outlined"
-              className={classes.formField}
-              value="Your existing Company"
-              disabled={true}
-              InputProps={{
-                style: {
-                  fontWeight: "bold",
-                },
-                endAdornment: (
-                  <Button
-                    varaint="contained"
-                    color="primary"
-                    className={classes.btn}
-                  >
-                    Remove
-                  </Button>
-                ),
-              }}
-            />
-          </Grid>
-          <Grid className={classes.inputWrapper}>
-            <TextField
-              variant="outlined"
-              className={classes.formField}
-              label="Company Name"
-              InputLabelProps={{
-                style: {
-                  fontWeight: "bold",
-                },
-              }}
-              InputProps={{
-                style: {
-                  fontWeight: "bold",
-                },
-                endAdornment: (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.btn}
-                  >
-                    Add
-                  </Button>
-                ),
-              }}
-            />
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid item sm={12} className={classes.formFieldContainer}>
-        <Grid className={classes.fieldLabel}>
-          <InputLabel>
-            <h2>Weekly Report</h2>
-          </InputLabel>
-        </Grid>
-        <Grid className={classes.formsWrapper}>
-          <Grid className={classes.inputWrapper}>
-            <TextField
-              variant="outlined"
-              className={classes.formField}
-              value="yoursubmail@emails.com"
-              InputProps={{ style: { fontWeight: "bold" } }}
-            />
-          </Grid>
-        </Grid>
-      </Grid>
-      <Button variant="contained" color="primary" className={classes.btn}>
-        Save
-      </Button>
+      <CompanyForms classes={classes} />
+      <SubscriberEmailForm classes={classes} />
+      <FormButton
+        classes={classes}
+        label="Save"
+        onClick={() => console.log("save")}
+      />
     </Grid>
   );
 };
