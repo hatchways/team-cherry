@@ -6,7 +6,7 @@ import axios from "axios";
 import SidePanel from "../components/settings/SidePanel";
 import SettingsContent from "../components/settings/SettingsContent";
 
-import { getUser } from "../utils/localStorage";
+import { getUser, storeUser } from "../utils/localStorage";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -52,6 +52,14 @@ const Settings = (props) => {
     }
   };
 
+  const updateSubscriberEmail = async (email) => {
+    await axios.put("/api/users/subscribe-mail/update", {
+      subscriberEmail: email,
+    });
+    // update user object on client
+    storeUser({ ...user, subscriberEmail: email });
+  };
+
   return (
     <Grid container className={classes.container}>
       <SidePanel setTabIndex={onChangeTabs} currentTabIndex={currentTabIndex} />
@@ -61,6 +69,7 @@ const Settings = (props) => {
         user={user}
         removeCompany={removeCompanyFromUser}
         addCompany={addCompanyToUser}
+        updateSubEmail={updateSubscriberEmail}
       />
     </Grid>
   );

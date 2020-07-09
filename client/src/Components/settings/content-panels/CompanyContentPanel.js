@@ -5,7 +5,6 @@ import { Grid, makeStyles } from "@material-ui/core";
 
 import CompanyForms from "../forms/CompanyForms";
 import SubscriberEmailForm from "../forms/SubscriberEmailForm";
-import FormButton from "../forms/FormButton";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -49,6 +48,7 @@ const CompanyContentPanel = ({
   user,
   removeCompany,
   addCompany,
+  updateSubEmail,
 }) => {
   const classes = useStyles();
   return (
@@ -59,12 +59,10 @@ const CompanyContentPanel = ({
         removeCompany={removeCompany}
         addCompany={addCompany}
       />
-      <SubscriberEmailForm classes={classes} user={user} />
-      <FormButton
+      <SubscriberEmailForm
         classes={classes}
-        label="Save"
-        color="primary"
-        onClick={() => console.log("save")}
+        user={user}
+        updateSubEmail={updateSubEmail}
       />
     </Grid>
   );

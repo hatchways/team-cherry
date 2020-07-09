@@ -88,4 +88,13 @@ router.post("/logout", requiresAuth, async (req, res, next) => {
   res.clearCookie("token").sendStatus(200);
 });
 
+router.put("/subscribe-mail/update", requiresAuth, async (req, res) => {
+  const user = await User.findByPk(req.user.id);
+  user.subscriberEmail = req.body.subscriberEmail;
+  await user.save();
+
+  // refresh the user token to bring on the email change
+  res.sendStatus(204);
+});
+
 module.exports = router;
