@@ -124,16 +124,6 @@ class Main extends Component {
       mentions: [],
     };
   }
-  async componentDidMount() {
-    const res = await axios.get('/api/mentions')
-    console.log(res.data.mentions)
-    const allMentionsSorted = this.sortByDate(res.data.mentions)
-    console.log(allMentionsSorted)
-    this.setState({
-      mentions: allMentionsSorted
-    })
-
-  }
 
   sortByPopularity(mentions) {
     mentions.sort((a, b) => {
