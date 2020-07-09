@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { TextField, Grid } from "@material-ui/core";
 import FormButton from "./FormButton";
 
-const AddCompanyForm = ({ classes }) => {
+const AddCompanyForm = ({ classes, addCompany }) => {
+  const [input, setInput] = useState("");
   return (
     <Grid className={classes.inputWrapper}>
       <TextField
         variant="outlined"
         className={classes.formField}
         label="Company Name"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
         InputLabelProps={{
           style: {
             fontWeight: "bold",
@@ -21,7 +24,8 @@ const AddCompanyForm = ({ classes }) => {
           endAdornment: (
             <FormButton
               label="Add"
-              onClick={() => console.log("add")}
+              onClick={() => addCompany(input)}
+              color="primary"
               classes={classes}
             />
           ),

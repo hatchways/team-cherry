@@ -45,6 +45,13 @@ const Settings = (props) => {
     );
   };
 
+  const addCompanyToUser = async (companyName) => {
+    if (!userCompanies.map((c) => c.name).includes(companyName)) {
+      const { data } = await axios.post("/api/company", { companyName });
+      setUserCompanies([...userCompanies, data]);
+    }
+  };
+
   return (
     <Grid container className={classes.container}>
       <SidePanel setTabIndex={onChangeTabs} currentTabIndex={currentTabIndex} />
@@ -53,6 +60,7 @@ const Settings = (props) => {
         userCompanies={userCompanies}
         user={user}
         removeCompany={removeCompanyFromUser}
+        addCompany={addCompanyToUser}
       />
     </Grid>
   );

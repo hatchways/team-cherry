@@ -18,6 +18,7 @@ const UserCompany = ({ classes, name, removeCompany }) => {
           endAdornment: (
             <FormButton
               label="Remove"
+              color="secondary"
               onClick={() => removeCompany(name)}
               classes={classes}
             />

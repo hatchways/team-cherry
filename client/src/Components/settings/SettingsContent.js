@@ -22,6 +22,7 @@ const SettingsContent = ({
   userCompanies,
   user,
   removeCompany,
+  addCompany,
 }) => {
   const classes = useStyles();
   const history = useHistory();
@@ -38,6 +39,7 @@ const SettingsContent = ({
           userCompanies={userCompanies}
           user={user}
           removeCompany={removeCompany}
+          addCompany={addCompany}
         />
       </TabPanel>
       <TabPanel currentTabIndex={currentTabIndex} index={1}>
