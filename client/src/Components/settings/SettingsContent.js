@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SettingsContent = ({ currentTabIndex, userCompanies }) => {
+const SettingsContent = ({ currentTabIndex, userCompanies, user }) => {
   const classes = useStyles();
   const history = useHistory();
   return (
@@ -29,7 +29,7 @@ const SettingsContent = ({ currentTabIndex, userCompanies }) => {
         </Button>
       </Grid>
       <TabPanel currentTabIndex={currentTabIndex} index={0}>
-        <CompanyContentPanel userCompanies={userCompanies} />
+        <CompanyContentPanel userCompanies={userCompanies} user={user} />
       </TabPanel>
       <TabPanel currentTabIndex={currentTabIndex} index={1}>
         <SecurityContentPanel />

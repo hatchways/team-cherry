@@ -6,6 +6,8 @@ import axios from "axios";
 import SidePanel from "../components/settings/SidePanel";
 import SettingsContent from "../components/settings/SettingsContent";
 
+import { getUser } from "../utils/localStorage";
+
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
@@ -18,6 +20,7 @@ const Settings = (props) => {
   const classes = useStyles();
   const [currentTabIndex, setTabIndex] = useState(0);
   const [userCompanies, setUserCompanies] = useState([]);
+  const [user, setUser] = useState(getUser());
 
   // api fetch
   useEffect(() => {
@@ -38,6 +41,7 @@ const Settings = (props) => {
       <SettingsContent
         currentTabIndex={currentTabIndex}
         userCompanies={userCompanies}
+        user={user}
       />
     </Grid>
   );

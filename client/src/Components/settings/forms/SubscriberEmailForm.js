@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, InputLabel, TextField } from "@material-ui/core";
 
-const SubscriberEmailForm = ({ classes }) => {
+const SubscriberEmailForm = ({ classes, user }) => {
   return (
     <Grid item sm={12} className={classes.formFieldContainer}>
       <Grid className={classes.fieldLabel}>
@@ -14,7 +14,7 @@ const SubscriberEmailForm = ({ classes }) => {
           <TextField
             variant="outlined"
             className={classes.formField}
-            value="yoursubmail@emails.com"
+            value={user.subscriberEmail}
             InputProps={{ style: { fontWeight: "bold" } }}
           />
         </Grid>
