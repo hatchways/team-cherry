@@ -35,6 +35,16 @@ const Settings = (props) => {
     setTabIndex(newValue);
   };
 
+  const removeCompanyFromUser = async (companyName) => {
+    // note the delete method is the only method where if you require request body data
+    // you have to do it in this way, other methods let you pass in a javascript object directly
+    // without having to preface with data
+    await axios.delete("/api/company", { data: { name: companyName } });
+    setUserCompanies(
+      userCompanies.filter((company) => company.name !== companyName)
+    );
+  };
+
   return (
     <Grid container className={classes.container}>
       <SidePanel setTabIndex={onChangeTabs} currentTabIndex={currentTabIndex} />
@@ -42,6 +52,7 @@ const Settings = (props) => {
         currentTabIndex={currentTabIndex}
         userCompanies={userCompanies}
         user={user}
+        removeCompany={removeCompanyFromUser}
       />
     </Grid>
   );

@@ -3,7 +3,7 @@ import { Grid, TextField } from "@material-ui/core";
 
 import FormButton from "./FormButton";
 
-const UserCompany = ({ classes, name }) => {
+const UserCompany = ({ classes, name, removeCompany }) => {
   return (
     <Grid className={classes.inputWrapper}>
       <TextField
@@ -18,7 +18,7 @@ const UserCompany = ({ classes, name }) => {
           endAdornment: (
             <FormButton
               label="Remove"
-              onClick={() => console.log("remove")}
+              onClick={() => removeCompany(name)}
               classes={classes}
             />
           ),

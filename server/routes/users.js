@@ -49,8 +49,6 @@ router.post("/register", validateRegister, async (req, res) => {
         .json({ success: true, newUser, company });
     }
   );
-
-  res.json(newUser);
 });
 
 router.post("/login", validateLogin, async (req, res) => {
