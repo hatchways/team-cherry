@@ -1,6 +1,12 @@
 import React from "react";
-import { makeStyles, Grid, Tabs, Tab } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+
+import { Grid, makeStyles, Tab, Tabs } from "@material-ui/core";
 import SettingsIcon from "@material-ui/icons/Settings";
+
+import axios from "axios";
+
+import { eraseUser } from "../../utils/localStorage";
 
 const useStyles = makeStyles((theme) => ({
   sidePanel: {
@@ -25,6 +31,15 @@ const useStyles = makeStyles((theme) => ({
 
 const SettingsSidePanel = ({ setTabIndex, currentTabIndex }) => {
   const classes = useStyles();
+  const history = useHistory();
+
+  const logoutUser = async (e) => {
+    e.preventDefault();
+    await axios.post("api/users/logout");
+    eraseUser();
+    history.push("/login");
+  };
+
   return (
     <Grid item xs={3} container className={classes.sidePanel}>
       <Grid item className={classes.panelHeader}>
@@ -45,7 +60,7 @@ const SettingsSidePanel = ({ setTabIndex, currentTabIndex }) => {
         >
           <Tab label="Company" />
           <Tab label="Security" />
-          <Tab label="Logout" />
+          <Tab onClick={logoutUser} label="Logout" />
         </Tabs>
       </Grid>
     </Grid>
