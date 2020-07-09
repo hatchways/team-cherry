@@ -222,10 +222,6 @@ class Main extends Component {
     };
   }
 
-  async componentDidMount() {
-    const res = await axios.get('/api/mentions')
-    console.log(res.data.mentions)
-  }
   render() {
     const { classes } = this.props;
 
