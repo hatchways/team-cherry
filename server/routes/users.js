@@ -19,7 +19,7 @@ router.post("/register", validateRegister, async (req, res) => {
     });
   }
 
-  const newUser = await User.create({
+  const user = await User.create({
     email: req.body.email,
     subscriberEmail: req.body.email,
     password: req.body.password,
@@ -31,12 +31,12 @@ router.post("/register", validateRegister, async (req, res) => {
     },
   });
 
-  await newUser.addCompany(company);
+  await user.addCompany(company);
 
   // token payload
   const payload = {
-    id: newUser.id,
-    email: newUser.email,
+    id: user.id,
+    email: user.email,
   };
 
   jwt.sign(
@@ -46,7 +46,7 @@ router.post("/register", validateRegister, async (req, res) => {
     (err, token) => {
       res
         .cookie("token", token, cookieConfig)
-        .json({ success: true, newUser, company });
+        .json({ success: true, user, company });
     }
   );
 });

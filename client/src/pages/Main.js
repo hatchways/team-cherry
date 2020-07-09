@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Header from "../components/Header";
 import Mention from "../components/Mention";
+import axios from "axios";
 import SwitchSelector from "react-switch-selector";
 import { withStyles } from "@material-ui/core/styles";
 import {

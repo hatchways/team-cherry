@@ -38,6 +38,11 @@ export default function Login(props) {
   const [passwordErr, setPasswordErr] = useState(false);
   const [passwordErrMsg, setpasswordErrMsg] = useState("");
 
+  //helps with persisted login status
+  if (getUser()) {
+    const { history } = props;
+    history.push("/main");
+  }
   const login = async (event) => {
     //this could be for a redirect if there is already a user in localstorage
     if (getUser()) {
@@ -62,14 +67,14 @@ export default function Login(props) {
         email: email,
         password: password,
       });
-      if (res.status === 400) {
-        if (res.data.user) {
-          setEmailErr(true);
-          setEmailErrMsg(res.data.user);
-          return;
-        }
-        if (res.data.password) setPasswordErr(true);
-        setpasswordErrMsg(res.data.password);
+      if (res === "User doesn't exist") {
+        setEmailErr(true);
+        setEmailErrMsg("User doesn't exist");
+        return;
+      }
+      if ("Password does not match") {
+        setPasswordErr(true);
+        setpasswordErrMsg("Password does not match");
         return;
       }
 
