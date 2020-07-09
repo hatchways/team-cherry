@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 
-import Mention from "../components/Mention";
-import Grid from "@material-ui/core/Grid";
-
+import Mention from "../Components/Mention";
+import axios from 'axios'
 import SwitchSelector from "react-switch-selector";
 import { withStyles } from "@material-ui/core/styles";
 import {
@@ -223,6 +222,10 @@ class Main extends Component {
     };
   }
 
+  async componentDidMount() {
+    const res = await axios.get('/api/mentions')
+    console.log(res.data.mentions)
+  }
   render() {
     const { classes } = this.props;
 
