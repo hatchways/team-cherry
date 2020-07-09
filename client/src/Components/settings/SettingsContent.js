@@ -30,7 +30,7 @@ const SettingsContent = ({
   return (
     <Grid item container xs={9} className={classes.content}>
       <Grid xs={1}>
-        <Button onClick={() => history.goBack()}>
+        <Button onClick={() => history.push("/main")}>
           <HomeIcon />
           <Typography>Go Back</Typography>
         </Button>
