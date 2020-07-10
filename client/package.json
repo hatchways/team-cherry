@@ -11,7 +11,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.0.1",
     "react-switch": "^5.0.1",
-    "react-switch-selector": "^1.1.2"
+    "react-switch-selector": "^1.1.2",
+    "uuidv4": "^6.1.1"
   },
   "scripts": {
     "start": "react-scripts start",

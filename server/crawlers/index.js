@@ -1,7 +1,7 @@
-const redditScraper = require("./redditScraper");
-const twitterScraper = require("./twitterScraper");
+const redditCrawler = require("./redditCrawler");
+const twitterCrawler = require("./twitterCrawler");
 
 module.exports = {
-  redditScraper,
-  twitterScraper,
+  redditCrawler,
+  twitterCrawler,
 };
