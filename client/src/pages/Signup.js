@@ -13,7 +13,7 @@ import { getUser } from "../utils/localStorage";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: "50px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -27,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "5px",
     boxShadow: "0 2px 4px 0 gray",
     backgroundColor: "white",
-    marginTop: "100px",
     width: "900px",
+    marginTop: "150px",
   },
 }));
 
@@ -90,66 +90,71 @@ export default function Signup(props) {
     }
   };
   return (
-    <Container className={classes.mainContainer} component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        {loginSignup === "/signup" ? (
-          <React.Fragment>
-            <Typography variant="h1">Lets Get Started!</Typography>
-            <Typography>Create an account</Typography>
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <Typography variant="h1">Welcome Back!</Typography>
-          </React.Fragment>
-        )}
-        <form className={classes.form} onSubmit={createAccount} noValidate>
-          <CustomTextField
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            error={emailErr}
-            helperText={emailErrMsg}
-            onChange={(event) => {
-              setEmail(event.target.value);
-            }}
-          />
+    <div>
+      <Container
+        className={classes.mainContainer}
+        component="main"
+        maxWidth="xs"
+      >
+        <div className={classes.paper}>
           {loginSignup === "/signup" ? (
+            <React.Fragment>
+              <Typography variant="h1">Lets Get Started!</Typography>
+              <Typography>Create an account</Typography>
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <Typography variant="h1">Welcome Back!</Typography>
+            </React.Fragment>
+          )}
+          <form className={classes.form} onSubmit={createAccount} noValidate>
             <CustomTextField
-              name="CompanyName"
-              label="Company Name"
-              id="CompanyName"
-              error={companyErr}
-              helperText={companyErr ? "Please enter your company" : ""}
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              error={emailErr}
+              helperText={emailErrMsg}
               onChange={(event) => {
-                setCompany(event.target.value);
+                setEmail(event.target.value);
               }}
             />
-          ) : (
-            ""
-          )}
-          <CustomTextField
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            onChange={(event) => {
-              setPassword(event.target.value);
-            }}
-            error={passwordErr}
-            helperText={
-              passwordErr
-                ? "Please enter a password longer than 7 characters"
-                : ""
-            }
-          />
-          <SubmitButton>
-            {loginSignup === "/signup" ? "Create" : "Log In"}
-          </SubmitButton>
-        </form>
-      </div>
-    </Container>
+            {loginSignup === "/signup" ? (
+              <CustomTextField
+                name="CompanyName"
+                label="Company Name"
+                id="CompanyName"
+                error={companyErr}
+                helperText={companyErr ? "Please enter your company" : ""}
+                onChange={(event) => {
+                  setCompany(event.target.value);
+                }}
+              />
+            ) : (
+              ""
+            )}
+            <CustomTextField
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              onChange={(event) => {
+                setPassword(event.target.value);
+              }}
+              error={passwordErr}
+              helperText={
+                passwordErr
+                  ? "Please enter a password longer than 7 characters"
+                  : ""
+              }
+            />
+            <SubmitButton>
+              {loginSignup === "/signup" ? "Create" : "Log In"}
+            </SubmitButton>
+          </form>
+        </div>
+      </Container>
+    </div>
   );
 }
 

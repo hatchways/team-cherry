@@ -6,10 +6,13 @@ const { Mention, User } = require("../models");
 
 router.get("/", requiresAuth, async (req, res) => {
   let output = [];
-  const { keywords, platforms } = req.body;
+  let { keywords, platforms } = req.query;
+  if (!platforms) {
+    platforms = [];
+  }
   const searchQuery = `%${keywords}%`;
-
   const user = await User.findByPk(req.user.id);
+
   const companies = await user.getCompanies();
   for (let company of companies) {
     let mentions = await company.getMentions({

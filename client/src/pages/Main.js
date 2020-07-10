@@ -1,9 +1,6 @@
 import React, { Component } from "react";
-
 import Mention from "../components/Mention";
-
 import axios from "axios";
-
 import SwitchSelector from "react-switch-selector";
 import { withStyles } from "@material-ui/core/styles";
 import {
@@ -18,14 +15,14 @@ import {
   Grid,
   ListItemSecondaryAction,
 } from "@material-ui/core/";
-import { uuid } from 'uuidv4';
+import { uuid } from "uuidv4";
 import Header from "../components/Header";
 
 const useStyles = (theme) => ({
   RootGridContainer: {
-    '& .MuiGrid-container': {
-      paddingTop: '50px'
-    }
+    "& .MuiGrid-container": {
+      paddingTop: "50px",
+    },
   },
   rightPart: {
     marginTop: "8em",
@@ -59,6 +56,9 @@ const useStyles = (theme) => ({
   },
   instruction: {
     textAlign: "center",
+  },
+  mention: {
+    maxWidth: "100%",
   },
 });
 
@@ -127,71 +127,113 @@ class Main extends Component {
       splitSelectedPlatforms = selectedPlatformsInURL.split(",");
     }
 
+    let allPlatforms = ["Reddit", "Twitter", "Facebook"];
+    let switchStates = [];
+    allPlatforms.forEach((item) => {
+      switchStates[item] = splitSelectedPlatforms.includes(item);
+    });
+
     this.state = {
-      allPlatforms: ["Reddit", "Twitter", "Facebook"],
+      allPlatforms: allPlatforms,
       platformSelected: [...splitSelectedPlatforms],
       mentions: [],
+      switchStates: switchStates,
     };
   }
 
   async componentDidMount() {
-    let res = await axios.get('/api/mentions')
+    let res = await axios.get("/api/mentions", {
+      params: {
+        platforms: this.state.platformSelected,
+        keywords: "",
+      },
+    });
     this.setState({
-      mentions: res.data.mentions
-    })
+      mentions: res.data.mentions,
+    });
   }
 
   sortByPopularity(mentions) {
     mentions.sort((a, b) => {
-      return b.popularity - a.popularity
-    })
-    return mentions
+      return b.popularity - a.popularity;
+    });
+    return mentions;
   }
 
   sortByDate(mentions) {
     mentions.sort((a, b) => {
-      return b.date - a.date
-    })
-    return mentions
+      return b.date - a.date;
+    });
+    return mentions;
   }
 
   sortToggle(event) {
-    let sortedMentions = this.state.mentions
-    if (event === 'Most Recent') {
-      sortedMentions = this.sortByDate(this.state.mentions)
-    }
-    else {
-      sortedMentions = this.sortByPopularity(this.state.mentions)
+    let sortedMentions = this.state.mentions;
+    if (event === "Most Recent") {
+      sortedMentions = this.sortByDate(this.state.mentions);
+    } else {
+      sortedMentions = this.sortByPopularity(this.state.mentions);
     }
     this.setState({
-      mentions: sortedMentions
-    })
+      mentions: sortedMentions,
+    });
+  }
+
+  async handlePlatformToggle(value) {
+    let newlySelectedPlatform = value.target.name;
+    let checked = value.target.checked;
+    this.state.switchStates[newlySelectedPlatform] = checked;
+
+    if (checked) {
+      await this.setState({
+        platformSelected: [
+          ...this.state.platformSelected,
+          newlySelectedPlatform,
+        ],
+      });
+
+      let { data } = await axios.get("/api/mentions/", {
+        params: {
+          platforms: [newlySelectedPlatform],
+          keywords: "",
+        },
+      });
+
+      const newMentions = this.state.mentions.concat(data.mentions);
+
+      let sortedMentions = this.sortByDate(newMentions);
+      await this.setState({
+        mentions: sortedMentions,
+      });
+    } else {
+      let index = this.state.platformSelected.indexOf(newlySelectedPlatform);
+      let temp = this.state.platformSelected;
+      if (index !== -1) {
+        temp.splice(index, 1);
+      }
+      await this.setState({
+        platformSelected: temp,
+      });
+
+      let filteredMentions = this.state.mentions.filter(
+        (mention) => mention.platform !== newlySelectedPlatform
+      );
+
+      await this.setState({
+        mentions: filteredMentions,
+      });
+    }
+
+    // Add the selected platforms in to the query params.
+    let currentUrlParams = new URLSearchParams();
+    currentUrlParams.set("platforms", this.state.platformSelected);
+    this.props.history.push(
+      window.location.pathname + "?" + currentUrlParams.toString()
+    );
   }
 
   render() {
     const { classes } = this.props;
-
-    const handlePlatformToggle = async (value) => {
-      if (value.target.checked) {
-        await this.setState({
-          platformSelected: [...this.state.platformSelected, value.target.name],
-        });
-      } else {
-        let index = this.state.platformSelected.indexOf(value.target.name);
-        let temp = this.state.platformSelected;
-        temp.splice(index, 1);
-        await this.setState({
-          platformSelected: temp,
-        });
-      }
-
-      // Add the selected platforms in to the query params.
-      let currentUrlParams = new URLSearchParams();
-      currentUrlParams.set("platforms", this.state.platformSelected);
-      this.props.history.push(
-        window.location.pathname + "?" + currentUrlParams.toString()
-      );
-    };
 
     return (
       <div>
@@ -224,10 +266,10 @@ class Main extends Component {
                       <ListItemSecondaryAction>
                         <IOSSwitch
                           name={platform}
-                          checked={this.state.platformSelected.includes(
-                            platform
-                          )}
-                          onChange={handlePlatformToggle}
+                          checked={this.state.switchStates[platform]}
+                          onClick={(event) => {
+                            this.handlePlatformToggle(event);
+                          }}
                         />
                       </ListItemSecondaryAction>
                     </ListItem>
@@ -258,7 +300,9 @@ class Main extends Component {
               <h1>My mentions</h1>
               <div className={classes.SwitchSelector}>
                 <SwitchSelector
-                  onChange={(event) => { this.sortToggle(event) }}
+                  onChange={(event) => {
+                    this.sortToggle(event);
+                  }}
                   options={[
                     {
                       label: "Most recent",
@@ -279,39 +323,6 @@ class Main extends Component {
               </div>
             </Grid>
 
-
-            <Grid item>
-              <Mention
-                title="PalPay invested $500 million in Company ABC"
-                platform="Twitter"
-                content="Heat oil in a (14- to 16-inch) paella pan or a large, deep
-                skillet over medium-high heat. Add chicken, shrimp and chorizo,
-                and cook, stirring occasionally until lightly browned, 6 to 8
-                minutes. Transfer shrimp to a large plate and set aside, leaving
-                chicken and chorizo in the pan. Add pimentón, bay leaves,
-                garlic, tomatoes, onion, salt and pepper, and cook, stirring
-                often until thickened and fragrant, about 10 minutes. Add
-                saffron broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil. broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil."
-                image="/imgs/dog.jpg"
-              />
-            </Grid>
-            {this.state.mentions.map((current) => {
-              return (
-                <Grid
-                  key={uuid()}>
-                  <Mention
-
-                    title={current.title}
-                    platform={current.platform}
-                    content={current.content}
-                    image={current.image}
-                  />
-                </Grid>
-              )
-            })}
-
             {this.state.mentions.length === 0 ? (
               <h3 className={classes.instruction}>
                 Please enter a company name in the search bar, and toggle one or
@@ -320,7 +331,7 @@ class Main extends Component {
             ) : (
               this.state.mentions.map((mention, index) => {
                 return (
-                  <Grid item key={index}>
+                  <Grid item key={index} className={classes.mention}>
                     <Mention
                       image={mention.image}
                       title={mention.title}
