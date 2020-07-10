@@ -5,7 +5,7 @@ import { theme } from "./themes/theme";
 import Signup from "./pages/Signup";
 import Login from './pages/Login'
 import Main from './pages/Main'
-import Header from "./Components/Header"
+import Header from "./components/Header"
 import { eraseUser, getUser } from './utils/localStorage'
 import { loginInterceptor, AxiosInterceptor, } from './utils/authAxios'
 import Snackbar from '@material-ui/core/Snackbar';

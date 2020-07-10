@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import Mention from "../Components/Mention";
+import Mention from "../components/Mention";
 import axios from 'axios'
 import SwitchSelector from "react-switch-selector";
 import { withStyles } from "@material-ui/core/styles";
@@ -19,6 +19,11 @@ import {
 import { uuid } from 'uuidv4';
 
 const useStyles = (theme) => ({
+  RootGridContainer: {
+    '& .MuiGrid-container': {
+      paddingTop: '50px'
+    }
+  },
   rightPart: {
     marginTop: "8em",
   },
@@ -126,6 +131,13 @@ class Main extends Component {
     };
   }
 
+  async componentDidMount() {
+    let res = await axios.get('/api/mentions')
+    this.setState({
+      mentions: res.data.mentions
+    })
+  }
+
   sortByPopularity(mentions) {
     mentions.sort((a, b) => {
       return b.popularity - a.popularity
@@ -135,7 +147,7 @@ class Main extends Component {
 
   sortByDate(mentions) {
     mentions.sort((a, b) => {
-      return new Date(b.date) - new Date(a.date)
+      return b.date - a.date
     })
     return mentions
   }
@@ -235,9 +247,10 @@ class Main extends Component {
 
             {this.state.mentions.map((current) => {
               return (
-                <Grid>
+                <Grid
+                  key={uuid()}>
                   <Mention
-                    key={uuid()}
+
                     title={current.title}
                     platform={current.platform}
                     content={current.content}
