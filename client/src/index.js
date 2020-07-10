@@ -8,7 +8,6 @@ import { Provider } from "react-redux";
 
 const reduser = (state = {}, action) => {
   if (action.type === "setKeywords") {
-    console.log("qweqweqwe");
     return { keywords: action.payload };
   } else {
     return state;

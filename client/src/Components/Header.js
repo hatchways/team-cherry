@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   AppBar,
@@ -14,6 +14,7 @@ import { getUser } from "../utils/localStorage";
 import { DebounceInput } from "react-debounce-input";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { SearchTerm } from '../utils/SearchContext'
 
 const useStyles = makeStyles(() => ({
   fontColorForMentions: {
@@ -69,6 +70,9 @@ export default function Header() {
   const history = useHistory();
   const dispatcher = useDispatch();
 
+  const { searchTerm, setSearchTerm } = useContext(SearchTerm)
+
+
   const handleSearchBar = async (event) => {
     setKeywords(event.target.value);
     // console.log(keywords);
@@ -78,6 +82,7 @@ export default function Header() {
     currentUrlParams.set("keywords", event.target.value);
     history.push(window.location.pathname + "?" + currentUrlParams.toString());
 
+    setSearchTerm(event.target.value)
     dispatcher({ type: "setKeywords", payload: event.target.value });
   };
 
@@ -107,10 +112,10 @@ export default function Header() {
                 </div>
               </Grid>
             ) : (
-              <Grid>
-                <div></div>
-              </Grid>
-            )}
+                <Grid>
+                  <div></div>
+                </Grid>
+              )}
 
             <Grid item xs={2} className={classes.SettingsIcon}>
               <IconButton color="inherit">

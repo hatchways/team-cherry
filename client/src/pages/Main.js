@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, ThemeContext } from "react";
 
 import Mention from "../components/Mention";
 import axios from "axios";
@@ -17,6 +17,7 @@ import {
   ListItemSecondaryAction,
 } from "@material-ui/core/";
 import Header from "../components/Header";
+import { SearchTerm } from '../utils/SearchContext'
 
 const useStyles = (theme) => ({
   rightPart: {
@@ -222,8 +223,9 @@ class Main extends Component {
       ],
     };
   }
-
+  static contextType = SearchTerm
   render() {
+    console.log(this.context.searchTerm)
     const { classes } = this.props;
 
     const handlePlatformToggle = async (value) => {
@@ -340,19 +342,19 @@ class Main extends Component {
                 more platforms in the left panel.
               </h3>
             ) : (
-              this.state.mentions.map((mention, index) => {
-                return (
-                  <Grid item key={index}>
-                    <Mention
-                      image={mention.image}
-                      title={mention.title}
-                      platform={mention.platform}
-                      content={mention.content}
-                    />
-                  </Grid>
-                );
-              })
-            )}
+                this.state.mentions.map((mention, index) => {
+                  return (
+                    <Grid item key={index}>
+                      <Mention
+                        image={mention.image}
+                        title={mention.title}
+                        platform={mention.platform}
+                        content={mention.content}
+                      />
+                    </Grid>
+                  );
+                })
+              )}
           </Grid>
         </Grid>
       </div>
