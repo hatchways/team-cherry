@@ -1,12 +1,11 @@
 const router = require("express").Router();
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const {
   validateLogin,
   validateRegister,
 } = require("./middleware/requiresFormValidation");
-const { User } = require("../models");
+const { User, Company } = require("../models");
 const cookieConfig = require("../cookie-config");
 const { createErrorResponse } = require("./middleware/util");
 
@@ -19,15 +18,23 @@ router.post("/register", validateRegister, async (req, res) => {
     });
   }
 
-  const newUser = await User.create({
+  const user = await User.create({
     email: req.body.email,
     password: req.body.password,
   });
 
+  const [company, isNew] = await Company.findOrCreate({
+    where: {
+      name: req.body.company,
+    },
+  });
+
+  await user.addCompany(company);
+
   // token payload
   const payload = {
-    id: newUser.id,
-    email: newUser.email,
+    id: user.id,
+    email: user.email,
   };
 
   jwt.sign(
@@ -35,11 +42,12 @@ router.post("/register", validateRegister, async (req, res) => {
     process.env.JWT_SECRET,
     { expiresIn: 31556926 },
     (err, token) => {
-      res.cookie("token", token, cookieConfig).json({ success: true, user });
+      res
+        .cookie("token", token, cookieConfig)
+        .json({ success: true, user, company });
     }
   );
-
-  res.json(newUser);
+  // res.json({ user: newUser });
 });
 
 router.post("/login", validateLogin, async (req, res) => {
