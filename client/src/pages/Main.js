@@ -250,7 +250,6 @@ class Main extends Component {
 
     return (
       <div>
-        <Header />
         <Grid container>
           <Grid item xs={3} container className={classes.leftPanelGrid}>
             <List dense className={classes.leftPanelList}>
