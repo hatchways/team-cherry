@@ -1,4 +1,4 @@
-const { redditScraper, twitterScraper } = require("../crawlers");
+const { redditCrawler, twitterCrawler } = require("../crawlers");
 
 module.exports = function ScraperManager() {
   this.run = async function run(companyName) {
@@ -7,8 +7,8 @@ module.exports = function ScraperManager() {
 
     let results = [];
 
-    const redditMentions = await redditScraper(companyName);
-    const twitterMentions = await twitterScraper(companyName);
+    const redditMentions = await redditCrawler(companyName);
+    const twitterMentions = await twitterCrawler(companyName);
 
     results = results.concat(redditMentions, twitterMentions);
 
