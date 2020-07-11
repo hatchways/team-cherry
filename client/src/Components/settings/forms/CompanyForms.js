@@ -3,7 +3,7 @@ import { Grid, InputLabel } from "@material-ui/core";
 
 import AddCompanyForm from "./AddCompanyForm";
 import UserCompany from "./UserCompany";
-import { SettingsContext } from "../../../utils/settings-context";
+import { SettingsContext } from "../settings-context";
 
 const CompanyForms = ({ classes }) => {
   const { state } = useContext(SettingsContext);

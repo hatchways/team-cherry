@@ -3,7 +3,7 @@ import axios from "axios";
 import { TextField, Grid } from "@material-ui/core";
 
 import FormButton from "./FormButton";
-import { SettingsContext } from "../../../utils/settings-context";
+import { SettingsContext } from "../settings-context";
 
 const AddCompanyForm = ({ classes }) => {
   const [input, setInput] = useState("");

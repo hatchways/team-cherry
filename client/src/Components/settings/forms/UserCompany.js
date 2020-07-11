@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import axios from "axios";
 import { Grid, TextField } from "@material-ui/core";
 
-import { SettingsContext } from "../../../utils/settings-context";
+import { SettingsContext } from "../settings-context";
 import FormButton from "./FormButton";
 
 const UserCompany = ({ classes, name }) => {

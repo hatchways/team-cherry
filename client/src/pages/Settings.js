@@ -10,7 +10,7 @@ import {
   SettingsContext,
   settingsReducer,
   settingsInitialState,
-} from "../utils/settings-context";
+} from "../components/settings/settings-context";
 
 const useStyles = makeStyles((theme) => ({
   container: {
