@@ -16,7 +16,6 @@ import {
   Grid,
   ListItemSecondaryAction,
 } from "@material-ui/core/";
-import Header from "../components/Header";
 import { SearchTerm } from '../utils/SearchContext'
 
 const useStyles = (theme) => ({
@@ -119,10 +118,10 @@ class Main extends Component {
     if (selectedPlatformsInURL) {
       splitSelectedPlatforms = selectedPlatformsInURL.split(",");
     }
-
     this.state = {
       allPlatforms: ["Reddit", "Twitter", "Facebook"],
       platformSelected: [...splitSelectedPlatforms],
+      searchTerm: '',
       mentions: [
         {
           title: "PalPay invested $500 million in Company ABC",
@@ -224,8 +223,9 @@ class Main extends Component {
     };
   }
   static contextType = SearchTerm
+
   render() {
-    console.log(this.context.searchTerm)
+    console.log(this.context.searchTerm)//this line will print search term
     const { classes } = this.props;
 
     const handlePlatformToggle = async (value) => {
@@ -249,6 +249,11 @@ class Main extends Component {
         window.location.pathname + "?" + currentUrlParams.toString()
       );
     };
+    if (this.context.searchTerm.length != 0) {
+      this.props.history.push(
+        window.location.pathname + '?' + 'keyword=' + this.context.searchTerm
+      )
+    }
 
     return (
       <div>

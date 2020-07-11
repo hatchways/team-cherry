@@ -13,7 +13,6 @@ import TextField from "@material-ui/core/Input";
 import { getUser } from "../utils/localStorage";
 import { DebounceInput } from "react-debounce-input";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { SearchTerm } from '../utils/SearchContext'
 
 const useStyles = makeStyles(() => ({
@@ -68,22 +67,19 @@ export default function Header() {
 
   const [keywords, setKeywords] = useState("");
   const history = useHistory();
-  const dispatcher = useDispatch();
 
-  const { searchTerm, setSearchTerm } = useContext(SearchTerm)
+  const { setSearchTerm } = useContext(SearchTerm)
 
 
   const handleSearchBar = async (event) => {
     setKeywords(event.target.value);
-    // console.log(keywords);
+    setSearchTerm(event.target.value)
 
     // Set keywords into URL params.
-    let currentUrlParams = new URLSearchParams();
-    currentUrlParams.set("keywords", event.target.value);
-    history.push(window.location.pathname + "?" + currentUrlParams.toString());
+    // let currentUrlParams = new URLSearchParams();
+    // currentUrlParams.set("keywords", event.target.value);
+    // history.push(window.location.pathname + "?" + currentUrlParams.toString());
 
-    setSearchTerm(event.target.value)
-    dispatcher({ type: "setKeywords", payload: event.target.value });
   };
 
   return (
