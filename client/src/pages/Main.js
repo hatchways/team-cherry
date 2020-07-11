@@ -181,7 +181,6 @@ class Main extends Component {
   }
 
   sortToggle(event) {
-    console.log(event)
     let sortedMentions = this.state.mentions;
     if (event === "MostRecent") {
       sortedMentions = this.sortByDate(this.state.mentions);
