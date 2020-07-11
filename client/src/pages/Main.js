@@ -161,7 +161,6 @@ class Main extends Component {
   }
 
   sortByPopularity(mentions) {
-
     mentions.sort((a, b) => {
       return b.popularity - a.popularity;
     });
@@ -182,8 +181,9 @@ class Main extends Component {
   }
 
   sortToggle(event) {
+    console.log(event)
     let sortedMentions = this.state.mentions;
-    if (event === "Most Recent") {
+    if (event === "MostRecent") {
       sortedMentions = this.sortByDate(this.state.mentions);
     } else {
       sortedMentions = this.sortByPopularity(this.state.mentions);
@@ -193,12 +193,19 @@ class Main extends Component {
     });
     let currentUrlParams = new URLSearchParams(this.props.location.search);
     currentUrlParams.set('sortBy', this.state.sortByState)
-    console.log(this.state.sortByState)
     this.props.history.push({
       search: currentUrlParams.toString()
     });
   }
-
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.sortByState != this.state.sortByState) {
+      let currentUrlParams = new URLSearchParams(this.props.location.search);
+      currentUrlParams.set('sortBy', this.state.sortByState)
+      this.props.history.push({
+        search: currentUrlParams.toString()
+      });
+    }
+  }
   async handlePlatformToggle(value) {
     let newlySelectedPlatform = value.target.name;
     let checked = value.target.checked;
@@ -247,7 +254,6 @@ class Main extends Component {
     // Add the selected platforms in to the query params.
     let currentUrlParams = new URLSearchParams();
     currentUrlParams.set("platforms", this.state.platformSelected);
-    console.log(currentUrlParams)
     this.props.history.push(
       window.location.pathname + "?" + currentUrlParams.toString()
     );
