@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { makeStyles, Grid } from "@material-ui/core";
 
 import axios from "axios";
@@ -6,8 +6,11 @@ import axios from "axios";
 import SidePanel from "../components/settings/SidePanel";
 import SettingsContent from "../components/settings/SettingsContent";
 
-import { SettingsContext } from "../utils/settings-context";
-
+import {
+  SettingsContext,
+  settingsReducer,
+  settingsInitialState,
+} from "../utils/settings-context";
 import { getUser, storeUser } from "../utils/localStorage";
 
 const useStyles = makeStyles((theme) => ({
@@ -15,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     height: "100%",
+    marginTop: "1%",
   },
 }));
 
@@ -24,11 +28,14 @@ const Settings = (props) => {
   const [userCompanies, setUserCompanies] = useState([]);
   const [user, setUser] = useState(getUser());
 
+  const [state, dispatch] = useReducer(settingsReducer, settingsInitialState);
+
   // api fetch
   useEffect(() => {
     async function getCompanies() {
       const res = await axios.get("/api/company");
-      setUserCompanies(res.data.companies);
+      // setUserCompanies(res.data.companies);
+      dispatch({ type: "get_companies", payload: res.data.companies });
     }
     getCompanies();
   }, []);
@@ -47,13 +54,6 @@ const Settings = (props) => {
     );
   };
 
-  const addCompanyToUser = async (companyName) => {
-    if (!userCompanies.map((c) => c.name).includes(companyName)) {
-      const { data } = await axios.post("/api/company", { companyName });
-      setUserCompanies([...userCompanies, data]);
-    }
-  };
-
   const updateSubscriberEmail = async (email) => {
     await axios.put("/api/users/subscribe-mail/update", {
       subscriberEmail: email,
@@ -63,17 +63,20 @@ const Settings = (props) => {
   };
 
   return (
-    <Grid container className={classes.container}>
-      <SidePanel setTabIndex={onChangeTabs} currentTabIndex={currentTabIndex} />
-      <SettingsContent
-        currentTabIndex={currentTabIndex}
-        userCompanies={userCompanies}
-        user={user}
-        removeCompany={removeCompanyFromUser}
-        addCompany={addCompanyToUser}
-        updateSubEmail={updateSubscriberEmail}
-      />
-    </Grid>
+    <SettingsContext.Provider value={{ state, dispatch }}>
+      <Grid container className={classes.container}>
+        <SidePanel
+          setTabIndex={onChangeTabs}
+          currentTabIndex={currentTabIndex}
+        />
+        <SettingsContent
+          currentTabIndex={currentTabIndex}
+          user={user}
+          removeCompany={removeCompanyFromUser}
+          updateSubEmail={updateSubscriberEmail}
+        />
+      </Grid>
+    </SettingsContext.Provider>
   );
 };
 

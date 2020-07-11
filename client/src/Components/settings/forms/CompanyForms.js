@@ -1,15 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Grid, InputLabel } from "@material-ui/core";
 
 import AddCompanyForm from "./AddCompanyForm";
 import UserCompany from "./UserCompany";
+import { SettingsContext } from "../../../utils/settings-context";
 
-const CompanyForms = ({
-  classes,
-  userCompanies,
-  removeCompany,
-  addCompany,
-}) => {
+const CompanyForms = ({ classes, removeCompany }) => {
+  const { state } = useContext(SettingsContext);
   return (
     <Grid item sm={12} className={classes.formFieldContainer}>
       <Grid className={classes.fieldLabel}>
@@ -18,7 +15,7 @@ const CompanyForms = ({
         </InputLabel>
       </Grid>
       <Grid className={classes.formsWrapper}>
-        {userCompanies.map((company) => (
+        {state.companies.map((company) => (
           <UserCompany
             classes={classes}
             name={company.name}
@@ -26,7 +23,7 @@ const CompanyForms = ({
             removeCompany={removeCompany}
           />
         ))}
-        <AddCompanyForm classes={classes} addCompany={addCompany} />
+        <AddCompanyForm classes={classes} />
       </Grid>
     </Grid>
   );

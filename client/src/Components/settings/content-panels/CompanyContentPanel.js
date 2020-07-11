@@ -43,22 +43,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CompanyContentPanel = ({
-  userCompanies,
-  user,
-  removeCompany,
-  addCompany,
-  updateSubEmail,
-}) => {
+const CompanyContentPanel = ({ user, removeCompany, updateSubEmail }) => {
   const classes = useStyles();
   return (
     <Grid item container sm={12} className={classes.container}>
-      <CompanyForms
-        classes={classes}
-        userCompanies={userCompanies}
-        removeCompany={removeCompany}
-        addCompany={addCompany}
-      />
+      <CompanyForms classes={classes} removeCompany={removeCompany} />
       <SubscriberEmailForm
         classes={classes}
         user={user}

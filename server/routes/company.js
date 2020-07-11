@@ -26,7 +26,6 @@ router.get("/", requiresAuth, async (req, res) => {
 
 router.delete("/", requiresAuth, async (req, res) => {
   const user = await User.findByPk(req.user.id);
-  console.log(req.body);
   const companyToRemove = await Company.findOne({
     where: {
       name: req.body.name,

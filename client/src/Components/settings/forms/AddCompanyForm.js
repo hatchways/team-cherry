@@ -1,9 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import axios from "axios";
 import { TextField, Grid } from "@material-ui/core";
-import FormButton from "./FormButton";
 
-const AddCompanyForm = ({ classes, addCompany }) => {
+import FormButton from "./FormButton";
+import { SettingsContext } from "../../../utils/settings-context";
+
+const AddCompanyForm = ({ classes }) => {
   const [input, setInput] = useState("");
+  const { state, dispatch } = useContext(SettingsContext);
+
+  const addCompanyToUser = async (companyName) => {
+    if (!state.companies.map((c) => c.name).includes(companyName)) {
+      const { data } = await axios.post("/api/company", { companyName });
+      dispatch({ type: "add_company", payload: data });
+    }
+  };
+
   return (
     <Grid className={classes.inputWrapper}>
       <TextField
@@ -25,7 +37,7 @@ const AddCompanyForm = ({ classes, addCompany }) => {
             <FormButton
               label="Add"
               onClick={() => {
-                addCompany(input);
+                addCompanyToUser(input);
                 setInput("");
               }}
               color="primary"

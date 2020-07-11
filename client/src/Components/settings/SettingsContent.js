@@ -19,10 +19,8 @@ const useStyles = makeStyles((theme) => ({
 
 const SettingsContent = ({
   currentTabIndex,
-  userCompanies,
   user,
   removeCompany,
-  addCompany,
   updateSubEmail,
 }) => {
   const classes = useStyles();
@@ -37,10 +35,8 @@ const SettingsContent = ({
       </Grid>
       <TabPanel currentTabIndex={currentTabIndex} index={0}>
         <CompanyContentPanel
-          userCompanies={userCompanies}
           user={user}
           removeCompany={removeCompany}
-          addCompany={addCompany}
           updateSubEmail={updateSubEmail}
         />
       </TabPanel>
