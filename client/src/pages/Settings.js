@@ -6,6 +6,8 @@ import axios from "axios";
 import SidePanel from "../components/settings/SidePanel";
 import SettingsContent from "../components/settings/SettingsContent";
 
+import { SettingsContext } from "../utils/settings-context";
+
 import { getUser, storeUser } from "../utils/localStorage";
 
 const useStyles = makeStyles((theme) => ({
