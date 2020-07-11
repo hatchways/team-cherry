@@ -138,6 +138,7 @@ class Main extends Component {
       platformSelected: [...splitSelectedPlatforms],
       mentions: [],
       switchStates: switchStates,
+      sortByState: ''
     };
   }
 
@@ -150,13 +151,23 @@ class Main extends Component {
     });
     this.setState({
       mentions: res.data.mentions,
+      sortByState: 'MostRecent'
+    });
+    let currentUrlParams = new URLSearchParams(this.props.location.search);
+    currentUrlParams.set('sortBy', this.state.sortByState)
+    this.props.history.push({
+      search: currentUrlParams.toString()
     });
   }
 
   sortByPopularity(mentions) {
+
     mentions.sort((a, b) => {
       return b.popularity - a.popularity;
     });
+    this.setState({
+      sortByState: 'MostPopular'
+    })
     return mentions;
   }
 
@@ -164,6 +175,9 @@ class Main extends Component {
     mentions.sort((a, b) => {
       return b.date - a.date;
     });
+    this.setState({
+      sortByState: 'MostRecent'
+    })
     return mentions;
   }
 
@@ -176,6 +190,12 @@ class Main extends Component {
     }
     this.setState({
       mentions: sortedMentions,
+    });
+    let currentUrlParams = new URLSearchParams(this.props.location.search);
+    currentUrlParams.set('sortBy', this.state.sortByState)
+    console.log(this.state.sortByState)
+    this.props.history.push({
+      search: currentUrlParams.toString()
     });
   }
 
@@ -227,6 +247,7 @@ class Main extends Component {
     // Add the selected platforms in to the query params.
     let currentUrlParams = new URLSearchParams();
     currentUrlParams.set("platforms", this.state.platformSelected);
+    console.log(currentUrlParams)
     this.props.history.push(
       window.location.pathname + "?" + currentUrlParams.toString()
     );
@@ -302,17 +323,20 @@ class Main extends Component {
                 <SwitchSelector
                   onChange={(event) => {
                     this.sortToggle(event);
+                    this.setState({
+                      sortByState: event
+                    })
                   }}
                   options={[
                     {
                       label: "Most recent",
-                      value: "Most Recent",
+                      value: "MostRecent",
                       selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
                     {
                       label: "Most popular",
-                      value: "Most popular",
+                      value: "MostPopular",
                       selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
@@ -329,19 +353,19 @@ class Main extends Component {
                 more platforms in the left panel.
               </h3>
             ) : (
-              this.state.mentions.map((mention, index) => {
-                return (
-                  <Grid item key={index} className={classes.mention}>
-                    <Mention
-                      image={mention.image}
-                      title={mention.title}
-                      platform={mention.platform}
-                      content={mention.content}
-                    />
-                  </Grid>
-                );
-              })
-            )}
+                this.state.mentions.map((mention, index) => {
+                  return (
+                    <Grid item key={index} className={classes.mention}>
+                      <Mention
+                        image={mention.image}
+                        title={mention.title}
+                        platform={mention.platform}
+                        content={mention.content}
+                      />
+                    </Grid>
+                  );
+                })
+              )}
           </Grid>
         </Grid>
       </div>
