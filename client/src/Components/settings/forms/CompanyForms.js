@@ -5,7 +5,7 @@ import AddCompanyForm from "./AddCompanyForm";
 import UserCompany from "./UserCompany";
 import { SettingsContext } from "../../../utils/settings-context";
 
-const CompanyForms = ({ classes, removeCompany }) => {
+const CompanyForms = ({ classes }) => {
   const { state } = useContext(SettingsContext);
   return (
     <Grid item sm={12} className={classes.formFieldContainer}>
@@ -16,12 +16,7 @@ const CompanyForms = ({ classes, removeCompany }) => {
       </Grid>
       <Grid className={classes.formsWrapper}>
         {state.companies.map((company) => (
-          <UserCompany
-            classes={classes}
-            name={company.name}
-            key={company.id}
-            removeCompany={removeCompany}
-          />
+          <UserCompany classes={classes} name={company.name} key={company.id} />
         ))}
         <AddCompanyForm classes={classes} />
       </Grid>

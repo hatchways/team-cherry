@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
+import axios from "axios";
 import { Grid, TextField } from "@material-ui/core";
 
+import { SettingsContext } from "../../../utils/settings-context";
 import FormButton from "./FormButton";
 
-const UserCompany = ({ classes, name, removeCompany }) => {
+const UserCompany = ({ classes, name }) => {
+  const { dispatch } = useContext(SettingsContext);
+
+  const removeCompanyFromUser = async (companyName) => {
+    await axios.delete("/api/company", { data: { name: companyName } });
+    dispatch({ type: "remove_company", payload: companyName });
+  };
+
   return (
     <Grid className={classes.inputWrapper}>
       <TextField
@@ -19,7 +28,7 @@ const UserCompany = ({ classes, name, removeCompany }) => {
             <FormButton
               label="Remove"
               color="secondary"
-              onClick={() => removeCompany(name)}
+              onClick={() => removeCompanyFromUser(name)}
               classes={classes}
             />
           ),

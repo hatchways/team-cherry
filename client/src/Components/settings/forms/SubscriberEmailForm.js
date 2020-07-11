@@ -1,9 +1,22 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { Grid, InputLabel, TextField } from "@material-ui/core";
-import FormButton from "../forms/FormButton";
 
-const SubscriberEmailForm = ({ classes, user, updateSubEmail }) => {
+import FormButton from "../forms/FormButton";
+import { getUser, storeUser } from "../../../utils/localStorage";
+
+const SubscriberEmailForm = ({ classes }) => {
+  const [user, setUser] = useState(getUser());
   const [input, setInput] = useState(user.subscriberEmail);
+
+  const updateSubscriberEmail = async (email) => {
+    await axios.put("/api/users/subscribe-mail/update", {
+      subscriberEmail: email,
+    });
+    // update user object on client
+    storeUser({ ...user, subscriberEmail: email });
+  };
+
   return (
     <>
       <Grid item sm={12} className={classes.formFieldContainer}>
@@ -28,7 +41,7 @@ const SubscriberEmailForm = ({ classes, user, updateSubEmail }) => {
         classes={classes}
         label="Save"
         color="primary"
-        onClick={() => updateSubEmail(input)}
+        onClick={() => updateSubscriberEmail(input)}
       />
     </>
   );
