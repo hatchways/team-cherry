@@ -5,6 +5,7 @@ const mentionsCache = new NodeCache();
 
 const requiresAuth = require("./middleware/requiresAuth");
 const { Mention, User } = require("../models");
+const { tryToGetFromCache } = require("./util");
 
 router.get("/", requiresAuth, async (req, res) => {
   let { keywords, platforms, page } = req.query;
@@ -12,21 +13,21 @@ router.get("/", requiresAuth, async (req, res) => {
     platforms = [];
   }
   const searchQuery = `%${keywords}%`;
-  const user = await User.findByPk(req.user.id);
-
   page = parseInt(page) || 1;
 
+  const user = await User.findByPk(req.user.id);
   const companies = await user.getCompanies();
 
-  // the other way is to just grab all the mentions, sort by date and return based on an array slice(mentions.slice(offset - pageSize, offset))
-  // this could be expensive however as it would be reperforming the same query on every load. could be solved by using a backend cache however(npm node-cache)
-  let output = mentionsCache.get("mentions");
+  let cacheKey = "keywords=" + keywords + "&platforms=" + platforms.join(",");
+  let companyNames = companies.map((c) => c.name);
+  let output = tryToGetFromCache(mentionsCache, cacheKey, companyNames);
+
   if (!output) {
+    console.log("cache reset");
     output = [];
     for (let company of companies) {
       let mentions = await company.getMentions({
         where: {
-          // note: passing the array directly into `where` will implicitly use [Op.in]
           // is the mention from one of the toggled platforms?
           platform: platforms,
 
@@ -48,7 +49,9 @@ router.get("/", requiresAuth, async (req, res) => {
 
       output = output.concat(mentions);
     }
-    mentionsCache.set("mentions", output);
+    mentionsCache.set(cacheKey, output);
+    mentionsCache.set("key", cacheKey);
+    mentionsCache.set("companies", companyNames);
   }
 
   const pageSize = 5; // you can change this value

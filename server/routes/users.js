@@ -7,7 +7,7 @@ const {
 } = require("./middleware/requiresFormValidation");
 const { User, Company } = require("../models");
 const cookieConfig = require("../cookie-config");
-const { createErrorResponse } = require("./middleware/util");
+const { createErrorResponse } = require("./util");
 
 router.post("/register", validateRegister, async (req, res) => {
   const existingUser = await User.findOne({ where: { email: req.body.email } });
