@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   AppBar,
@@ -11,6 +11,8 @@ import SearchIcon from "@material-ui/icons/Search";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/Input";
 import { getUser } from "../utils/localStorage";
+import { DebounceInput } from "react-debounce-input";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
   fontColorForMentions: {
@@ -61,6 +63,22 @@ const useStyles = makeStyles(() => ({
 
 export default function Header() {
   const classes = useStyles();
+  const history = useHistory();
+  const [keywords, setKeywords] = useState("");
+
+  useEffect(() => {
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    let keywords = currentUrlParams.get("keywords");
+    setKeywords(keywords);
+  }, []);
+
+  const handleSearchBar = async (event) => {
+    // Set keywords into URL params.
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    currentUrlParams.set("keywords", event.target.value);
+    history.push(window.location.pathname + "?" + currentUrlParams.toString());
+  };
+
   return (
     <div>
       <AppBar className={classes.AppBar}>
@@ -76,9 +94,13 @@ export default function Header() {
             {getUser() ? (
               <Grid item xs={6} className={classes.SearchBarGrid}>
                 <div className={classes.SeacrhBarDiv}>
-                  <TextField
-                    disableUnderline={true}
+                  <DebounceInput
+                    element={TextField}
+                    debounceTimeout={300}
                     className={classes.TextField}
+                    disableUnderline={true}
+                    onChange={handleSearchBar}
+                    value={keywords}
                   />
                   <SearchIcon className={classes.SearchIcon} />
                 </div>

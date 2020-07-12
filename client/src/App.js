@@ -11,12 +11,14 @@ import { loginInterceptor, AxiosInterceptor } from "./utils/authAxios";
 import Snackbar from "@material-ui/core/Snackbar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import "./App.css";
+import { SearchTerm } from "./utils/SearchContext";
 // import "fontsource-roboto";
 
 function App() {
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [protectedRoutes, unhideProtectedRoutes] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   //adds an interceptor to check requests. If a request is sent with a 401, user is erased and send back to login
   const unauthorized = () => {
@@ -48,18 +50,20 @@ function App() {
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
-        <Header />
-        <Switch>
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/signup" component={Signup} />
-          {/* routes should be inaccessible after here if token doesn't exist*/}
-          {protectedRoutes === "unhide" ? (
+        <SearchTerm.Provider value={{ searchTerm, setSearchTerm }}>
+          <Header />
+          <Switch>
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/signup" component={Signup} />
+            {/* routes should be inaccessible after here if token doesn't exist*/}
             <Route exact path="/main" component={Main} />
-          ) : (
-            <Redirect to="/signup" />
-          )}
-          <Route render={() => <Redirect to="/login" />} />
-        </Switch>
+            {/* {protectedRoutes === "unhide" ? (
+            ) : (
+              <Redirect to="/signup" />
+            )} */}
+            <Route render={() => <Redirect to="/login" />} />
+          </Switch>
+        </SearchTerm.Provider>
       </BrowserRouter>
       <Snackbar
         anchorOrigin={{
