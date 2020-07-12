@@ -15,8 +15,6 @@ import {
   Grid,
   ListItemSecondaryAction,
 } from "@material-ui/core/";
-import { uuid } from "uuidv4";
-import Header from "../components/Header";
 
 const useStyles = (theme) => ({
   RootGridContainer: {
@@ -128,6 +126,8 @@ class Main extends Component {
     }
 
     let keywords = currentUrlParams.get("keywords");
+    let sortByState = currentUrlParams.get("sortBy");
+
     let allPlatforms = ["Reddit", "Twitter", "Facebook"];
     let switchStates = [];
     allPlatforms.forEach((item) => {
@@ -140,7 +140,7 @@ class Main extends Component {
       keywords: keywords,
       mentions: [],
       switchStates: switchStates,
-      sortByState: "",
+      sortByState: sortByState,
     };
   }
 
@@ -156,6 +156,12 @@ class Main extends Component {
         },
       });
 
+      if (this.state.sortByState == "MostRecent") {
+        this.sortByDate(data.mentions);
+      } else {
+        this.sortByPopularity(data.mentions);
+      }
+
       this.setState({
         mentions: data.mentions,
         keywords: keywords,
@@ -170,14 +176,15 @@ class Main extends Component {
         keywords: this.state.keywords,
       },
     });
+
+    if (this.state.sortByState == "MostRecent") {
+      this.sortByDate(res.data.mentions);
+    } else {
+      this.sortByPopularity(res.data.mentions);
+    }
+
     this.setState({
       mentions: res.data.mentions,
-      sortByState: "MostRecent",
-    });
-    let currentUrlParams = new URLSearchParams(this.props.location.search);
-    currentUrlParams.set("sortBy", this.state.sortByState);
-    this.props.history.push({
-      search: currentUrlParams.toString(),
     });
   }
 
@@ -185,10 +192,6 @@ class Main extends Component {
     mentions.sort((a, b) => {
       return b.popularity - a.popularity;
     });
-    this.setState({
-      sortByState: "MostPopular",
-    });
-    return mentions;
   }
 
   sortByDate(mentions) {
@@ -199,37 +202,31 @@ class Main extends Component {
         return -1;
       }
     });
-    this.setState({
-      sortByState: "MostRecent",
-    });
-    return mentions;
   }
 
-  sortToggle(event) {
+  sortToggle(value) {
+    console.log(value);
     let sortedMentions = this.state.mentions;
-    if (event === "MostRecent") {
-      sortedMentions = this.sortByDate(this.state.mentions);
+    if (value === "MostRecent") {
+      this.sortByDate(sortedMentions);
     } else {
-      sortedMentions = this.sortByPopularity(this.state.mentions);
+      this.sortByPopularity(sortedMentions);
     }
     this.setState({
       mentions: sortedMentions,
     });
+
+    this.setState({
+      sortByState: value,
+    });
+
     let currentUrlParams = new URLSearchParams(this.props.location.search);
-    currentUrlParams.set("sortBy", this.state.sortByState);
+    currentUrlParams.set("sortBy", value);
     this.props.history.push({
       search: currentUrlParams.toString(),
     });
   }
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.sortByState != this.state.sortByState) {
-      let currentUrlParams = new URLSearchParams(this.props.location.search);
-      currentUrlParams.set("sortBy", this.state.sortByState);
-      this.props.history.push({
-        search: currentUrlParams.toString(),
-      });
-    }
-  }
+
   async handlePlatformToggle(value) {
     let newlySelectedPlatform = value.target.name;
     let checked = value.target.checked;
@@ -252,16 +249,14 @@ class Main extends Component {
 
       const newMentions = this.state.mentions.concat(data.mentions);
 
-      let sortedMentions = [];
-
       if (this.state.sortByState == "MostRecent") {
-        sortedMentions = this.sortByDate(newMentions);
+        this.sortByDate(newMentions);
       } else {
-        sortedMentions = this.sortByPopularity(newMentions);
+        this.sortByPopularity(newMentions);
       }
 
       await this.setState({
-        mentions: sortedMentions,
+        mentions: newMentions,
       });
     } else {
       let index = this.state.platformSelected.indexOf(newlySelectedPlatform);
@@ -357,11 +352,14 @@ class Main extends Component {
               <h1>My mentions</h1>
               <div className={classes.SwitchSelector}>
                 <SwitchSelector
-                  onChange={(event) => {
-                    this.sortToggle(event);
-                    this.setState({
-                      sortByState: event,
-                    });
+                  initialSelectedIndex={
+                    !this.state.sortByState ||
+                    this.state.sortByState === "MostRecent"
+                      ? 0
+                      : 1
+                  }
+                  onChange={(value) => {
+                    this.sortToggle(value);
                   }}
                   options={[
                     {
