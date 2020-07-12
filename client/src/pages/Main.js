@@ -1,4 +1,4 @@
-import React, { Component, ThemeContext } from "react";
+import React, { Component } from "react";
 
 import Mention from "../components/Mention";
 import axios from "axios";
@@ -16,7 +16,6 @@ import {
   Grid,
   ListItemSecondaryAction,
 } from "@material-ui/core/";
-import { SearchTerm } from '../utils/SearchContext'
 
 const useStyles = (theme) => ({
   rightPart: {
@@ -118,10 +117,13 @@ class Main extends Component {
     if (selectedPlatformsInURL) {
       splitSelectedPlatforms = selectedPlatformsInURL.split(",");
     }
+
+    let keywords = currentUrlParams.get("keywords");
+
     this.state = {
       allPlatforms: ["Reddit", "Twitter", "Facebook"],
       platformSelected: [...splitSelectedPlatforms],
-      searchTerm: '',
+      keywords: keywords,
       mentions: [
         {
           title: "PalPay invested $500 million in Company ABC",
@@ -140,7 +142,7 @@ class Main extends Component {
           image: null,
         },
         {
-          title: "PalPay invested $500 million in Company ABC",
+          title: "PalPay invested $500 billion in Company ABC",
           platform: "Twitter",
           content:
             "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
@@ -156,7 +158,7 @@ class Main extends Component {
           image: "",
         },
         {
-          title: "PalPay invested $500 million in Company ABC",
+          title: "PalPay invested $500 thousand in Company ABC",
           platform: "Facebook",
           content:
             "Heat oil in a (14- to 16-inch) paella pan or a large, deep" +
@@ -222,10 +224,24 @@ class Main extends Component {
       ],
     };
   }
-  static contextType = SearchTerm
+
+  componentWillUpdate() {
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    let keywords = currentUrlParams.get("keywords");
+
+    if (this.state.keywords !== keywords) {
+      let filteredMentions = this.state.mentions.filter((mention) => {
+        return mention.title.includes(keywords);
+      });
+
+      this.setState({
+        mentions: filteredMentions,
+        keywords: keywords,
+      });
+    }
+  }
 
   render() {
-    console.log(this.context.searchTerm)//this line will print search term
     const { classes } = this.props;
 
     const handlePlatformToggle = async (value) => {
@@ -243,17 +259,12 @@ class Main extends Component {
       }
 
       // Add the selected platforms in to the query params.
-      let currentUrlParams = new URLSearchParams();
+      let currentUrlParams = new URLSearchParams(window.location.search);
       currentUrlParams.set("platforms", this.state.platformSelected);
       this.props.history.push(
         window.location.pathname + "?" + currentUrlParams.toString()
       );
     };
-    if (this.context.searchTerm.length != 0) {
-      this.props.history.push(
-        window.location.pathname + '?' + 'keyword=' + this.context.searchTerm
-      )
-    }
 
     return (
       <div>
@@ -347,19 +358,19 @@ class Main extends Component {
                 more platforms in the left panel.
               </h3>
             ) : (
-                this.state.mentions.map((mention, index) => {
-                  return (
-                    <Grid item key={index}>
-                      <Mention
-                        image={mention.image}
-                        title={mention.title}
-                        platform={mention.platform}
-                        content={mention.content}
-                      />
-                    </Grid>
-                  );
-                })
-              )}
+              this.state.mentions.map((mention, index) => {
+                return (
+                  <Grid item key={index}>
+                    <Mention
+                      image={mention.image}
+                      title={mention.title}
+                      platform={mention.platform}
+                      content={mention.content}
+                    />
+                  </Grid>
+                );
+              })
+            )}
           </Grid>
         </Grid>
       </div>

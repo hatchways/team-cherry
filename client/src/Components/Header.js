@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   AppBar,
@@ -13,7 +13,6 @@ import TextField from "@material-ui/core/Input";
 import { getUser } from "../utils/localStorage";
 import { DebounceInput } from "react-debounce-input";
 import { useHistory } from "react-router-dom";
-import { SearchTerm } from '../utils/SearchContext'
 
 const useStyles = makeStyles(() => ({
   fontColorForMentions: {
@@ -64,22 +63,20 @@ const useStyles = makeStyles(() => ({
 
 export default function Header() {
   const classes = useStyles();
-
-  const [keywords, setKeywords] = useState("");
   const history = useHistory();
+  const [keywords, setKeywords] = useState("");
 
-  const { setSearchTerm } = useContext(SearchTerm)
-
+  useEffect(() => {
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    let keywords = currentUrlParams.get("keywords");
+    setKeywords(keywords);
+  }, []);
 
   const handleSearchBar = async (event) => {
-    setKeywords(event.target.value);
-    setSearchTerm(event.target.value)
-
     // Set keywords into URL params.
-    // let currentUrlParams = new URLSearchParams();
-    // currentUrlParams.set("keywords", event.target.value);
-    // history.push(window.location.pathname + "?" + currentUrlParams.toString());
-
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    currentUrlParams.set("keywords", event.target.value);
+    history.push(window.location.pathname + "?" + currentUrlParams.toString());
   };
 
   return (
@@ -103,15 +100,16 @@ export default function Header() {
                     className={classes.TextField}
                     disableUnderline={true}
                     onChange={handleSearchBar}
+                    value={keywords}
                   />
                   <SearchIcon className={classes.SearchIcon} />
                 </div>
               </Grid>
             ) : (
-                <Grid>
-                  <div></div>
-                </Grid>
-              )}
+              <Grid>
+                <div></div>
+              </Grid>
+            )}
 
             <Grid item xs={2} className={classes.SettingsIcon}>
               <IconButton color="inherit">
