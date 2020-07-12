@@ -7,7 +7,7 @@ async function twitterCrawler(companyName) {
     bearer_token: process.env.Twitter_bearer_token,
   });
 
-  let tweets = await client.get("tweets/search/30day/dev", {
+  let tweets = await client.get("tweets/search/30day/hatchways", {
     query: companyName,
   });
 

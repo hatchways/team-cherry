@@ -81,7 +81,7 @@ export default function Header() {
 
   return (
     <div>
-      <AppBar position="static" className={classes.AppBar}>
+      <AppBar className={classes.AppBar}>
         <Toolbar>
           <Grid container className={classes.spacing} spacing={0}>
             <Grid item xs={4} className={classes.LogoGrid}>
