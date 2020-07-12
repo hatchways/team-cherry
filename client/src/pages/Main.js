@@ -140,6 +140,7 @@ class Main extends Component {
       keywords: keywords,
       mentions: [],
       switchStates: switchStates,
+      sortByState: "",
     };
   }
 
@@ -171,12 +172,21 @@ class Main extends Component {
     });
     this.setState({
       mentions: res.data.mentions,
+      sortByState: "MostRecent",
+    });
+    let currentUrlParams = new URLSearchParams(this.props.location.search);
+    currentUrlParams.set("sortBy", this.state.sortByState);
+    this.props.history.push({
+      search: currentUrlParams.toString(),
     });
   }
 
   sortByPopularity(mentions) {
     mentions.sort((a, b) => {
       return b.popularity - a.popularity;
+    });
+    this.setState({
+      sortByState: "MostPopular",
     });
     return mentions;
   }
@@ -189,12 +199,15 @@ class Main extends Component {
         return -1;
       }
     });
+    this.setState({
+      sortByState: "MostRecent",
+    });
     return mentions;
   }
 
   sortToggle(event) {
     let sortedMentions = this.state.mentions;
-    if (event === "Most Recent") {
+    if (event === "MostRecent") {
       sortedMentions = this.sortByDate(this.state.mentions);
     } else {
       sortedMentions = this.sortByPopularity(this.state.mentions);
@@ -202,8 +215,21 @@ class Main extends Component {
     this.setState({
       mentions: sortedMentions,
     });
+    let currentUrlParams = new URLSearchParams(this.props.location.search);
+    currentUrlParams.set("sortBy", this.state.sortByState);
+    this.props.history.push({
+      search: currentUrlParams.toString(),
+    });
   }
-
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.sortByState != this.state.sortByState) {
+      let currentUrlParams = new URLSearchParams(this.props.location.search);
+      currentUrlParams.set("sortBy", this.state.sortByState);
+      this.props.history.push({
+        search: currentUrlParams.toString(),
+      });
+    }
+  }
   async handlePlatformToggle(value) {
     let newlySelectedPlatform = value.target.name;
     let checked = value.target.checked;
@@ -333,17 +359,20 @@ class Main extends Component {
                 <SwitchSelector
                   onChange={(event) => {
                     this.sortToggle(event);
+                    this.setState({
+                      sortByState: event,
+                    });
                   }}
                   options={[
                     {
                       label: "Most recent",
-                      value: "Most Recent",
+                      value: "MostRecent",
                       selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
                     {
                       label: "Most popular",
-                      value: "Most popular",
+                      value: "MostPopular",
                       selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
