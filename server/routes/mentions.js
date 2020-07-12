@@ -7,9 +7,14 @@ const { Mention, User } = require("../models");
 router.get("/", requiresAuth, async (req, res) => {
   let output = [];
   let { keywords, platforms } = req.query;
+
   if (!platforms) {
     platforms = [];
   }
+  if (!keywords) {
+    keywords = "";
+  }
+
   const searchQuery = `%${keywords}%`;
   const user = await User.findByPk(req.user.id);
 

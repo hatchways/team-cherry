@@ -183,7 +183,11 @@ class Main extends Component {
 
   sortByDate(mentions) {
     mentions.sort((a, b) => {
-      return b.date - a.date;
+      if (new Date(b.date) > new Date(a.date)) {
+        return 1;
+      } else {
+        return -1;
+      }
     });
     return mentions;
   }
@@ -222,7 +226,14 @@ class Main extends Component {
 
       const newMentions = this.state.mentions.concat(data.mentions);
 
-      let sortedMentions = this.sortByDate(newMentions);
+      let sortedMentions = [];
+
+      if (this.state.sortByState == "MostRecent") {
+        sortedMentions = this.sortByDate(newMentions);
+      } else {
+        sortedMentions = this.sortByPopularity(newMentions);
+      }
+
       await this.setState({
         mentions: sortedMentions,
       });
@@ -357,6 +368,8 @@ class Main extends Component {
                       title={mention.title}
                       platform={mention.platform}
                       content={mention.content}
+                      popularity={mention.popularity}
+                      date={mention.date}
                     />
                   </Grid>
                 );
