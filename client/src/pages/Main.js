@@ -15,8 +15,6 @@ import {
   Grid,
   ListItemSecondaryAction,
 } from "@material-ui/core/";
-import { uuid } from "uuidv4";
-import Header from "../components/Header";
 
 const useStyles = (theme) => ({
   RootGridContainer: {
@@ -127,6 +125,9 @@ class Main extends Component {
       splitSelectedPlatforms = selectedPlatformsInURL.split(",");
     }
 
+    let keywords = currentUrlParams.get("keywords");
+    let sortByState = currentUrlParams.get("sortBy");
+
     let allPlatforms = ["Reddit", "Twitter", "Facebook"];
     let switchStates = [];
     allPlatforms.forEach((item) => {
@@ -136,18 +137,52 @@ class Main extends Component {
     this.state = {
       allPlatforms: allPlatforms,
       platformSelected: [...splitSelectedPlatforms],
+      keywords: keywords,
       mentions: [],
       switchStates: switchStates,
+      sortByState: sortByState,
     };
+  }
+
+  async componentWillUpdate() {
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    let keywords = currentUrlParams.get("keywords");
+
+    if (this.state.keywords !== keywords) {
+      let { data } = await axios.get("/api/mentions", {
+        params: {
+          platforms: this.state.platformSelected,
+          keywords: keywords,
+        },
+      });
+
+      if (this.state.sortByState == "MostRecent") {
+        this.sortByDate(data.mentions);
+      } else {
+        this.sortByPopularity(data.mentions);
+      }
+
+      this.setState({
+        mentions: data.mentions,
+        keywords: keywords,
+      });
+    }
   }
 
   async componentDidMount() {
     let res = await axios.get("/api/mentions", {
       params: {
         platforms: this.state.platformSelected,
-        keywords: "",
+        keywords: this.state.keywords,
       },
     });
+
+    if (this.state.sortByState == "MostRecent") {
+      this.sortByDate(res.data.mentions);
+    } else {
+      this.sortByPopularity(res.data.mentions);
+    }
+
     this.setState({
       mentions: res.data.mentions,
     });
@@ -157,25 +192,38 @@ class Main extends Component {
     mentions.sort((a, b) => {
       return b.popularity - a.popularity;
     });
-    return mentions;
   }
 
   sortByDate(mentions) {
     mentions.sort((a, b) => {
-      return b.date - a.date;
+      if (new Date(b.date) > new Date(a.date)) {
+        return 1;
+      } else {
+        return -1;
+      }
     });
-    return mentions;
   }
 
-  sortToggle(event) {
+  sortToggle(value) {
+    console.log(value);
     let sortedMentions = this.state.mentions;
-    if (event === "Most Recent") {
-      sortedMentions = this.sortByDate(this.state.mentions);
+    if (value === "MostRecent") {
+      this.sortByDate(sortedMentions);
     } else {
-      sortedMentions = this.sortByPopularity(this.state.mentions);
+      this.sortByPopularity(sortedMentions);
     }
     this.setState({
       mentions: sortedMentions,
+    });
+
+    this.setState({
+      sortByState: value,
+    });
+
+    let currentUrlParams = new URLSearchParams(this.props.location.search);
+    currentUrlParams.set("sortBy", value);
+    this.props.history.push({
+      search: currentUrlParams.toString(),
     });
   }
 
@@ -195,15 +243,20 @@ class Main extends Component {
       let { data } = await axios.get("/api/mentions/", {
         params: {
           platforms: [newlySelectedPlatform],
-          keywords: "",
+          keywords: this.state.keywords,
         },
       });
 
       const newMentions = this.state.mentions.concat(data.mentions);
 
-      let sortedMentions = this.sortByDate(newMentions);
+      if (this.state.sortByState == "MostRecent") {
+        this.sortByDate(newMentions);
+      } else {
+        this.sortByPopularity(newMentions);
+      }
+
       await this.setState({
-        mentions: sortedMentions,
+        mentions: newMentions,
       });
     } else {
       let index = this.state.platformSelected.indexOf(newlySelectedPlatform);
@@ -225,7 +278,7 @@ class Main extends Component {
     }
 
     // Add the selected platforms in to the query params.
-    let currentUrlParams = new URLSearchParams();
+    let currentUrlParams = new URLSearchParams(window.location.search);
     currentUrlParams.set("platforms", this.state.platformSelected);
     this.props.history.push(
       window.location.pathname + "?" + currentUrlParams.toString()
@@ -237,7 +290,6 @@ class Main extends Component {
 
     return (
       <div>
-        <Header />
         <Grid container>
           <Grid item xs={3} container className={classes.leftPanelGrid}>
             <List dense className={classes.leftPanelList}>
@@ -300,19 +352,25 @@ class Main extends Component {
               <h1>My mentions</h1>
               <div className={classes.SwitchSelector}>
                 <SwitchSelector
-                  onChange={(event) => {
-                    this.sortToggle(event);
+                  initialSelectedIndex={
+                    !this.state.sortByState ||
+                    this.state.sortByState === "MostRecent"
+                      ? 0
+                      : 1
+                  }
+                  onChange={(value) => {
+                    this.sortToggle(value);
                   }}
                   options={[
                     {
                       label: "Most recent",
-                      value: "Most Recent",
+                      value: "MostRecent",
                       selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
                     {
                       label: "Most popular",
-                      value: "Most popular",
+                      value: "MostPopular",
                       selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
@@ -337,6 +395,8 @@ class Main extends Component {
                       title={mention.title}
                       platform={mention.platform}
                       content={mention.content}
+                      popularity={mention.popularity}
+                      date={mention.date}
                     />
                   </Grid>
                 );
