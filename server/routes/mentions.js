@@ -49,15 +49,18 @@ router.get("/", requiresAuth, async (req, res) => {
 
       output = output.concat(mentions);
     }
+    // TODO sort output based on date
+    output.sort((a, b) => Date.parse(a.date) + Date.parse(b.date));
     mentionsCache.set(cacheKey, output);
     mentionsCache.set("key", cacheKey);
     mentionsCache.set("companies", companyNames);
   }
 
+  console.log(output.map((c) => c.date));
   const pageSize = 5; // you can change this value
   const offset = page * pageSize;
   const chunk = output.slice(offset - pageSize, offset);
-  const hasMore = offset < output.length;
+  const hasMore = offset <= output.length;
   const count = chunk.length;
 
   res.json({ page, hasMore, count, mentions: chunk });
