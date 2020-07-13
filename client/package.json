@@ -8,6 +8,7 @@
     "axios": "^0.19.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-infinite-scroll": "^0.1.5",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.0.1",
     "react-switch": "^5.0.1",
