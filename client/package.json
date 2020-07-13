@@ -7,6 +7,7 @@
     "@material-ui/icons": "^4.9.1",
     "axios": "^0.19.2",
     "react": "^16.13.1",
+    "react-debounce-input": "^3.2.2",
     "react-dom": "^16.13.1",
     "react-infinite-scroll": "^0.1.5",
     "react-router-dom": "^5.2.0",

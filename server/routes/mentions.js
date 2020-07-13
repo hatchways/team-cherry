@@ -12,6 +12,10 @@ router.get("/", requiresAuth, async (req, res) => {
   if (!platforms) {
     platforms = [];
   }
+  if (!keywords) {
+    keywords = "";
+  }
+
   const searchQuery = `%${keywords}%`;
   page = parseInt(page) || 1;
 
