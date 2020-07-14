@@ -31,17 +31,15 @@ function App() {
   const userLogin = () => {
     unhideProtectedRoutes("unhide");
   };
-  const unsetProtectedRoutes = () => {
-    unhideProtectedRoutes("hide");
-  };
 
-  useEffect(() => {
+  const isAuthorized = () => {
     if (getUser()) {
-      unhideProtectedRoutes("unhide");
+      return true
     }
-  }, []);
+    else return false
+  }
   //this interceptor catches 401s
-  AxiosInterceptor(unauthorized, unsetProtectedRoutes);
+  AxiosInterceptor(unauthorized, isAuthorized);
 
   //this interceptor stores user on storage, then unhides protected routes.
   loginInterceptor(userLogin);
@@ -56,11 +54,11 @@ function App() {
             <Route exact path="/login" component={Login} />
             <Route exact path="/signup" component={Signup} />
             {/* routes should be inaccessible after here if token doesn't exist*/}
-            <Route exact path="/main" component={Main} />
-            {/* {protectedRoutes === "unhide" ? (
+            {isAuthorized() ? (
+              <Route exact path="/main" component={Main} />
             ) : (
-              <Redirect to="/signup" />
-            )} */}
+                <Redirect to="/signup" />
+              )}
             <Route render={() => <Redirect to="/login" />} />
           </Switch>
         </SearchTerm.Provider>
