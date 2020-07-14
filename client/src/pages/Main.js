@@ -244,6 +244,8 @@ class Main extends Component {
           ...this.state.platformSelected,
           newlySelectedPlatform,
         ],
+        hasMore: true,
+        page: 1,
       });
 
       let { data } = await axios.get("/api/mentions/", {
@@ -263,6 +265,8 @@ class Main extends Component {
 
       await this.setState({
         mentions: newMentions,
+        hasMore: true,
+        page: 1,
       });
     } else {
       let index = this.state.platformSelected.indexOf(newlySelectedPlatform);
@@ -272,6 +276,8 @@ class Main extends Component {
       }
       await this.setState({
         platformSelected: temp,
+        hasMore: true,
+        page: 1,
       });
 
       let filteredMentions = this.state.mentions.filter(
@@ -280,6 +286,8 @@ class Main extends Component {
 
       await this.setState({
         mentions: filteredMentions,
+        hasMore: true,
+        page: 1,
       });
     }
 
@@ -301,11 +309,17 @@ class Main extends Component {
     });
 
     const { hasMore, page, mentions } = res.data;
-    this.setState({
-      hasMore,
-      page,
-      mentions: [...this.state.mentions, ...mentions],
-    });
+    if (hasMore) {
+      this.setState({
+        hasMore,
+        page,
+        mentions: [...this.state.mentions, ...mentions],
+      });
+    } else {
+      this.setState({
+        hasMore: false,
+      });
+    }
   }
 
   render() {
@@ -413,12 +427,13 @@ class Main extends Component {
                 pageStart={0}
                 loadMore={this.loadMoreMentions.bind(this)}
                 hasMore={this.state.hasMore}
-                loader={<CircularProgress />}
+                loader={<CircularProgress key={0} />}
               >
                 {this.state.mentions.map((mention, index) => {
                   return (
                     <Grid item key={index} className={classes.mention}>
                       <Mention
+                        key={mention.id}
                         image={mention.image}
                         title={mention.title}
                         platform={mention.platform}
