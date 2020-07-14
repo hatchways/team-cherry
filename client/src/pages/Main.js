@@ -15,6 +15,7 @@ import {
   Grid,
   ListItemSecondaryAction,
   CircularProgress,
+  LinearProgress,
 } from "@material-ui/core/";
 import InfiniteScroll from "react-infinite-scroller";
 import { uuid } from "uuidv4";
@@ -244,8 +245,6 @@ class Main extends Component {
           ...this.state.platformSelected,
           newlySelectedPlatform,
         ],
-        hasMore: true,
-        page: 1,
       });
 
       let { data } = await axios.get("/api/mentions/", {
@@ -255,7 +254,9 @@ class Main extends Component {
         },
       });
 
-      const newMentions = this.state.mentions.concat(data.mentions);
+      // commented out might be causing a bug with scroller that refetches mentions already being displayed
+      // const newMentions = this.state.mentions.concat(data.mentions);
+      const newMentions = data.mentions;
 
       if (this.state.sortByState == "MostRecent") {
         this.sortByDate(newMentions);
@@ -276,8 +277,6 @@ class Main extends Component {
       }
       await this.setState({
         platformSelected: temp,
-        hasMore: true,
-        page: 1,
       });
 
       let filteredMentions = this.state.mentions.filter(
@@ -286,8 +285,6 @@ class Main extends Component {
 
       await this.setState({
         mentions: filteredMentions,
-        hasMore: true,
-        page: 1,
       });
     }
 
@@ -427,7 +424,7 @@ class Main extends Component {
                 pageStart={0}
                 loadMore={this.loadMoreMentions.bind(this)}
                 hasMore={this.state.hasMore}
-                loader={<CircularProgress key={0} />}
+                loader={<LinearProgress key={0} />}
               >
                 {this.state.mentions.map((mention, index) => {
                   return (
