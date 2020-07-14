@@ -60,7 +60,7 @@ router.get("/", requiresAuth, async (req, res) => {
     mentionsCache.set("companies", companyNames);
   }
 
-  console.log(output.map((c) => c.date));
+  // console.log(output.map((c) => c.date));
   const pageSize = 5; // you can change this value
   const offset = page * pageSize;
   const chunk = output.slice(offset - pageSize, offset);

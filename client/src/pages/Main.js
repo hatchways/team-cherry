@@ -16,7 +16,7 @@ import {
   ListItemSecondaryAction,
   CircularProgress,
 } from "@material-ui/core/";
-import InfiniteScroll from "react-infinite-scroll";
+import InfiniteScroll from "react-infinite-scroller";
 import { uuid } from "uuidv4";
 
 const useStyles = (theme) => ({
@@ -142,6 +142,8 @@ class Main extends Component {
       platformSelected: [...splitSelectedPlatforms],
       keywords: keywords,
       mentions: [],
+      hasMore: true || false,
+      page: 1,
       switchStates: switchStates,
       sortByState: sortByState,
     };
@@ -177,6 +179,7 @@ class Main extends Component {
       params: {
         platforms: this.state.platformSelected,
         keywords: this.state.keywords,
+        page: this.state.page,
       },
     });
 
@@ -288,6 +291,23 @@ class Main extends Component {
     );
   }
 
+  async loadMoreMentions() {
+    let res = await axios.get("/api/mentions", {
+      params: {
+        platforms: this.state.platformSelected,
+        keywords: this.state.keywords,
+        page: this.state.page + 1,
+      },
+    });
+
+    const { hasMore, page, mentions } = res.data;
+    this.setState({
+      hasMore,
+      page,
+      mentions: [...this.state.mentions, ...mentions],
+    });
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -383,27 +403,33 @@ class Main extends Component {
                 />
               </div>
             </Grid>
-
             {this.state.mentions.length === 0 ? (
               <h3 className={classes.instruction}>
                 Please enter a company name in the search bar, and toggle one or
                 more platforms in the left panel.
               </h3>
             ) : (
-              this.state.mentions.map((mention, index) => {
-                return (
-                  <Grid item key={index} className={classes.mention}>
-                    <Mention
-                      image={mention.image}
-                      title={mention.title}
-                      platform={mention.platform}
-                      content={mention.content}
-                      popularity={mention.popularity}
-                      date={mention.date}
-                    />
-                  </Grid>
-                );
-              })
+              <InfiniteScroll
+                pageStart={0}
+                loadMore={this.loadMoreMentions.bind(this)}
+                hasMore={this.state.hasMore}
+                loader={<CircularProgress />}
+              >
+                {this.state.mentions.map((mention, index) => {
+                  return (
+                    <Grid item key={index} className={classes.mention}>
+                      <Mention
+                        image={mention.image}
+                        title={mention.title}
+                        platform={mention.platform}
+                        content={mention.content}
+                        popularity={mention.popularity}
+                        date={mention.date}
+                      />
+                    </Grid>
+                  );
+                })}
+              </InfiniteScroll>
             )}
           </Grid>
         </Grid>
