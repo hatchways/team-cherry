@@ -45,7 +45,10 @@ export default function Login(props) {
   }
   const login = async (event) => {
     //this could be for a redirect if there is already a user in localstorage
-
+    if (getUser()) {
+      const { history } = props;
+      history.push("/main");
+    }
     try {
       event.preventDefault();
       setEmailErr(false);
