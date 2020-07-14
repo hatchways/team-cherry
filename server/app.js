@@ -104,6 +104,7 @@ companyScraper.on('completed', async (job, result) => {
       where: { id: job.data.id }
     }],
   })
+  console.log(job.data.name, users)
 })
 
 weeklyMentions.on('completed', (job, result) => {
