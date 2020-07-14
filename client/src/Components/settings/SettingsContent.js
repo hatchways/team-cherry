@@ -11,7 +11,7 @@ import SecurityContentPanel from "./content-panels/SecurityContentPanel";
 const useStyles = makeStyles((theme) => ({
   content: {
     padding: "3%",
-    backgroundColor: "#d3f5f5",
+    // backgroundColor: "#d3f5f5",
     display: "flex",
     flexDirection: "column",
   },
@@ -22,7 +22,7 @@ const SettingsContent = ({ currentTabIndex }) => {
   const history = useHistory();
   return (
     <Grid item container xs={9} className={classes.content}>
-      <Grid xs={1}>
+      <Grid sm={1} style={{ whiteSpace: "nowrap" }}>
         <Button onClick={() => history.push("/main")}>
           <HomeIcon />
           <Typography>Go Back</Typography>

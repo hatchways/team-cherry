@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     height: "100%",
-    marginTop: "1%",
+    marginTop: "3%",
   },
 }));
 
