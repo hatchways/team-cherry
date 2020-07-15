@@ -53,8 +53,6 @@ router.get("/", requiresAuth, async (req, res) => {
     });
     output = output.concat(mentions);
   }
-  // TODO sort output based on date
-  // output.sort((a, b) => Date.parse(a.date) + Date.parse(b.date));
 
   const count = output.length;
   const hasMore = count ? true : false;
