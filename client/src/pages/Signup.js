@@ -9,7 +9,7 @@ import {
 import SubmitButton from "../components/SubmitButton";
 import CustomTextField from "../components/CustomTextField";
 import axios from "axios";
-import { getUser } from "../utils/localStorage";
+import { getUser, redirectPath, erasePath } from "../utils/localStorage";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -103,10 +103,10 @@ export default function Signup(props) {
               <Typography>Create an account</Typography>
             </React.Fragment>
           ) : (
-            <React.Fragment>
-              <Typography variant="h1">Welcome Back!</Typography>
-            </React.Fragment>
-          )}
+              <React.Fragment>
+                <Typography variant="h1">Welcome Back!</Typography>
+              </React.Fragment>
+            )}
           <form className={classes.form} onSubmit={createAccount} noValidate>
             <CustomTextField
               id="email"
@@ -131,8 +131,8 @@ export default function Signup(props) {
                 }}
               />
             ) : (
-              ""
-            )}
+                ""
+              )}
             <CustomTextField
               name="password"
               label="Password"

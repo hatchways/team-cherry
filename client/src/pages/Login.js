@@ -5,7 +5,7 @@ import Container from "@material-ui/core/Container";
 import SubmitButton from "../components/SubmitButton";
 import CustomTextField from "../components/CustomTextField";
 import axios from "axios";
-import { storeUser, getUser } from "../utils/localStorage";
+import { storeUser, getUser, erasePath, getPath } from "../utils/localStorage";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -62,7 +62,6 @@ export default function Login(props) {
         setpasswordErrMsg("Please enter a password with at least 7 characters");
       }
       if (emailErr || passwordErr) return;
-
       const res = await axios.post("api/users/login", {
         email: email,
         password: password,
@@ -72,16 +71,21 @@ export default function Login(props) {
         setEmailErrMsg("User doesn't exist");
         return;
       }
-      if ("Password does not match") {
+      if (res === "Password does not match") {
         setPasswordErr(true);
         setpasswordErrMsg("Password does not match");
         return;
       }
-
       storeUser(res.data.user);
-
+      const path = getPath()
       const { history } = props;
-      history.push("/main");
+      if (!path) {
+        history.push('/main');
+      }
+      else {
+        erasePath()
+        history.push(path);
+      }
     } catch (error) {
       console.error(error);
     }

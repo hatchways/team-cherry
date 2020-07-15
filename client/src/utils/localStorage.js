@@ -9,3 +9,15 @@ export const storeUser = (user) => {
 export const eraseUser = () => {
   localStorage.removeItem('user')
 }
+
+export const redirectPath = (path) => {
+  localStorage.setItem('redirect', JSON.stringify(path))
+}
+
+export const getPath = () => {
+  return JSON.parse(localStorage.getItem('redirect'))
+}
+
+export const erasePath = () => {
+  localStorage.removeItem('redirect')
+}
