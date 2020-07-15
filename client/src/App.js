@@ -7,7 +7,7 @@ import Login from "./pages/Login";
 import Main from "./pages/Main";
 import Settings from "./pages/Settings";
 import Header from "./components/Header";
-import { eraseUser, getUser } from "./utils/localStorage";
+import { eraseUser, getUser, redirectPath } from "./utils/localStorage";
 import { loginInterceptor, AxiosInterceptor } from "./utils/authAxios";
 import Snackbar from "@material-ui/core/Snackbar";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -33,20 +33,23 @@ function App() {
   const userLogin = () => {
     unhideProtectedRoutes("unhide");
   };
-  const unsetProtectedRoutes = () => {
-    unhideProtectedRoutes("hide");
-  };
 
-  useEffect(() => {
+  const isAuthorized = () => {
     if (getUser()) {
-      unhideProtectedRoutes("unhide");
+      return true
     }
-  }, []);
+    else return false
+  }
   //this interceptor catches 401s
-  AxiosInterceptor(unauthorized, unsetProtectedRoutes);
+  AxiosInterceptor(unauthorized, isAuthorized);
 
   //this interceptor stores user on storage, then unhides protected routes.
   loginInterceptor(userLogin);
+
+  const pathName = window.location.pathname
+  if (!isAuthorized() && (pathName != '/login' && pathName != '/signup')) {
+    redirectPath(pathName)
+  }
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -58,12 +61,14 @@ function App() {
             <Route exact path="/login" component={Login} />
             <Route exact path="/signup" component={Signup} />
             {/* routes should be inaccessible after here if token doesn't exist*/}
-            <Route exact path="/main" component={Main} />
-            <Route exact path="/settings" component={Settings} />
-            {/* {protectedRoutes === "unhide" ? (
+            {isAuthorized() ? (
+              <Switch>
+                <Route exact path="/main" component={Main} />
+                <Route exact path="/settings" component={Settings} />
+              </Switch>
             ) : (
-              <Redirect to="/signup" />
-            )} */}
+                <Redirect to="/signup" />
+              )}
             <Route render={() => <Redirect to="/login" />} />
           </Switch>
         </SearchTerm.Provider>
