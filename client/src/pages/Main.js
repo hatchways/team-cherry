@@ -1,24 +1,26 @@
-import React, { Component } from "react";
-import Mention from "../components/Mention";
-import axios from "axios";
-import SwitchSelector from "react-switch-selector";
-import { withStyles } from "@material-ui/core/styles";
 import {
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-  Switch,
   Avatar,
-  ListItemAvatar,
+  CircularProgress,
   Divider,
   Grid,
-  ListItemSecondaryAction,
-  CircularProgress,
   LinearProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemSecondaryAction,
+  ListItemText,
+  Switch,
+  Typography,
 } from "@material-ui/core/";
+import { withStyles } from "@material-ui/core/styles";
+import axios from "axios";
+import React, { Component } from "react";
 import InfiniteScroll from "react-infinite-scroller";
+import SwitchSelector from "react-switch-selector";
+import io from "socket.io-client";
 import { uuid } from "uuidv4";
+
+import Mention from "../components/Mention";
 
 const useStyles = (theme) => ({
   RootGridContainer: {
@@ -130,12 +132,26 @@ class Main extends Component {
     }
 
     let keywords = currentUrlParams.get("keywords");
+    if (!keywords) {
+      keywords = "";
+    }
     let sortByState = currentUrlParams.get("sortBy");
+    if (!sortByState) {
+      sortByState = "MostRecent";
+    }
 
     let allPlatforms = ["Reddit", "Twitter", "Facebook"];
     let switchStates = [];
     allPlatforms.forEach((item) => {
       switchStates[item] = splitSelectedPlatforms.includes(item);
+    });
+
+    // Setup WebSocket
+    var socket = io.connect("http://localhost:3000/", {
+      query: {
+        keywords: keywords,
+        platformSelected: splitSelectedPlatforms,
+      },
     });
 
     this.state = {
@@ -147,14 +163,18 @@ class Main extends Component {
       page: 1,
       switchStates: switchStates,
       sortByState: sortByState,
+      socket: socket,
     };
   }
 
-  async componentWillUpdate() {
+  async componentDidUpdate() {
     let currentUrlParams = new URLSearchParams(window.location.search);
     let keywords = currentUrlParams.get("keywords");
+    if (!keywords) {
+      keywords = "";
+    }
 
-    if (this.state.keywords !== keywords) {
+    if (this.state.keywords != keywords) {
       let { data } = await axios.get("/api/mentions", {
         params: {
           platforms: this.state.platformSelected,
@@ -171,6 +191,10 @@ class Main extends Component {
       this.setState({
         mentions: data.mentions,
         keywords: keywords,
+      });
+
+      this.state.socket.emit("setKeywords", {
+        keywords: this.state.keywords,
       });
     }
   }
@@ -212,7 +236,6 @@ class Main extends Component {
   }
 
   sortToggle(value) {
-    console.log(value);
     let sortedMentions = this.state.mentions;
     if (value === "MostRecent") {
       this.sortByDate(sortedMentions);
@@ -250,13 +273,15 @@ class Main extends Component {
       let { data } = await axios.get("/api/mentions/", {
         params: {
           platforms: [newlySelectedPlatform],
+          // platforms: this.state.platformSelected,
           keywords: this.state.keywords,
         },
       });
 
-      // commented out might be causing a bug with scroller that refetches mentions already being displayed
-      // const newMentions = this.state.mentions.concat(data.mentions);
-      const newMentions = data.mentions;
+      // commented out might be causing a bug with scroller that refetches
+      // mentions already being displayed
+      const newMentions = this.state.mentions.concat(data.mentions);
+      // const newMentions = data.mentions;
 
       if (this.state.sortByState == "MostRecent") {
         this.sortByDate(newMentions);
@@ -294,6 +319,10 @@ class Main extends Component {
     this.props.history.push(
       window.location.pathname + "?" + currentUrlParams.toString()
     );
+
+    this.state.socket.emit("setPlatformSelected", {
+      platformSelected: this.state.platformSelected,
+    });
   }
 
   async loadMoreMentions() {
@@ -334,6 +363,7 @@ class Main extends Component {
                       <ListItemAvatar
                         className={classes.platformListItemAvatar}
                       >
+                        {" "}
                         <Avatar
                           className={classes.platformAvatar}
                           src={`/imgs/${platform}_icon.png`}
@@ -376,6 +406,7 @@ class Main extends Component {
             direction={"column"}
             spacing={2}
           >
+            {" "}
             <Grid
               item
               container
