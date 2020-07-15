@@ -7,7 +7,7 @@ import Login from "./pages/Login";
 import Main from "./pages/Main";
 import Settings from "./pages/Settings";
 import Header from "./components/Header";
-import { eraseUser, getUser } from "./utils/localStorage";
+import { eraseUser, getUser, redirectPath } from "./utils/localStorage";
 import { loginInterceptor, AxiosInterceptor } from "./utils/authAxios";
 import Snackbar from "@material-ui/core/Snackbar";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -46,6 +46,13 @@ function App() {
   //this interceptor stores user on storage, then unhides protected routes.
   loginInterceptor(userLogin);
 
+  const pathName = window.location.pathname
+  console.log('pathname', pathName)
+  if (!isAuthorized() && (pathName != '/login' && pathName != '/signup')) {
+    console.log('hello')
+    redirectPath(pathName)
+  }
+
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
@@ -57,7 +64,10 @@ function App() {
             <Route exact path="/signup" component={Signup} />
             {/* routes should be inaccessible after here if token doesn't exist*/}
             {isAuthorized() ? (
-              <Route exact path="/main" component={Main} />
+              <Switch>
+                <Route exact path="/main" component={Main} />
+                <Route exact path="/settings" component={Settings} />
+              </Switch>
             ) : (
                 <Redirect to="/signup" />
               )}
