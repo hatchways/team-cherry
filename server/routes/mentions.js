@@ -3,7 +3,6 @@ const { Op } = require("sequelize");
 
 const requiresAuth = require("./middleware/requiresAuth");
 const { Mention, User } = require("../models");
-const { tryToGetFromCache } = require("./util");
 
 router.get("/", requiresAuth, async (req, res) => {
   let { keywords, platforms, page } = req.query;
