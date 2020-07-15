@@ -22,7 +22,7 @@ router.get("/", requiresAuth, async (req, res) => {
   const companies = await user.getCompanies();
 
   // pagination variables
-  const pageSize = Math.ceil(20 / companies.length);
+  const pageSize = Math.ceil(20 / companies.length); // number of companies should never exceed page size(20)
   const offset = (page - 1) * pageSize;
   const limit = pageSize;
 
@@ -49,6 +49,7 @@ router.get("/", requiresAuth, async (req, res) => {
           },
         ],
       },
+      order: [["date", "DESC"]],
     });
     output = output.concat(mentions);
   }
