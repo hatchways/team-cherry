@@ -14,6 +14,8 @@ import { getUser } from "../utils/localStorage";
 import { DebounceInput } from "react-debounce-input";
 import { useHistory } from "react-router-dom";
 
+import { Link } from "react-router-dom";
+
 const useStyles = makeStyles(() => ({
   fontColorForMentions: {
     color: "white",
@@ -24,7 +26,6 @@ const useStyles = makeStyles(() => ({
   AppBar: {
     height: "5.4em",
     boxShadow: "none",
-    position: "fixed",
   },
   LogoGrid: {
     display: "flex",
@@ -112,9 +113,11 @@ export default function Header() {
             )}
 
             <Grid item xs={2} className={classes.SettingsIcon}>
-              <IconButton color="inherit">
-                <SettingsIcon />
-              </IconButton>
+              <Link to="/settings">
+                <IconButton color="inherit">
+                  <SettingsIcon />
+                </IconButton>
+              </Link>
             </Grid>
           </Grid>
         </Toolbar>

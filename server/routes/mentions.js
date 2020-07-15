@@ -30,12 +30,12 @@ router.get("/", requiresAuth, async (req, res) => {
         [Op.or]: [
           {
             title: {
-              [Op.like]: searchQuery,
+              [Op.iLike]: searchQuery,
             },
           },
           {
             content: {
-              [Op.like]: searchQuery,
+              [Op.iLike]: searchQuery,
             },
           },
         ],
