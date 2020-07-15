@@ -5,12 +5,14 @@ import { theme } from "./themes/theme";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
+import Settings from "./pages/Settings";
 import Header from "./components/Header";
 import { eraseUser, getUser } from "./utils/localStorage";
 import { loginInterceptor, AxiosInterceptor } from "./utils/authAxios";
 import Snackbar from "@material-ui/core/Snackbar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import "./App.css";
+import "./index.css";
 import { SearchTerm } from "./utils/SearchContext";
 // import "fontsource-roboto";
 
@@ -57,6 +59,7 @@ function App() {
             <Route exact path="/signup" component={Signup} />
             {/* routes should be inaccessible after here if token doesn't exist*/}
             <Route exact path="/main" component={Main} />
+            <Route exact path="/settings" component={Settings} />
             {/* {protectedRoutes === "unhide" ? (
             ) : (
               <Redirect to="/signup" />

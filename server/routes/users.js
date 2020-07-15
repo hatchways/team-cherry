@@ -8,6 +8,7 @@ const {
 const { User, Company } = require("../models");
 const cookieConfig = require("../cookie-config");
 const { createErrorResponse } = require("./util");
+const requiresAuth = require("./middleware/requiresAuth");
 
 router.post("/register", validateRegister, async (req, res) => {
   const existingUser = await User.findOne({ where: { email: req.body.email } });
@@ -20,6 +21,7 @@ router.post("/register", validateRegister, async (req, res) => {
 
   const user = await User.create({
     email: req.body.email,
+    subscriberEmail: req.body.email,
     password: req.body.password,
   });
 
@@ -47,7 +49,6 @@ router.post("/register", validateRegister, async (req, res) => {
         .json({ success: true, user, company });
     }
   );
-  // res.json({ user: newUser });
 });
 
 router.post("/login", validateLogin, async (req, res) => {
@@ -81,6 +82,19 @@ router.post("/login", validateLogin, async (req, res) => {
       password: "Password does not match",
     });
   }
+});
+
+router.post("/logout", requiresAuth, async (req, res, next) => {
+  res.clearCookie("token").sendStatus(200);
+});
+
+router.put("/subscribe-mail/update", requiresAuth, async (req, res) => {
+  const user = await User.findByPk(req.user.id);
+  user.subscriberEmail = req.body.subscriberEmail;
+  await user.save();
+
+  // refresh the user token to bring on the email change
+  res.sendStatus(204);
 });
 
 module.exports = router;
