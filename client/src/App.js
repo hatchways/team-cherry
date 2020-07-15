@@ -47,9 +47,7 @@ function App() {
   loginInterceptor(userLogin);
 
   const pathName = window.location.pathname
-  console.log('pathname', pathName)
   if (!isAuthorized() && (pathName != '/login' && pathName != '/signup')) {
-    console.log('hello')
     redirectPath(pathName)
   }
 
