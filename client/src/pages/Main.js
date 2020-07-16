@@ -127,6 +127,9 @@ class Main extends Component {
 
     let keywords = currentUrlParams.get("keywords");
     let sortByState = currentUrlParams.get("sortBy");
+    if (!sortByState) {
+      sortByState = "MostRecent";
+    }
 
     let allPlatforms = ["Reddit", "Twitter", "Facebook"];
     let switchStates = [];
