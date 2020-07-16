@@ -162,7 +162,7 @@ export default function Header() {
                 <Grid>
                   <Container className={classes.redirectContainer}>
                     <Typography variant='h2' className={classes.redirectText}>
-                      {redirect ? 'Already have an account?' : "Don't have an account?"}
+                      {redirect === 'Log In' ? 'Already have an account?' : "Don't have an account?"}
                     </Typography>
                     <Button
                       className={classes.redirectButton}
