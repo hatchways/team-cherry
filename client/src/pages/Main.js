@@ -159,12 +159,15 @@ class Main extends Component {
       platformSelected: [...splitSelectedPlatforms],
       keywords: keywords,
       mentions: [],
+      isLoadingMentions: false,
       hasMore: true || false,
       page: 1,
       switchStates: switchStates,
       sortByState: sortByState,
       socket: socket,
     };
+
+    this.loadMoreMentions = this.loadMoreMentions.bind(this);
   }
 
   async componentDidUpdate() {
@@ -272,16 +275,16 @@ class Main extends Component {
 
       let { data } = await axios.get("/api/mentions/", {
         params: {
-          platforms: [newlySelectedPlatform],
-          // platforms: this.state.platformSelected,
+          // platforms: [newlySelectedPlatform],
+          platforms: this.state.platformSelected,
           keywords: this.state.keywords,
         },
       });
 
       // commented out might be causing a bug with scroller that refetches
       // mentions already being displayed
-      const newMentions = this.state.mentions.concat(data.mentions);
-      // const newMentions = data.mentions;
+      // const newMentions = this.state.mentions.concat(data.mentions);
+      const newMentions = data.mentions;
 
       if (this.state.sortByState == "MostRecent") {
         this.sortByDate(newMentions);
@@ -340,12 +343,22 @@ class Main extends Component {
         hasMore,
         page,
         mentions: [...this.state.mentions, ...mentions],
+        isLoadingMentions: false,
       });
     } else {
       this.setState({
         hasMore: false,
+        isLoadingMentions: false,
       });
     }
+  }
+
+  async handleLoad() {
+    if (this.state.isLoadingMentions) {
+      return;
+    }
+    this.setState({ isLoadingMentions: true });
+    await this.loadMoreMentions();
   }
 
   render() {
@@ -453,9 +466,10 @@ class Main extends Component {
             ) : (
               <InfiniteScroll
                 pageStart={0}
-                loadMore={this.loadMoreMentions.bind(this)}
+                loadMore={this.handleLoad.bind(this)}
                 hasMore={this.state.hasMore}
                 loader={<LinearProgress key={0} />}
+                threshold={500}
               >
                 {this.state.mentions.map((mention, index) => {
                   return (
