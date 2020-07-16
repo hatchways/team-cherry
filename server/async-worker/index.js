@@ -1,13 +1,17 @@
 const callScraper = require("../scraper");
 const { Mention, Company } = require("../models");
 const User = require("../models/user");
+const UserCompanies = require("../models/userCompanies");
 
-module.exports = async function asyncWorker() {
+module.exports = async function asyncWorker(io, loggedInUsers) {
   console.log("[Scraper] Calling async scraper");
+
+  let newMentions = [];
 
   const companies = await Company.findAll();
   for (let company of companies) {
     let mentions = await callScraper(company.name);
+    newMentions["" + company.id] = [];
 
     for (let m of mentions) {
       [mention, isNew] = await Mention.findOrCreate({
@@ -26,7 +30,42 @@ module.exports = async function asyncWorker() {
       });
 
       await company.addMention(mention);
+
+      // if(){
+      // newMentions["" + company.id].push(mention);
+      // }
     }
+
+    // Object.keys(newMentions).forEach((companyId) => {
+    //   loggedInUsers.forEach(async (user) => {
+    //     let companies = await UserCompanies.findAll({
+    //       where: {
+    //         UserId: user.userId,
+    //       },
+    //       attributes: ["CompanyId"],
+    //     });
+    //     let companyIds = JSON.stringify(companies);
+
+    //     let hasThisCompany = false;
+    //     for (let i = 0; i < companyIds.length; i++) {
+    //       if (companyIds[i]["CompanyId"] == companyId) {
+    //         hasThisCompany = true;
+    //         break;
+    //       }
+    //     }
+
+    //     if (hasThisCompany) {
+    //       let filteredMentions = newMentions[companyId].filter((mention) => {
+    //         return (
+    //           (mention.title.includes(user.keywords) ||
+    //             mention.content.includes(user.keywords)) &&
+    //           user.platformSelected.includes(mention.platform)
+    //         );
+    //       });
+    //       user.socket.emit("newMentions", filteredMentions);
+    //     }
+    //   });
+    // });
 
     console.log(`[Scraper] Finished adding mentions for ${company.name}`);
   }

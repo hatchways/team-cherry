@@ -15,6 +15,7 @@ import {
   Grid,
   ListItemSecondaryAction,
 } from "@material-ui/core/";
+import io from "socket.io-client";
 
 const useStyles = (theme) => ({
   RootGridContainer: {
@@ -126,6 +127,9 @@ class Main extends Component {
     }
 
     let keywords = currentUrlParams.get("keywords");
+    if (!keywords) {
+      keywords = "";
+    }
     let sortByState = currentUrlParams.get("sortBy");
     if (!sortByState) {
       sortByState = "MostRecent";
@@ -137,6 +141,14 @@ class Main extends Component {
       switchStates[item] = splitSelectedPlatforms.includes(item);
     });
 
+    // Setup WebSocket
+    var socket = io.connect("http://localhost:3000/", {
+      query: {
+        keywords: keywords,
+        platformSelected: splitSelectedPlatforms,
+      },
+    });
+
     this.state = {
       allPlatforms: allPlatforms,
       platformSelected: [...splitSelectedPlatforms],
@@ -144,14 +156,18 @@ class Main extends Component {
       mentions: [],
       switchStates: switchStates,
       sortByState: sortByState,
+      socket: socket,
     };
   }
 
-  async componentWillUpdate() {
+  async componentDidUpdate() {
     let currentUrlParams = new URLSearchParams(window.location.search);
     let keywords = currentUrlParams.get("keywords");
+    if (!keywords) {
+      keywords = "";
+    }
 
-    if (this.state.keywords !== keywords) {
+    if (this.state.keywords != keywords) {
       let { data } = await axios.get("/api/mentions", {
         params: {
           platforms: this.state.platformSelected,
@@ -168,6 +184,10 @@ class Main extends Component {
       this.setState({
         mentions: data.mentions,
         keywords: keywords,
+      });
+
+      this.state.socket.emit("setKeywords", {
+        keywords: this.state.keywords,
       });
     }
   }
@@ -208,7 +228,6 @@ class Main extends Component {
   }
 
   sortToggle(value) {
-    console.log(value);
     let sortedMentions = this.state.mentions;
     if (value === "MostRecent") {
       this.sortByDate(sortedMentions);
@@ -286,6 +305,10 @@ class Main extends Component {
     this.props.history.push(
       window.location.pathname + "?" + currentUrlParams.toString()
     );
+
+    this.state.socket.emit("setPlatformSelected", {
+      platformSelected: this.state.platformSelected,
+    });
   }
 
   render() {
