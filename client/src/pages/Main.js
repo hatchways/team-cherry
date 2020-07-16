@@ -275,16 +275,16 @@ class Main extends Component {
 
       let { data } = await axios.get("/api/mentions/", {
         params: {
-          // platforms: [newlySelectedPlatform],
-          platforms: this.state.platformSelected,
+          platforms: [newlySelectedPlatform],
+          // if there is duplicates for you uncomment below and comment above
+          // platforms: this.state.platformSelected,
           keywords: this.state.keywords,
         },
       });
 
-      // commented out might be causing a bug with scroller that refetches
-      // mentions already being displayed
-      // const newMentions = this.state.mentions.concat(data.mentions);
-      const newMentions = data.mentions;
+      const newMentions = this.state.mentions.concat(data.mentions);
+      // if there is duplicates for you uncomment below and comment above
+      // const newMentions = data.mentions;
 
       if (this.state.sortByState == "MostRecent") {
         this.sortByDate(newMentions);
@@ -469,7 +469,6 @@ class Main extends Component {
                 loadMore={this.handleLoad.bind(this)}
                 hasMore={this.state.hasMore}
                 loader={<LinearProgress key={0} />}
-                threshold={500}
               >
                 {this.state.mentions.map((mention, index) => {
                   return (
