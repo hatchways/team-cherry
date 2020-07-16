@@ -224,4 +224,4 @@ io.on("connection", function (socket) {
   });
 });
 
-setInterval(asyncWorker, 30000, io, loggedInUsers);
+// setInterval(asyncWorker, 30000, io, loggedInUsers);
