@@ -65,6 +65,7 @@ function App() {
               <Switch>
                 <Route exact path="/main" component={Main} />
                 <Route exact path="/settings" component={Settings} />
+                <Route path="/" component={Main} /> {/* redirect to main if can't recognize path. Maybe add 404 page if there's time*/}
               </Switch>
             ) : (
                 <Redirect to="/signup" />
