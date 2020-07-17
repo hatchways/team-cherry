@@ -19,6 +19,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import SwitchSelector from "react-switch-selector";
 import io from "socket.io-client";
 import { uuid } from "uuidv4";
+import { debounce } from "throttle-debounce";
 
 import Mention from "../components/Mention";
 
@@ -159,7 +160,6 @@ class Main extends Component {
       platformSelected: [...splitSelectedPlatforms],
       keywords: keywords,
       mentions: [],
-      isLoadingMentions: false,
       hasMore: true || false,
       page: 1,
       switchStates: switchStates,
@@ -167,7 +167,7 @@ class Main extends Component {
       socket: socket,
     };
 
-    this.loadMoreMentions = this.loadMoreMentions.bind(this);
+    this.loadMoreMentions = debounce(500, this.loadMoreMentions.bind(this));
   }
 
   async componentDidUpdate() {
@@ -275,16 +275,16 @@ class Main extends Component {
 
       let { data } = await axios.get("/api/mentions/", {
         params: {
-          platforms: [newlySelectedPlatform],
+          // platforms: [newlySelectedPlatform],
           // if there is duplicates for you uncomment below and comment above
-          // platforms: this.state.platformSelected,
+          platforms: this.state.platformSelected,
           keywords: this.state.keywords,
         },
       });
 
-      const newMentions = this.state.mentions.concat(data.mentions);
+      // const newMentions = this.state.mentions.concat(data.mentions);
       // if there is duplicates for you uncomment below and comment above
-      // const newMentions = data.mentions;
+      const newMentions = data.mentions;
 
       if (this.state.sortByState == "MostRecent") {
         this.sortByDate(newMentions);
@@ -343,22 +343,12 @@ class Main extends Component {
         hasMore,
         page,
         mentions: [...this.state.mentions, ...mentions],
-        isLoadingMentions: false,
       });
     } else {
       this.setState({
         hasMore: false,
-        isLoadingMentions: false,
       });
     }
-  }
-
-  async handleLoad() {
-    if (this.state.isLoadingMentions) {
-      return;
-    }
-    this.setState({ isLoadingMentions: true });
-    await this.loadMoreMentions();
   }
 
   render() {
@@ -466,7 +456,7 @@ class Main extends Component {
             ) : (
               <InfiniteScroll
                 pageStart={0}
-                loadMore={this.handleLoad.bind(this)}
+                loadMore={this.loadMoreMentions}
                 hasMore={this.state.hasMore}
                 loader={<LinearProgress key={0} />}
               >
