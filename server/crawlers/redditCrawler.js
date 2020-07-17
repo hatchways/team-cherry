@@ -8,7 +8,7 @@ async function redditCrawler(companyName) {
     refreshToken: process.env.Reddit_refreshToken,
   });
 
-  const subreddit = await scraper.getSubreddit("business");
+  const subreddit = await scraper.getSubreddit("all");
   const topPosts = await subreddit.search({
     query: companyName,
     time: "all",

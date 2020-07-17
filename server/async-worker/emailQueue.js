@@ -19,7 +19,6 @@ module.exports = async function emailQueue() {
       const emails = await User.findAll({
         attributes: ['subscriberEmail',]
       })
-      console.log('wjat ios this', emails)
       return emails
     } catch (error) {
       console.error(error)
@@ -58,7 +57,7 @@ module.exports = async function emailQueue() {
       service: 'gmail',
       auth: {
         user: 'mentionscrawler123@gmail.com',
-        pass: 'will put pw in slack'
+        pass: process.env.mentionsCrawlerPW
       }
     };
     nodemailer.createTransport(mailConfig).sendMail(mailOptions, (err, info) => {

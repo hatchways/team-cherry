@@ -3,8 +3,8 @@ const { Mention, Company, User } = require("../models");
 const callScraper = require("../scraper");
 
 module.exports = async function scraperQueue() {
-  //Declaring both queues in redis. WeeklyMentions adds companies as jobs for companyscraper. Companyscraper does the scraping and adds to db + gets list of users for that company.
-  const weeklyMentions = new Queue('companies', {
+  //Declaring both queues in redis below. asyncMentions adds companies as jobs for companyscraper. Companyscraper does the scraping and adds to db + gets list of users for that company.
+  const asyncMentions = new Queue('companies', {
     redis: {
       host: '127.0.0.1',
       port: 6379,
@@ -18,10 +18,10 @@ module.exports = async function scraperQueue() {
     }
   })
 
-  weeklyMentions.add([], { repeat: { cron: ' */10 * * * * *' } })
+  asyncMentions.add([], { repeat: { cron: ' */10 * * * * *' } })
   //adds a job for scraping each company every so often (set at 10 seconds)
 
-  weeklyMentions.process(async () => {
+  asyncMentions.process(async () => {
     const companies = await Company.findAll()
     companies.forEach((currentCompany) => {
       companyScraper.add(currentCompany)
@@ -64,7 +64,7 @@ module.exports = async function scraperQueue() {
     console.log(job.data.name, users)
   })
   //this might not be neccesary, but shows that jobs were added
-  weeklyMentions.on('completed', (job, result) => {
+  asyncMentions.on('completed', (job, result) => {
     console.log('companies added to companyscraper')
   })
 }
