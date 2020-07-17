@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
+const nodemailer = require('nodemailer')
 
 const {
   validateLogin,
@@ -38,6 +39,28 @@ router.post("/register", validateRegister, async (req, res) => {
     id: user.id,
     email: user.email,
   };
+
+  let mailOptions = {
+    to: `${req.body.email}`,
+    subject: 'Account Created',
+    text: "Welcome to MentionsCrawler. You have successfully created an account.",
+  };
+  let mailConfig = {
+    service: 'gmail',
+    auth: {
+      user: 'mentionscrawler123@gmail.com',
+      pass: 'P455w0rd'
+    }
+  };
+  nodemailer.createTransport(mailConfig).sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('success')
+      resolve(info);
+    }
+  });
+
 
   jwt.sign(
     payload,

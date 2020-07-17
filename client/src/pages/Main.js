@@ -282,7 +282,13 @@ class Main extends Component {
         },
       });
 
-      const newMentions = this.state.mentions.concat(data.mentions);
+      // this can come out to be a very expensive performance
+      const filterDuplicates = data.mentions.filter(
+        (mention) => !this.state.mentions.some((m) => m.id === mention.id)
+      );
+
+      const newMentions = this.state.mentions.concat(filterDuplicates);
+      // const newMentions = this.state.mentions.concat(data.mentions);
       // if there is duplicates for you uncomment below and comment above
       // const newMentions = data.mentions;
 
