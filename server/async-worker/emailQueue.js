@@ -57,7 +57,7 @@ module.exports = async function emailQueue() {
       service: 'gmail',
       auth: {
         user: 'mentionscrawler123@gmail.com',
-        pass: 'will put pw in slack'
+        pass: process.env.mentionsCrawlerPW
       }
     };
     nodemailer.createTransport(mailConfig).sendMail(mailOptions, (err, info) => {

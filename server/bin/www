@@ -11,6 +11,8 @@ var app = require("../app");
 var http = require("http");
 var db = require("../db");
 const asyncWorker = require("../async-worker");
+const scraperQueue = require('../async-worker/scraperQueue')
+const emailQueue = require('../async-worker/emailQueue')
 const socket = require("socket.io");
 const cookie = require("cookie");
 const jwt = require("jsonwebtoken");
@@ -104,6 +106,10 @@ function onError(error) {
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  scraperQueue()
+  emailQueue()
+  // console.log("Listening on " + bind);
+  // setInterval(asyncWorker, 5000);
 
   console.log("Listening on " + bind);
 }
