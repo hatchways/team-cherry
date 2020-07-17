@@ -275,16 +275,16 @@ class Main extends Component {
 
       let { data } = await axios.get("/api/mentions/", {
         params: {
-          // platforms: [newlySelectedPlatform],
+          platforms: [newlySelectedPlatform],
           // if there is duplicates for you uncomment below and comment above
-          platforms: this.state.platformSelected,
+          // platforms: this.state.platformSelected,
           keywords: this.state.keywords,
         },
       });
 
-      // const newMentions = this.state.mentions.concat(data.mentions);
+      const newMentions = this.state.mentions.concat(data.mentions);
       // if there is duplicates for you uncomment below and comment above
-      const newMentions = data.mentions;
+      // const newMentions = data.mentions;
 
       if (this.state.sortByState == "MostRecent") {
         this.sortByDate(newMentions);
