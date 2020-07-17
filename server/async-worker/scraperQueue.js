@@ -61,7 +61,6 @@ module.exports = async function scraperQueue() {
         where: { id: job.data.id }
       }],
     })
-    console.log(job.data.name, users)
   })
   //this might not be neccesary, but shows that jobs were added
   weeklyMentions.on('completed', (job, result) => {
