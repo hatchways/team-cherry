@@ -275,22 +275,12 @@ class Main extends Component {
 
       let { data } = await axios.get("/api/mentions/", {
         params: {
-          platforms: [newlySelectedPlatform],
-          // if there is duplicates for you uncomment below and comment above
-          // platforms: this.state.platformSelected,
+          platforms: this.state.platformSelected,
           keywords: this.state.keywords,
         },
       });
 
-      // this can come out to be a very expensive performance
-      const filterDuplicates = data.mentions.filter(
-        (mention) => !this.state.mentions.some((m) => m.id === mention.id)
-      );
-
-      const newMentions = this.state.mentions.concat(filterDuplicates);
-      // const newMentions = this.state.mentions.concat(data.mentions);
-      // if there is duplicates for you uncomment below and comment above
-      // const newMentions = data.mentions;
+      const newMentions = data.mentions;
 
       if (this.state.sortByState == "MostRecent") {
         this.sortByDate(newMentions);
@@ -345,11 +335,7 @@ class Main extends Component {
 
     const { hasMore, page, mentions } = res.data;
     if (hasMore) {
-      const filterDuplicates = mentions.filter(
-        (mention) => !this.state.mentions.some((m) => m.id === mention.id)
-      );
-
-      const updatedMentions = this.state.mentions.concat(filterDuplicates);
+      const updatedMentions = [...this.state.mentions, ...mentions];
 
       if (this.state.sortByState == "MostRecent") {
         this.sortByDate(updatedMentions);

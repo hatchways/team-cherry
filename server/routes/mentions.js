@@ -14,8 +14,6 @@ router.get("/", requiresAuth, async (req, res) => {
     keywords = "";
   }
 
-  //TODO Do pagination without cache, use original idea(counter for page size and total mentions fetched so far)
-
   const searchQuery = `%${keywords}%`;
   page = parseInt(page) || 1;
 
