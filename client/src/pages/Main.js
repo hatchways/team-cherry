@@ -345,10 +345,14 @@ class Main extends Component {
 
     const { hasMore, page, mentions } = res.data;
     if (hasMore) {
+      const filterDuplicates = mentions.filter(
+        (mention) => !this.state.mentions.some((m) => m.id === mention.id)
+      );
+
       this.setState({
         hasMore,
         page,
-        mentions: [...this.state.mentions, ...mentions],
+        mentions: [...this.state.mentions, ...filterDuplicates],
       });
     } else {
       this.setState({
