@@ -349,10 +349,18 @@ class Main extends Component {
         (mention) => !this.state.mentions.some((m) => m.id === mention.id)
       );
 
+      const updatedMentions = this.state.mentions.concat(filterDuplicates);
+
+      if (this.state.sortByState == "MostRecent") {
+        this.sortByDate(updatedMentions);
+      } else {
+        this.sortByPopularity(updatedMentions);
+      }
+
       this.setState({
         hasMore,
         page,
-        mentions: [...this.state.mentions, ...filterDuplicates],
+        mentions: updatedMentions,
       });
     } else {
       this.setState({
