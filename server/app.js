@@ -7,8 +7,10 @@ const logger = require("morgan");
 const authRoutes = require("./routes/users");
 const mentionsRoutes = require("./routes/mentions");
 const companyRoutes = require("./routes/company");
-
 const { json, urlencoded } = express;
+const nodemailer = require('nodemailer');
+
+
 
 var app = express();
 
@@ -38,4 +40,7 @@ app.use(function (err, req, res, next) {
   res.json({ error: err });
 });
 
+
 module.exports = app;
+
+
