@@ -73,7 +73,7 @@ module.exports = async function emailQueue() {
     try {
       let config = {
         headers: {
-          Authorization: "Bearer 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",
+          Authorization: "Bearer ",
         }
       }
 
