@@ -10,7 +10,6 @@ module.exports = function ScraperManager() {
     const redditMentions = await redditCrawler(companyName);
     // const twitterMentions = await twitterCrawler(companyName);
     const twitterMentions = [];
-
     results = results.concat(redditMentions, twitterMentions);
 
     return results;

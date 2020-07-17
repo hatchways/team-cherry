@@ -69,7 +69,7 @@ export default function Mention(props) {
           component="small"
           className={classes.fontColorForPlatform}
         >
-          {props.platform}
+          {props.platform} | Popularity: {props.popularity} | {props.date}
         </Typography>
 
         <p className={classes.paragraphInMentions}>{props.content}</p>

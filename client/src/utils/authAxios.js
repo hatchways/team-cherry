@@ -1,13 +1,13 @@
 import axios from "axios";
 import { storeUser, } from './localStorage'
 
-export function AxiosInterceptor(unauth, hideRoutes) {
+export function AxiosInterceptor(unauth, isAuthorized) {
   axios.interceptors.response.use((response) => {
     return response
   }, error => {
     if (error.response.status === 401) {
       unauth()
-      hideRoutes()
+      isAuthorized()
     }
     return Promise.reject(error);
   }

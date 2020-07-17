@@ -17,6 +17,26 @@ router.post("/", requiresAuth, async (req, res) => {
   res.json(company);
 });
 
+router.get("/", requiresAuth, async (req, res) => {
+  const user = await User.findByPk(req.user.id);
+  const companies = await user.getCompanies();
+
+  res.json({ companies });
+});
+
+router.delete("/", requiresAuth, async (req, res) => {
+  const user = await User.findByPk(req.user.id);
+  const companyToRemove = await Company.findOne({
+    where: {
+      name: req.body.name,
+    },
+  });
+
+  await user.removeCompany(companyToRemove);
+
+  res.sendStatus(204);
+});
+
 // test route to validate that 1-n relationship is working properly
 router.get("/:company/users", async (req, res) => {
   const company = await Company.findOne({

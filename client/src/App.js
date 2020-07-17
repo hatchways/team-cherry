@@ -5,18 +5,22 @@ import { theme } from "./themes/theme";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
+import Settings from "./pages/Settings";
 import Header from "./components/Header";
-import { eraseUser, getUser } from "./utils/localStorage";
+import { eraseUser, getUser, redirectPath } from "./utils/localStorage";
 import { loginInterceptor, AxiosInterceptor } from "./utils/authAxios";
 import Snackbar from "@material-ui/core/Snackbar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import "./App.css";
+import "./index.css";
+import { SearchTerm } from "./utils/SearchContext";
 // import "fontsource-roboto";
 
 function App() {
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [protectedRoutes, unhideProtectedRoutes] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   //adds an interceptor to check requests. If a request is sent with a 401, user is erased and send back to login
   const unauthorized = () => {
@@ -29,37 +33,45 @@ function App() {
   const userLogin = () => {
     unhideProtectedRoutes("unhide");
   };
-  const unsetProtectedRoutes = () => {
-    unhideProtectedRoutes("hide");
-  };
 
-  useEffect(() => {
+  const isAuthorized = () => {
     if (getUser()) {
-      unhideProtectedRoutes("unhide");
+      return true
     }
-  }, []);
+    else return false
+  }
   //this interceptor catches 401s
-  AxiosInterceptor(unauthorized, unsetProtectedRoutes);
+  AxiosInterceptor(unauthorized, isAuthorized);
 
   //this interceptor stores user on storage, then unhides protected routes.
   loginInterceptor(userLogin);
+
+  const pathName = window.location.pathname
+  if (!isAuthorized() && (pathName != '/login' && pathName != '/signup')) {
+    redirectPath(pathName)
+  }
 
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
-        <Header />
-        <Switch>
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/signup" component={Signup} />
-          {/* routes should be inaccessible after here if token doesn't exist*/}
-          {protectedRoutes === "unhide" ? (
-            <Route exact path="/main" component={Main} />
-          ) : (
-            <Redirect to="/signup" />
-          )}
-          <Route render={() => <Redirect to="/login" />} />
-        </Switch>
+        <SearchTerm.Provider value={{ searchTerm, setSearchTerm }}>
+          <Header />
+          <Switch>
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/signup" component={Signup} />
+            {/* routes should be inaccessible after here if token doesn't exist*/}
+            {isAuthorized() ? (
+              <Switch>
+                <Route exact path="/main" component={Main} />
+                <Route exact path="/settings" component={Settings} />
+              </Switch>
+            ) : (
+                <Redirect to="/signup" />
+              )}
+            <Route render={() => <Redirect to="/login" />} />
+          </Switch>
+        </SearchTerm.Provider>
       </BrowserRouter>
       <Snackbar
         anchorOrigin={{
