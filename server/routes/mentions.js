@@ -3,10 +3,7 @@ const { Op } = require("sequelize");
 
 const requiresAuth = require("./middleware/requiresAuth");
 const { Mention, User } = require("../models");
-
 const NodeCache = require("node-cache");
-// cache for storing current page locations platformName --> page #
-const pageCache = new NodeCache();
 
 router.get("/", requiresAuth, async (req, res) => {
   let { keywords, platforms, page } = req.query;
