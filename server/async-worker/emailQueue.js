@@ -1,5 +1,5 @@
 const Queue = require('bull');
-const { User } = require("../models");
+const { User, Company, Mention } = require("../models");
 const axios = require('axios')
 const { setQueues } = require('bull-board')
 //Task queue for emailing
@@ -65,7 +65,6 @@ module.exports = async function emailQueue() {
           Authorization: `Bearer ${process.env.sendgridKey}`,
         }
       }
-
       let data = {
         personalizations: [
           {
@@ -89,12 +88,43 @@ module.exports = async function emailQueue() {
     }
   }
 
+  // const result = await A.findOne({
+  //   include: {
+  //     model: B,
+  //     include: {
+  //       model: C,
+  //       where: {
+  //         c_columnName: {
+  //           [Op.col]: 'B.b_columnName',
+  //         },
+  //       }
+  //     },
+  //   },
+  // });
   sendEmail.process(async (job) => {
-    // await send(job.data.subscriberEmail)
-    console.log(job.data.subscriberEmail)
+    await send(job.data.subscriberEmail)
+    const mentions = await Mention.findAll({
+      include: [{
+        model: Company,
+        include: [{
+          model: User,
+          where: { id: job.data.id }
+        }]
+      },
+      ]
+    })
+    console.log(mentions)
+    // job.data.allMentions = []
+    // const companies = await Company.findAll({
+    //   include: [{
+    //     model: User,
+    //     where: { id: job.data.id }
+    //   }]
+    // })
 
   })
   sendEmail.on('completed', async (job, result) => {
+
     console.log('email sent', job.data.subscriberEmail)
   })
   setQueues([getEmails, sendEmail])
