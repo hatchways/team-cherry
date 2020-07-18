@@ -102,29 +102,30 @@ module.exports = async function emailQueue() {
   //   },
   // });
   sendEmail.process(async (job) => {
-    await send(job.data.subscriberEmail)
-    const mentions = await Mention.findAll({
+    // await send(job.data.subscriberEmail)
+
+    job.data.allMentions = []
+    const companies = await Company.findAll({
       include: [{
-        model: Company,
-        include: [{
-          model: User,
-          where: { id: job.data.id }
-        }]
-      },
-      ]
+        model: User,
+        where: { id: job.data.id }
+      }]
     })
-    console.log(mentions)
-    // job.data.allMentions = []
-    // const companies = await Company.findAll({
-    //   include: [{
-    //     model: User,
-    //     where: { id: job.data.id }
-    //   }]
-    // })
+    console.log(companies)
+    for (let company of companies) {
+      let mentions = await company.getMentions()
+      job.data.allMentions = job.data.allMentions.concat(mentions)
+    }
+
+    // for (let company of companies) {
+    //   let mentions = await company.getMentions()
+    //   job.data.allMentions = job.data.allMentions.concat(mentions)
+    // }
+
 
   })
   sendEmail.on('completed', async (job, result) => {
-
+    console.log(job.data.allMentions)
     console.log('email sent', job.data.subscriberEmail)
   })
   setQueues([getEmails, sendEmail])
