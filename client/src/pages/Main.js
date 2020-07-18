@@ -194,6 +194,7 @@ class Main extends Component {
       this.setState({
         mentions: data.mentions,
         keywords: keywords,
+        page: 1,
       });
 
       this.state.socket.emit("setKeywords", {
