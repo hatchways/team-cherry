@@ -8,12 +8,12 @@ const authRoutes = require("./routes/users");
 const mentionsRoutes = require("./routes/mentions");
 const companyRoutes = require("./routes/company");
 const { json, urlencoded } = express;
-const nodemailer = require('nodemailer');
-
+const { UI } = require('bull-board')
 
 
 var app = express();
 
+app.use('/admin/queues', UI)
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));

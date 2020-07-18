@@ -1,11 +1,11 @@
 const Queue = require('bull');
 const { User } = require("../models");
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
 const axios = require('axios')
-
+const { setQueues } = require('bull-board')
 //Task queue for emailing
 module.exports = async function emailQueue() {
-  const weeklyEmailQueue = new Queue('sendMail', {
+  const getEmails = new Queue('getEmails', {
     //Make sure redis is set / installed on your end. default port should be 6379
     //this creates a queue in redis called sendmail, the value of sendmail is the configuration of the queue
     redis: {
@@ -14,46 +14,37 @@ module.exports = async function emailQueue() {
     }
   });
 
+  const sendEmail = new Queue('sendEmail', {
+    redis: {
+      host: '127.0.0.1',
+      port: 6379,
+    }
+  })
 
-  const getEmails = async () => {
+
+  getEmails.add([], { repeat: { cron: ' */10 * * * * *' } });
+  /*This is a job. Parameters are items for worker func to process the job, and the configuration for when job should be repeated. Right now it is set up to repeat every minute */
+
+  getEmails.process(async () => {
     try {
       const emails = await User.findAll({
         attributes: ['subscriberEmail',]
+      })
+      emails.forEach(async (email) => {
+        await sendEmail.add(email)
       })
       return emails
     } catch (error) {
       console.error(error)
     }
-  }
-
-  weeklyEmailQueue.add([], { repeat: { cron: ' */10 * * * * *' } });
-  /*This is a job. Parameters are items for worker func to process the job, and the configuration for when job should be repeated. Right now it is set up to repeat every minute */
-
-
-
-  weeklyEmailQueue.process(async () => {
-    try {
-      const data = await getEmails()
-      const emails = []
-      data.forEach((current) => {
-        emails.push(current.dataValues.subscriberEmail)
-      })
-      emails.forEach((email) => {
-        sendEmail(email);
-      })
-    } catch (error) {
-      console.error(error)
-    }
-  });
+  })
   /* this is the worker / processor above. This carries out the job*/
 
   const obj = {
     subject: "Your weekly mentioncrawler newsletter",
-    heading: "Welcome to Okaydexter",
+    heading: "Hey! Below are your mentions for this week.",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    image:
-      "https://images.unsplash.com/photo-1583552188819-4cab7da34a31?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80"
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
   };
 
   let htmlTemplate = `
@@ -68,12 +59,11 @@ module.exports = async function emailQueue() {
         </body>
         </html>
 `;
-  const sendEmail = async (address) => {
-
+  const send = async (address) => {
     try {
       let config = {
         headers: {
-          Authorization: "Bearer ",
+          Authorization: `Bearer ${process.env.sendgridKey}`,
         }
       }
 
@@ -83,7 +73,6 @@ module.exports = async function emailQueue() {
             to: [
               {
                 email: `${address}`,
-
               },
             ],
             subject: "Your Weekly Updates from Mentionscrawler"
@@ -95,13 +84,21 @@ module.exports = async function emailQueue() {
         },
         content: [{ type: "text/html", value: htmlTemplate }]
       }
-      console.log('about to send')
       await axios.post("https://api.sendgrid.com/v3/mail/send", data, config)
-
     } catch (error) {
-      console.error('failing here>>>>>>>', error)
+      console.error('failing here>>>>>>>')
     }
   }
+
+  sendEmail.process(async (job) => {
+    // await send(job.data.subscriberEmail)
+    console.log(job.data.subscriberEmail)
+
+  })
+  sendEmail.on('completed', async (job, result) => {
+    console.log('email sent', job.data.subscriberEmail)
+  })
+  setQueues([getEmails, sendEmail])
   // function sendMail(email) {
   //   let mailOptions = {
   //     to: `${email}`,

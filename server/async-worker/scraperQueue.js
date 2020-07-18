@@ -64,6 +64,6 @@ module.exports = async function scraperQueue() {
   })
   //this might not be neccesary, but shows that jobs were added
   weeklyMentions.on('completed', (job, result) => {
-    console.log('companies added to companyscraper')
+    // console.log('companies added to companyscraper')
   })
 }

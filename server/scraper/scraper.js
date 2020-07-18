@@ -3,7 +3,7 @@ const { redditCrawler, twitterCrawler } = require("../crawlers");
 module.exports = function ScraperManager() {
   this.run = async function run(companyName) {
     const date = new Date(Date.now());
-    console.log(`Scraper is running: ${date.toString()} `);
+    // console.log(`Scraper is running: ${date.toString()} `);
 
     let results = [];
 
