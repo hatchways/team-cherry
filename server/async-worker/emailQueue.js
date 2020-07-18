@@ -1,6 +1,5 @@
 const Queue = require('bull');
 const { User } = require("../models");
-// const nodemailer = require("nodemailer");
 const axios = require('axios')
 const { setQueues } = require('bull-board')
 //Task queue for emailing
@@ -28,7 +27,7 @@ module.exports = async function emailQueue() {
   getEmails.process(async () => {
     try {
       const emails = await User.findAll({
-        attributes: ['subscriberEmail',]
+        attributes: ['subscriberEmail', 'id']
       })
       emails.forEach(async (email) => {
         await sendEmail.add(email)
