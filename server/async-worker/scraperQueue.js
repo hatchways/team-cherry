@@ -69,8 +69,6 @@ module.exports = async function scraperQueue(loggedInUsers) {
       }
     }
 
-    console.log("newMentions: " + newMentions);
-
     // For each loggin user
     loggedInUsers.forEach(async (user) => {
       // retrieve her companies.

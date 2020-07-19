@@ -237,7 +237,7 @@ class Main extends Component {
 
     this.state.socket.on("newMentions", data => {
       this.setState({
-        newMentions: [...this.state.newMentions, ...data],
+        newMentions: [...data, ...this.state.newMentions],
       })
 
       if (!this.state.newMentionsPopupOpen) {
