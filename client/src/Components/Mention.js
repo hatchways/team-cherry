@@ -25,10 +25,9 @@ const useStyles = makeStyles(() => ({
     width: "3%",
   },
   thumbnailImg: {
-    maxWidth: "90%",
-    maxHeight: "90%",
-    width: "90%",
-    height: "auto"
+    objectFit: "contain",
+    maxHeight: "100%",
+    width: "95%",
   },
   contentDiv: {
     width: "69%",
