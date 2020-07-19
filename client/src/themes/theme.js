@@ -16,7 +16,6 @@ export const theme = createMuiTheme({
       fontWeight: '900',
       fontSize: '12px'
     }
-
   },
   palette: {
     primary: {

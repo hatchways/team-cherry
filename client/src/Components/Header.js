@@ -19,7 +19,6 @@ import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
-
   redirectContainer: {
     display: 'flex',
     whiteSpace: "nowrap"
@@ -74,7 +73,6 @@ const useStyles = makeStyles(() => ({
   },
   spacing: {
     justifyContent: "space-between",
-
   },
 }));
 

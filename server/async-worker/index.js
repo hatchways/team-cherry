@@ -6,12 +6,9 @@ const UserCompanies = require("../models/userCompanies");
 module.exports = async function asyncWorker(io, loggedInUsers) {
   console.log("[Scraper] Calling async scraper");
 
-  let newMentions = [];
-
   const companies = await Company.findAll();
   for (let company of companies) {
     let mentions = await callScraper(company.name);
-    newMentions["" + company.id] = [];
 
     for (let m of mentions) {
       [mention, isNew] = await Mention.findOrCreate({

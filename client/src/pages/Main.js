@@ -14,7 +14,15 @@ import {
   Divider,
   Grid,
   ListItemSecondaryAction,
+  Snackbar,
+  Dialog,
+  Button,
+  IconButton
 } from "@material-ui/core/";
+import CloseIcon from '@material-ui/icons/Close';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import io from "socket.io-client";
 
 const useStyles = (theme) => ({
@@ -59,6 +67,9 @@ const useStyles = (theme) => ({
   mention: {
     maxWidth: "100%",
   },
+  snackBarBackground: {
+    background: theme.palette.primary.main,
+  }
 });
 
 const IOSSwitch = withStyles((theme) => ({
@@ -114,6 +125,16 @@ const IOSSwitch = withStyles((theme) => ({
   );
 });
 
+// Variables for "new mentions" popup window.
+const DialogTitle = withStyles(useStyles)((props) => {
+  const { children } = props;
+  return (
+    <MuiDialogTitle disableTypography>
+      <Typography variant="h6">{children}</Typography>
+    </MuiDialogTitle>
+  );
+});
+
 class Main extends Component {
   constructor(props) {
     super(props);
@@ -154,9 +175,12 @@ class Main extends Component {
       platformSelected: [...splitSelectedPlatforms],
       keywords: keywords,
       mentions: [],
+      newMentions: [],
       switchStates: switchStates,
       sortByState: sortByState,
       socket: socket,
+      snackBarOpen: false,
+      newMentionsPopupOpen: false
     };
   }
 
@@ -209,6 +233,19 @@ class Main extends Component {
     this.setState({
       mentions: res.data.mentions,
     });
+
+
+    this.state.socket.on("newMentions", data => {
+      this.setState({
+        newMentions: [...this.state.newMentions, ...data],
+      })
+
+      if (!this.state.newMentionsPopupOpen) {
+        this.setState({
+          snackBarOpen: true
+        })
+      }
+    })
   }
 
   sortByPopularity(mentions) {
@@ -311,6 +348,20 @@ class Main extends Component {
     });
   }
 
+  handleSnackBarClick = (event) => {
+    this.setState({
+      snackBarOpen: false,
+      newMentionsPopupOpen: true
+    })
+  }
+
+  handlePopupWindowClose = () => {
+    this.setState({
+      newMentionsPopupOpen: false,
+      newMentions: []
+    });
+  };
+
   render() {
     const { classes } = this.props;
 
@@ -380,7 +431,7 @@ class Main extends Component {
                 <SwitchSelector
                   initialSelectedIndex={
                     !this.state.sortByState ||
-                    this.state.sortByState === "MostRecent"
+                      this.state.sortByState === "MostRecent"
                       ? 0
                       : 1
                   }
@@ -413,7 +464,44 @@ class Main extends Component {
                 more platforms in the left panel.
               </h3>
             ) : (
-              this.state.mentions.map((mention, index) => {
+                this.state.mentions.map((mention, index) => {
+                  return (
+                    <Grid item key={index} className={classes.mention}>
+                      <Mention
+                        image={mention.imageUrl}
+                        title={mention.title}
+                        platform={mention.platform}
+                        content={mention.content}
+                        popularity={mention.popularity}
+                        date={mention.date}
+                      />
+                    </Grid>
+                  );
+                })
+              )}
+
+            <Snackbar
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              open={this.state.snackBarOpen}
+              message="New mentions arrived. Click to view. "
+              onClick={this.handleSnackBarClick}
+              ContentProps={{
+                classes: {
+                  root: classes.snackBarBackground,
+                }
+              }}
+            />
+          </Grid>
+        </Grid>
+
+        <Dialog aria-labelledby="customized-dialog-title" open={this.state.newMentionsPopupOpen} maxWidth={'md'} fullWidth={true}>
+          <DialogTitle id="customized-dialog-title">
+            Newly posted mentions
+          </DialogTitle>
+
+          <MuiDialogContent dividers>
+            {
+              this.state.newMentions.map((mention, index) => {
                 return (
                   <Grid item key={index} className={classes.mention}>
                     <Mention
@@ -424,12 +512,21 @@ class Main extends Component {
                       popularity={mention.popularity}
                       date={mention.date}
                     />
+                    {
+                      index === this.state.newMentions.length - 1 ? null : <Divider />
+                    }
                   </Grid>
                 );
               })
-            )}
-          </Grid>
-        </Grid>
+            }
+          </MuiDialogContent>
+
+          <MuiDialogActions>
+            <Button autoFocus onClick={this.handlePopupWindowClose} color="primary">
+              Close
+            </Button>
+          </MuiDialogActions>
+        </Dialog>
       </div>
     );
   }

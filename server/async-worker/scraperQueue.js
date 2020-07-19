@@ -1,8 +1,9 @@
 const Queue = require('bull');
-const { Mention, Company, User } = require("../models");
+const { Mention, Company, User, CompanyMentions } = require("../models");
+const UserCompanies = require("../models/userCompanies")
 const callScraper = require("../scraper");
 
-module.exports = async function scraperQueue() {
+module.exports = async function scraperQueue(loggedInUsers) {
   //Declaring both queues in redis below. asyncMentions adds companies as jobs for companyscraper. Companyscraper does the scraping and adds to db + gets list of users for that company.
   const asyncMentions = new Queue('companies', {
     redis: {
@@ -35,6 +36,8 @@ module.exports = async function scraperQueue() {
   })
 
   companyScraper.on('completed', async (job, result) => {
+    let newMentions = [];
+
     //listener then adds mentions to db,
     const company = await Company.findByPk(job.data.id)
     for (let m of job.data.mentions) {
@@ -52,8 +55,57 @@ module.exports = async function scraperQueue() {
           imageUrl: m.image,
         },
       });
-      await company.addMention(mention)
+
+      let existRelationship = await CompanyMentions.findOne({
+        where: {
+          MentionId: mention.id,
+          CompanyId: company.id
+        }
+      })
+
+      if (!existRelationship) {
+        await company.addMention(mention)
+        newMentions.push(mention);
+      }
     }
+
+    console.log("newMentions: " + newMentions);
+
+    // For each loggin user
+    loggedInUsers.forEach(async (user) => {
+      // retrieve her companies.
+      let companyIds = await UserCompanies.findAll({
+        where: {
+          UserId: user.userId,
+        },
+        attributes: ["CompanyId"],
+      });
+
+      // Check if this user has this company.
+      let hasThisCompany = false;
+      for (let i = 0; i < companyIds.length; i++) {
+        if (companyIds[i]["CompanyId"] == job.data.id) {
+          hasThisCompany = true;
+          break;
+        }
+      }
+
+      // If she has, we filter out mentions that match her keywords and platform selected.
+      // Then send the filtered mentions to FE via websocket.
+      if (hasThisCompany) {
+        let filteredMentions = newMentions.filter((mention) => {
+          return (
+            (mention.title.includes(user.keywords) ||
+              mention.content.includes(user.keywords)) &&
+            user.platformSelected.includes(mention.platform)
+          );
+        });
+        if (filteredMentions.length > 0) {
+          user.socket.emit("newMentions", filteredMentions);
+        }
+      }
+    });
+
     //and gets users associated with company put in array
     const users = await User.findAll({
       include: [{
@@ -61,10 +113,10 @@ module.exports = async function scraperQueue() {
         where: { id: job.data.id }
       }],
     })
-    console.log(job.data.name, users)
+    // console.log(job.data.name, users)
   })
   //this might not be neccesary, but shows that jobs were added
-  asyncMentions.on('completed', (job, result) => {
-    console.log('companies added to companyscraper')
-  })
+  // asyncMentions.on('completed', (job, result) => {
+  //   console.log('companies added to companyscraper')
+  // })
 }
