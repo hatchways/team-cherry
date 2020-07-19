@@ -17,9 +17,7 @@ import {
   Snackbar,
   Dialog,
   Button,
-  IconButton
 } from "@material-ui/core/";
-import CloseIcon from '@material-ui/icons/Close';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -191,7 +189,7 @@ class Main extends Component {
       keywords = "";
     }
 
-    if (this.state.keywords != keywords) {
+    if (this.state.keywords !== keywords) {
       let { data } = await axios.get("/api/mentions", {
         params: {
           platforms: this.state.platformSelected,
@@ -199,7 +197,7 @@ class Main extends Component {
         },
       });
 
-      if (this.state.sortByState == "MostRecent") {
+      if (this.state.sortByState === "MostRecent") {
         this.sortByDate(data.mentions);
       } else {
         this.sortByPopularity(data.mentions);
@@ -224,7 +222,7 @@ class Main extends Component {
       },
     });
 
-    if (this.state.sortByState == "MostRecent") {
+    if (this.state.sortByState === "MostRecent") {
       this.sortByDate(res.data.mentions);
     } else {
       this.sortByPopularity(res.data.mentions);
@@ -308,7 +306,7 @@ class Main extends Component {
 
       const newMentions = this.state.mentions.concat(data.mentions);
 
-      if (this.state.sortByState == "MostRecent") {
+      if (this.state.sortByState === "MostRecent") {
         this.sortByDate(newMentions);
       } else {
         this.sortByPopularity(newMentions);
@@ -474,6 +472,8 @@ class Main extends Component {
                         content={mention.content}
                         popularity={mention.popularity}
                         date={mention.date}
+                        url={mention.url}
+                        summary={mention.summary}
                       />
                     </Grid>
                   );
@@ -505,12 +505,14 @@ class Main extends Component {
                 return (
                   <Grid item key={index} className={classes.mention}>
                     <Mention
-                      image={mention.image}
+                      image={mention.imageUrl}
                       title={mention.title}
                       platform={mention.platform}
                       content={mention.content}
                       popularity={mention.popularity}
                       date={mention.date}
+                      url={mention.url}
+                      summary={mention.summary}
                     />
                     {
                       index === this.state.newMentions.length - 1 ? null : <Divider />

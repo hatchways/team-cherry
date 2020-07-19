@@ -53,6 +53,8 @@ module.exports = async function scraperQueue(loggedInUsers) {
           content: m.content,
           popularity: m.popularity,
           imageUrl: m.image,
+          summary: m.summary,
+          url: m.url
         },
       });
 

@@ -7,7 +7,7 @@ const Mention = db.define("Mention", {
     primaryKey: true,
   },
   title: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   },
   platform: {
     type: DataTypes.STRING,
@@ -24,6 +24,12 @@ const Mention = db.define("Mention", {
   },
   popularity: {
     type: DataTypes.INTEGER,
+  },
+  url: {
+    type: DataTypes.STRING,
+  },
+  summary: {
+    type: DataTypes.TEXT,
   },
 });
 

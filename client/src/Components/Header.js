@@ -85,6 +85,9 @@ export default function Header() {
   useEffect(() => {
     let currentUrlParams = new URLSearchParams(window.location.search);
     let keywords = currentUrlParams.get("keywords");
+    if (!keywords) {
+      keywords = ""
+    }
     setKeywords(keywords);
   }, []);
 

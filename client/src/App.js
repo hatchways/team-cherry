@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import { theme } from "./themes/theme";

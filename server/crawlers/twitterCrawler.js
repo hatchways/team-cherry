@@ -17,8 +17,12 @@ async function twitterCrawler(companyName) {
     let dateInUnixFormat = Date.parse(tweet.created_at);
     let content = "";
 
-    // If a tweet doesn't have text, we jus ignore it.
+    // If a tweet doesn't have text, we just ignore it.
     if (tweet.extended_tweet) {
+      // Get its url, which is the last string in its "text" field.
+      let splitText = tweet.text.split(" ");
+      let url = splitText[splitText.length - 1];
+
       content = tweet.extended_tweet.full_text;
 
       // Make the content in one line so we can take a part of it as the title.
@@ -76,6 +80,8 @@ async function twitterCrawler(companyName) {
         content,
         date: dateInUnixFormat, // In Unix time format(in milisecond).
         platform: "Twitter",
+        url: url,
+        summary: null
       });
     }
   });
