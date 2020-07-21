@@ -538,7 +538,7 @@ class Main extends Component {
                 <SwitchSelector
                   initialSelectedIndex={
                     !this.state.sortByState ||
-                    this.state.sortByState === "MostRecent"
+                      this.state.sortByState === "MostRecent"
                       ? 0
                       : 1
                   }
@@ -570,32 +570,33 @@ class Main extends Component {
                 more platforms in the left panel.
               </h3>
             ) : (
-              <InfiniteScroll
-                pageStart={0}
-                loadMore={this.loadMoreMentions}
-                hasMore={this.state.hasMore}
-                loader={<LinearProgress key={0} />}
-              >
-                {this.state.mentions.map((mention, index) => {
-                  return (
-                    <Grid item key={index} className={classes.mention}>
-                      <Mention
-                        inList={true}
-                        id={mention.id}
-                        image={mention.imageUrl}
-                        title={mention.title}
-                        platform={mention.platform}
-                        content={mention.content}
-                        popularity={mention.popularity}
-                        date={mention.date}
-                        url={mention.url}
-                        summary={mention.summary}
-                      />
-                    </Grid>
-                  );
-                })}
-              </InfiniteScroll>
-            )}
+                <InfiniteScroll
+                  pageStart={0}
+                  loadMore={this.loadMoreMentions}
+                  hasMore={this.state.hasMore}
+                  loader={<LinearProgress key={0} />}
+                >
+                  {this.state.mentions.map((mention, index) => {
+                    return (
+                      <Grid item key={index} className={classes.mention}>
+                        <Mention
+                          inList={true}
+                          id={mention.id}
+                          image={mention.imageUrl}
+                          title={mention.title}
+                          platform={mention.platform}
+                          content={mention.content}
+                          popularity={mention.popularity}
+                          date={mention.date}
+                          url={mention.url}
+                          summary={mention.summary}
+                          sentiment={mention.sentiment}
+                        />
+                      </Grid>
+                    );
+                  })}
+                </InfiniteScroll>
+              )}
             <Snackbar
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               open={this.state.snackBarOpen}

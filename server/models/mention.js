@@ -31,6 +31,9 @@ const Mention = db.define("Mention", {
   summary: {
     type: DataTypes.TEXT,
   },
+  sentiment: {
+    type: DataTypes.FLOAT,
+  },
 });
 
 module.exports = Mention;

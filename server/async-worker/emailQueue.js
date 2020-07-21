@@ -25,7 +25,7 @@ module.exports = async function emailQueue() {
     }
   }
 
-  weeklyEmailQueue.add([], { repeat: { cron: ' */10 * * * * *' } });
+  weeklyEmailQueue.add([], { repeat: { cron: ' * * * * *' } });
   /*This is a job. Parameters are items for worker func to process the job, and the configuration for when job should be repeated. Right now it is set up to repeat every minute */
 
 
@@ -56,7 +56,7 @@ module.exports = async function emailQueue() {
     let mailConfig = {
       service: 'gmail',
       auth: {
-        user: 'powerseed5044@gmail.com',
+        user: 'mentionscrawler123@gmail.com',
         pass: process.env.mentionsCrawlerPW
       }
     };
@@ -64,7 +64,7 @@ module.exports = async function emailQueue() {
       if (err) {
         console.log(err)
       } else {
-        console.log('success')
+        console.log('email successful')
         resolve(info);
       }
     });

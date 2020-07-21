@@ -1,5 +1,8 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';//ok
+import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';//sad
+import SentimentSatisfiedAltIcon from '@material-ui/icons/SentimentSatisfiedAlt'; //happy
 import { Typography, ButtonBase } from "@material-ui/core";
 import Moment from 'react-moment';
 import { useHistory } from "react-router-dom";
@@ -64,9 +67,15 @@ const useStyles = makeStyles(() => ({
 
 
 export default function Mention(props) {
+  console.log('what are props', props)
   const classes = useStyles();
   const history = useHistory();
 
+  function sentimentAnalysis() {
+    if (props.sentiment < 0) return <SentimentVeryDissatisfiedIcon />
+    if (props.sentiment > 0) return <SentimentSatisfiedAltIcon />
+    return <SentimentSatisfiedIcon />
+  }
   return (
     < ButtonBase
       disabled={!props.inList}
@@ -101,7 +110,7 @@ export default function Mention(props) {
             component="small"
             className={classes.fontColorForPlatform}
           >
-            {props.platform} | Popularity: {props.popularity} | <Moment format="YYYY/MM/DD HH:mm">{props.date}</Moment>
+            {props.platform} | Popularity: {props.popularity} | <Moment format="YYYY/MM/DD HH:mm">{props.date}</Moment> | Sentiment: {sentimentAnalysis()}
           </Typography>
 
           {

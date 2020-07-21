@@ -8,15 +8,15 @@ async function redditCrawler(companyName) {
     refreshToken: process.env.Reddit_refreshToken,
   });
 
-  // const subreddit = await scraper.getSubreddit("all");
-  // const topPosts = await subreddit.search({
-  //   query: companyName,
-  //   time: "all",
-  //   sort: "relevance",
-  // });
+  const subreddit = await scraper.getSubreddit("all");
+  const topPosts = await subreddit.search({
+    query: companyName,
+    time: "all",
+    sort: "relevance",
+  });
 
-  const subreddit = await scraper.getSubreddit("hearthstone");
-  const topPosts = await subreddit.getNew();
+  // const subreddit = await scraper.getSubreddit("hearthstone");
+  // const topPosts = await subreddit.getNew();
 
   let data = [];
 
