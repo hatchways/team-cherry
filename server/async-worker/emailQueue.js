@@ -3,6 +3,7 @@ const { User, Company, Mention } = require("../models");
 const axios = require('axios')
 const { setQueues } = require('bull-board')
 //Task queue for emailing
+
 module.exports = async function emailQueue() {
   const getEmails = new Queue('getEmails', {
     //Make sure redis is set / installed on your end. default port should be 6379
@@ -21,8 +22,8 @@ module.exports = async function emailQueue() {
   })
 
 
-  getEmails.add([], { repeat: { cron: ' */10 * * * * *' } });
-  /*This is a job. Parameters are items for worker func to process the job, and the configuration for when job should be repeated. Right now it is set up to repeat every minute */
+  getEmails.add([], { repeat: { cron: ' */45 * * * * *' } });
+  /*This is a job. Parameters are items for worker func to process the job, and the configuration for when job should be repeated.*/
 
   getEmails.process(async () => {
     try {
@@ -39,116 +40,97 @@ module.exports = async function emailQueue() {
   })
   /* this is the worker / processor above. This carries out the job*/
 
-  const obj = {
-    subject: "Your weekly mentioncrawler newsletter",
-    heading: "Hey! Below are your mentions for this week.",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-  };
-
-  let htmlTemplate = `
-        <!DOCTYPE html>
-        <html>
-        <body>
-        <h1>${obj.heading}</h1>
-        <a href="default.asp">
-        <img src=${obj.image} alt="HTML tutorial" style="width:200px;height:200px;border:0">
-        </a>
-        <p>${obj.description}</p>
-        </body>
-        </html>
-`;
-  const send = async (address) => {
-    try {
-      let config = {
-        headers: {
-          Authorization: `Bearer ${process.env.sendgridKey}`,
-        }
+  const send = async (address, mentions) => {
+    // console.log('mentions json obj no await out of try', mentions)
+    let name = "john"
+    // console.log(object.is(test, mentions))
+    // console.log('not json stringify', mentions)
+    // jsonObj = JSON.stringify(mentions)
+    // console.log(jsonObj)
+    let config = {
+      headers: {
+        Authorization: `Bearer ${process.env.sendgridKey}`,
       }
-      let data = {
-        personalizations: [
-          {
-            to: [
-              {
-                email: `${address}`,
-              },
-            ],
-            subject: "Your Weekly Updates from Mentionscrawler"
+    }
+    let data = {
+      personalizations: [
+        {
+          to: [
+            {
+              email: `${address}`,
+            },
+          ],
+          dynamic_template_data: {
+            allMentions: mentions,
           }
-        ],
-        from: {
-          email: "mentionscrawler123@gmail.com",
-          name: "Mentionscrawler Team"
-        },
-        content: [{ type: "text/html", value: htmlTemplate }]
-      }
+        }
+      ],
+      from: {
+        email: "johnson.tieu@gmail.com",
+        name: "Mentionscrawler Team"
+      },
+      template_id: "d-b9a2a4408d424a6c81aa6f87664c3c68",
+    }
+    try {
       await axios.post("https://api.sendgrid.com/v3/mail/send", data, config)
     } catch (error) {
-      console.error('failing here>>>>>>>')
+      console.error(error, 'failing here>>>>>>>')
     }
   }
 
-  // const result = await A.findOne({
-  //   include: {
-  //     model: B,
-  //     include: {
-  //       model: C,
-  //       where: {
-  //         c_columnName: {
-  //           [Op.col]: 'B.b_columnName',
-  //         },
-  //       }
-  //     },
-  //   },
-  // });
   sendEmail.process(async (job) => {
-    // await send(job.data.subscriberEmail)
+    const companyMentions = {}
+    let oneWeekPrev = new Date()
+    let pastDate = oneWeekPrev.getDate() - 7;
 
-    job.data.allMentions = []
+    oneWeekPrev.setDate(pastDate)
+    //get all companies here
     const companies = await Company.findAll({
       include: [{
         model: User,
         where: { id: job.data.id }
       }]
     })
-    console.log(companies)
     for (let company of companies) {
-      let mentions = await company.getMentions()
-      job.data.allMentions = job.data.allMentions.concat(mentions)
+      companyMentions[company.name] = []
+      let mentions = await company.getMentions({
+        attributes: ['title', 'content', 'date', 'imageUrl', 'popularity', 'platform'],
+        include: [{ model: Company }],
+        order: [["popularity", "DESC"]],
+      })
+      mentions = mentions.map(current => {
+        let currentObj = {
+          title: current.title,
+          content: current.content || "",
+          date: current.date,
+          imageUrl: current.imageUrl || "",
+          platform: current.platform
+        }
+        return currentObj
+      })
+
+      //get all mentions
+      companyMentions[company.name] = companyMentions[company.name].concat(mentions)
+
+      //sort by popularity
+      companyMentions[company.name] = companyMentions[company.name].sort((a, b) => {
+        return b.popularity - a.popularity
+      })
+
+      //get rid of ones dated before last week
+      companyMentions[company.name] = companyMentions[company.name].filter((current) => {
+        return current.date > oneWeekPrev
+      })
+      //cut down to 10
+      if (companyMentions[company.name].length > 10) {
+        companyMentions[company.name] = companyMentions[company.name].slice(0, 10)
+      }
     }
-
-    // for (let company of companies) {
-    //   let mentions = await company.getMentions()
-    //   job.data.allMentions = job.data.allMentions.concat(mentions)
-    // }
-
-
+    send(job.data.subscriberEmail, companyMentions)
   })
+
   sendEmail.on('completed', async (job, result) => {
-    console.log(job.data.allMentions)
-    console.log('email sent', job.data.subscriberEmail)
+    console.log(`newsletter sent to ${job.data.subscriberEmail} `)
   })
   setQueues([getEmails, sendEmail])
-  // function sendMail(email) {
-  //   let mailOptions = {
-  //     to: `${email}`,
-  //     subject: 'Your weekly mentionscrawlers newsletter updated',
-  //     text: "Sent from cherry",
-  //   };
-  //   let mailConfig = {
-  //     service: 'gmail',
-  //     auth: {
-  //       user: 'mentionscrawler123@gmail.com',
-  //       pass: 'will put pw in slack'
-  //     }
-  //   };
-  //   nodemailer.createTransport(mailConfig).sendMail(mailOptions, (err, info) => {
-  //     if (err) {
-  //       console.log(err)
-  //     } else {
-  //       console.log('success')
-  //       resolve(info);
-  //     }
-  //   });
-  // }
 }
