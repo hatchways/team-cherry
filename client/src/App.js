@@ -6,6 +6,7 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
 import Settings from "./pages/Settings";
+import LikedMentions from "./pages/LikedMentions";
 import Header from "./components/Header";
 import { eraseUser, getUser, redirectPath } from "./utils/localStorage";
 import { loginInterceptor, AxiosInterceptor } from "./utils/authAxios";
@@ -36,19 +37,18 @@ function App() {
 
   const isAuthorized = () => {
     if (getUser()) {
-      return true
-    }
-    else return false
-  }
+      return true;
+    } else return false;
+  };
   //this interceptor catches 401s
   AxiosInterceptor(unauthorized, isAuthorized);
 
   //this interceptor stores user on storage, then unhides protected routes.
   loginInterceptor(userLogin);
 
-  const pathName = window.location.pathname
-  if (!isAuthorized() && (pathName != '/login' && pathName != '/signup')) {
-    redirectPath(pathName)
+  const pathName = window.location.pathname;
+  if (!isAuthorized() && pathName != "/login" && pathName != "/signup") {
+    redirectPath(pathName);
   }
 
   return (
@@ -65,11 +65,13 @@ function App() {
               <Switch>
                 <Route exact path="/main" component={Main} />
                 <Route exact path="/settings" component={Settings} />
-                <Route path="/" component={Main} /> {/* redirect to main if can't recognize path. Maybe add 404 page if there's time*/}
+                <Route exact path="/mentions/liked" component={LikedMentions} />
+                <Route path="/" component={Main} />{" "}
+                {/* redirect to main if can't recognize path. Maybe add 404 page if there's time*/}
               </Switch>
             ) : (
-                <Redirect to="/signup" />
-              )}
+              <Redirect to="/signup" />
+            )}
             <Route render={() => <Redirect to="/login" />} />
           </Switch>
         </SearchTerm.Provider>
