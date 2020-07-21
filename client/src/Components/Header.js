@@ -7,10 +7,11 @@ import {
   Typography,
   Grid,
   Container,
-  Button
+  Button,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import SettingsIcon from "@material-ui/icons/Settings";
+import FavoriteIcon from "@material-ui/icons/Favorite";
 import TextField from "@material-ui/core/Input";
 import { getUser } from "../utils/localStorage";
 import { DebounceInput } from "react-debounce-input";
@@ -20,16 +21,16 @@ import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
   redirectContainer: {
-    display: 'flex',
-    whiteSpace: "nowrap"
+    display: "flex",
+    whiteSpace: "nowrap",
   },
   redirectText: {
-    display: 'flex',
-    alignItems: 'center',
-    marginRight: '20px'
+    display: "flex",
+    alignItems: "center",
+    marginRight: "20px",
   },
   redirectButton: {
-    borderRadius: '25px'
+    borderRadius: "25px",
   },
   fontColorForMentions: {
     color: "white",
@@ -66,7 +67,7 @@ const useStyles = makeStyles(() => ({
   SearchIcon: {
     color: "black",
   },
-  SettingsIcon: {
+  NavIcons: {
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
@@ -80,7 +81,7 @@ export default function Header() {
   const classes = useStyles();
   const history = useHistory();
   const [keywords, setKeywords] = useState("");
-  const [redirect, setRedirect] = useState('')
+  const [redirect, setRedirect] = useState("");
 
   useEffect(() => {
     let currentUrlParams = new URLSearchParams(window.location.search);
@@ -94,32 +95,29 @@ export default function Header() {
     currentUrlParams.set("keywords", event.target.value);
     history.push(window.location.pathname + "?" + currentUrlParams.toString());
   };
-  let pathName = window.location.pathname
+  let pathName = window.location.pathname;
   useEffect(() => {
-    if (pathName != '/login') {
-      setRedirect('Log In')
+    if (pathName != "/login") {
+      setRedirect("Log In");
+    } else {
+      setRedirect("Sign Up");
     }
-    else {
-      setRedirect('Sign Up')
-    }
-  }, [pathName])
+  }, [pathName]);
 
   const redirectTo = () => {
-    if (pathName != '/login') {
-      setRedirect('Sign Up')
-      history.push('/login')
+    if (pathName != "/login") {
+      setRedirect("Sign Up");
+      history.push("/login");
+    } else {
+      setRedirect("Log In");
+      history.push("/signup");
     }
-    else {
-      setRedirect('Log In')
-      history.push('/signup')
-    }
-  }
+  };
   // const pathname = window.location.pathname
   // if (pathname === '/login') {
   //   console.log(pathname)
   //   setRedirect('on')
   // }
-
 
   return (
     <div>
@@ -128,8 +126,10 @@ export default function Header() {
           <Grid container className={classes.spacing} spacing={0}>
             <Grid item xs={4} className={classes.LogoGrid}>
               <Typography variant="h6">
-                <span className={classes.fontColorForMentions}>mentions</span>
-                <span className={classes.fontColorForCrawler}>crawler.</span>
+                <Link to="/" style={{ textDecoration: "none" }}>
+                  <span className={classes.fontColorForMentions}>mentions</span>
+                  <span className={classes.fontColorForCrawler}>crawler.</span>
+                </Link>
               </Typography>
             </Grid>
 
@@ -148,7 +148,12 @@ export default function Header() {
                     <SearchIcon className={classes.SearchIcon} />
                   </div>
                 </Grid>
-                <Grid item xs={2} className={classes.SettingsIcon}>
+                <Grid item xs={2} className={classes.NavIcons}>
+                  <Link to="/mentions/liked">
+                    <IconButton color="inherit">
+                      <FavoriteIcon />
+                    </IconButton>
+                  </Link>
                   <Link to="/settings">
                     <IconButton color="inherit">
                       <SettingsIcon />
@@ -157,25 +162,24 @@ export default function Header() {
                 </Grid>
               </React.Fragment>
             ) : (
-                <Grid>
-                  <Container className={classes.redirectContainer}>
-                    <Typography variant='h2' className={classes.redirectText}>
-                      {redirect === 'Log In' ? 'Already have an account?' : "Don't have an account?"}
-                    </Typography>
-                    <Button
-                      className={classes.redirectButton}
-                      variant="outlined"
-                      color="secondary"
-                      onClick={redirectTo}
-                    >
-                      <Typography variant='h3'>
-                        {redirect}
-                      </Typography>
-
-                    </Button>
-                  </Container>
-                </Grid>
-              )}
+              <Grid>
+                <Container className={classes.redirectContainer}>
+                  <Typography variant="h2" className={classes.redirectText}>
+                    {redirect === "Log In"
+                      ? "Already have an account?"
+                      : "Don't have an account?"}
+                  </Typography>
+                  <Button
+                    className={classes.redirectButton}
+                    variant="outlined"
+                    color="secondary"
+                    onClick={redirectTo}
+                  >
+                    <Typography variant="h3">{redirect}</Typography>
+                  </Button>
+                </Container>
+              </Grid>
+            )}
           </Grid>
         </Toolbar>
       </AppBar>
