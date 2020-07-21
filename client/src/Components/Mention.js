@@ -2,10 +2,22 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, ButtonBase } from "@material-ui/core";
 import Moment from 'react-moment';
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
-  Card: {
+  CardInList: {
     height: "200px",
+    width: "100%",
+    borderRadius: "5px",
+    background: "white",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    textAlign: "left"
+  },
+  CardInDialog: {
+    height: "auto",
+    maxHeight: "400px",
     width: "100%",
     borderRadius: "5px",
     background: "white",
@@ -30,14 +42,20 @@ const useStyles = makeStyles(() => ({
     width: "95%",
   },
   contentDiv: {
+    marginTop: "20px",
     width: "69%",
   },
-  paragraphInMentions: {
+  paragraphInMentionsInList: {
     display: "-webkit-box",
     overflow: "hidden",
     textOverflow: "ellipsis",
     WebkitLineClamp: 5,
     WebkitBoxOrient: "vertical",
+  },
+  paragraphInMentionsInDialog: {
+    whiteSpace: "pre-wrap",
+    maxHeight: "300px",
+    height: "auto",
   },
   fontColorForPlatform: {
     color: "#D3D3D3",
@@ -47,12 +65,17 @@ const useStyles = makeStyles(() => ({
 
 export default function Mention(props) {
   const classes = useStyles();
+  const history = useHistory();
 
   return (
-    <ButtonBase className={classes.Card} onClick={(event) => {
-      window.open(props.url);
-    }}>
-      <div className={classes.Card}>
+    < ButtonBase
+      disabled={!props.inList}
+      className={props.inList ? classes.CardInList : classes.CardInDialog}
+      onClick={(event) => {
+        let currentUrlParams = new URLSearchParams(window.location.search);
+        history.push("/main/mentions/" + props.id + "|" + props.platform + "?" + currentUrlParams);
+      }}>
+      <div className={props.inList ? classes.CardInList : classes.CardInDialog}>
         <div className={classes.thumbnailDiv}>
           {props.image ? (
             <img className={classes.thumbnailImg} src={props.image} alt="" />
@@ -68,7 +91,7 @@ export default function Mention(props) {
         <div className={classes.dividerDiv}></div>
 
         <div className={classes.contentDiv}>
-          <Typography noWrap gutterBottom variant="h5" component="h2">
+          <Typography noWrap={props.inList} gutterBottom variant="h5" component="h2">
             {props.title}
           </Typography>
 
@@ -82,10 +105,13 @@ export default function Mention(props) {
           </Typography>
 
           {
-            props.summary ? <p className={classes.paragraphInMentions}>{props.summary}</p> : <p className={classes.paragraphInMentions}>{props.content}</p>
+            props.inList ?
+              (props.summary ? <p className={classes.paragraphInMentionsInList}>{props.summary}</p> : <p className={classes.paragraphInMentionsInList}>{props.content}</p>)
+              :
+              <p className={classes.paragraphInMentionsInDialog}>{props.content}</p>
           }
         </div>
       </div>
-    </ButtonBase>
+    </ButtonBase >
   );
 }

@@ -17,7 +17,9 @@ import {
   Snackbar,
   Dialog,
   Button,
+  IconButton
 } from "@material-ui/core/";
+import CloseIcon from '@material-ui/icons/Close';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -178,11 +180,16 @@ class Main extends Component {
       sortByState: sortByState,
       socket: socket,
       snackBarOpen: false,
-      newMentionsPopupOpen: false
+      newMentionsPopupOpen: false,
+      idAndPlatformForMentionDisplayedInDialog: props.match.params.idAndPlatform,
+      singleMentionPopupOpen: false,
+      mentionDisplayedInDialog: null
     };
   }
 
   async componentDidUpdate() {
+    console.log("componentDidUpdate");
+
     let currentUrlParams = new URLSearchParams(window.location.search);
     let keywords = currentUrlParams.get("keywords");
     if (!keywords) {
@@ -211,6 +218,32 @@ class Main extends Component {
       this.state.socket.emit("setKeywords", {
         keywords: this.state.keywords,
       });
+    }
+
+    if (this.props.match.params.idAndPlatform) {
+      if (this.state.idAndPlatformForMentionDisplayedInDialog !== this.props.match.params.idAndPlatform) {
+        console.log("if");
+
+        let { data } = await axios.get("/api/mentions/" + this.props.match.params.idAndPlatform)
+
+        if (data) {
+          this.setState({
+            mentionDisplayedInDialog: data.mention,
+            singleMentionPopupOpen: true,
+            idAndPlatformForMentionDisplayedInDialog: this.props.match.params.idAndPlatform
+          })
+        }
+      }
+    }
+    else {
+      if (this.state.idAndPlatformForMentionDisplayedInDialog) {
+        console.log("else");
+        this.setState({
+          mentionDisplayedInDialog: null,
+          singleMentionPopupOpen: false,
+          idAndPlatformForMentionDisplayedInDialog: null
+        })
+      }
     }
   }
 
@@ -244,6 +277,16 @@ class Main extends Component {
         })
       }
     })
+
+    if (this.state.idAndPlatformForMentionDisplayedInDialog) {
+      let { data } = await axios.get("/api/mentions/" + this.state.idAndPlatformForMentionDisplayedInDialog)
+      if (data) {
+        await this.setState({
+          mentionDisplayedInDialog: data.mention,
+          singleMentionPopupOpen: true
+        })
+      }
+    }
   }
 
   sortByPopularity(mentions) {
@@ -347,16 +390,36 @@ class Main extends Component {
   }
 
   handleSnackBarClick = (event) => {
+    let updatedMentions = [...this.state.mentions, ...this.state.newMentions]
+
+    if (this.state.sortByState === "MostRecent") {
+      this.sortByDate(updatedMentions);
+    } else {
+      this.sortByPopularity(updatedMentions);
+    }
+
     this.setState({
       snackBarOpen: false,
-      newMentionsPopupOpen: true
+      newMentionsPopupOpen: true,
+      mentions: updatedMentions,
     })
   }
 
-  handlePopupWindowClose = () => {
+  handleNewMentionsPopupClose = () => {
     this.setState({
       newMentionsPopupOpen: false,
       newMentions: []
+    });
+  };
+
+  handleSingleMentionPopupClose = () => {
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    this.props.history.push("/main" + "?" + currentUrlParams);
+
+    this.setState({
+      singleMentionPopupOpen: false,
+      idAndPlatformForMentionDisplayedInDialog: null,
+      mentionDisplayedInDialog: null
     });
   };
 
@@ -466,6 +529,8 @@ class Main extends Component {
                   return (
                     <Grid item key={index} className={classes.mention}>
                       <Mention
+                        inList={true}
+                        id={mention.id}
                         image={mention.imageUrl}
                         title={mention.title}
                         platform={mention.platform}
@@ -505,6 +570,8 @@ class Main extends Component {
                 return (
                   <Grid item key={index} className={classes.mention}>
                     <Mention
+                      inList={true}
+                      id={mention.id}
                       image={mention.imageUrl}
                       title={mention.title}
                       platform={mention.platform}
@@ -524,7 +591,40 @@ class Main extends Component {
           </MuiDialogContent>
 
           <MuiDialogActions>
-            <Button autoFocus onClick={this.handlePopupWindowClose} color="primary">
+            <Button autoFocus onClick={this.handleNewMentionsPopupClose} color="primary">
+              Close
+            </Button>
+          </MuiDialogActions>
+        </Dialog>
+
+        <Dialog aria-labelledby="customized-dialog-title" open={this.state.singleMentionPopupOpen} maxWidth={'md'} fullWidth={true}>
+          <MuiDialogContent>
+            {
+              this.state.mentionDisplayedInDialog ?
+                <Mention
+                  inList={false}
+                  image={this.state.mentionDisplayedInDialog.imageUrl}
+                  title={this.state.mentionDisplayedInDialog.title}
+                  platform={this.state.mentionDisplayedInDialog.platform}
+                  content={this.state.mentionDisplayedInDialog.content}
+                  popularity={this.state.mentionDisplayedInDialog.popularity}
+                  date={this.state.mentionDisplayedInDialog.date}
+                  url={this.state.mentionDisplayedInDialog.url}
+                  summary={this.state.mentionDisplayedInDialog.summary}
+                />
+                :
+                null
+            }
+
+          </MuiDialogContent>
+
+          <Divider style={{ marginTop: "20px" }}></Divider>
+
+          <MuiDialogActions>
+            <Button onClick={() => { window.open(this.state.mentionDisplayedInDialog.url) }} color="primary">
+              Original Post
+            </Button>
+            <Button onClick={this.handleSingleMentionPopupClose} color="primary">
               Close
             </Button>
           </MuiDialogActions>
