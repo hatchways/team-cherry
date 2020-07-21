@@ -8,7 +8,7 @@ const {
 } = require("./middleware/requiresFormValidation");
 const { User, Company, Mention, UserMentions } = require("../models");
 const cookieConfig = require("../cookie-config");
-const { createErrorResponse } = require("./middleware/util");
+const { createErrorResponse } = require("./util");
 const requiresAuth = require("./middleware/requiresAuth");
 
 router.post("/register", validateRegister, async (req, res) => {

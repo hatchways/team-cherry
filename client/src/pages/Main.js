@@ -1,29 +1,34 @@
-import React, { Component } from "react";
-import Mention from "../components/Mention";
-import axios from "axios";
-import SwitchSelector from "react-switch-selector";
-import { withStyles } from "@material-ui/core/styles";
 import {
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-  Switch,
   Avatar,
-  ListItemAvatar,
   Divider,
   Grid,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
   ListItemSecondaryAction,
+  ListItemText,
+  Switch,
+  Typography,
   Snackbar,
   Dialog,
   Button,
-  IconButton
+  IconButton,
 } from "@material-ui/core/";
-import CloseIcon from '@material-ui/icons/Close';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import { withStyles } from "@material-ui/core/styles";
+import CloseIcon from "@material-ui/icons/Close";
+import MuiDialogActions from "@material-ui/core/DialogActions";
+import MuiDialogContent from "@material-ui/core/DialogContent";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import axios from "axios";
+import React, { Component } from "react";
+import InfiniteScroll from "react-infinite-scroller";
+import SwitchSelector from "react-switch-selector";
 import io from "socket.io-client";
+import { uuid } from "uuidv4";
+import { debounce } from "throttle-debounce";
+
+import Mention from "../components/Mention";
 
 const useStyles = (theme) => ({
   RootGridContainer: {
@@ -69,7 +74,7 @@ const useStyles = (theme) => ({
   },
   snackBarBackground: {
     background: theme.palette.primary.main,
-  }
+  },
 });
 
 const IOSSwitch = withStyles((theme) => ({
@@ -175,13 +180,17 @@ class Main extends Component {
       platformSelected: [...splitSelectedPlatforms],
       keywords: keywords,
       mentions: [],
+      hasMore: true || false,
+      page: 1,
       newMentions: [],
       switchStates: switchStates,
       sortByState: sortByState,
       socket: socket,
       snackBarOpen: false,
-      newMentionsPopupOpen: false
+      newMentionsPopupOpen: false,
     };
+
+    this.loadMoreMentions = debounce(500, this.loadMoreMentions.bind(this));
   }
 
   async componentDidUpdate() {
@@ -208,6 +217,8 @@ class Main extends Component {
       this.setState({
         mentions: data.mentions,
         keywords: keywords,
+        page: 1,
+        hasMore: true,
       });
 
       this.state.socket.emit("setKeywords", {
@@ -221,6 +232,7 @@ class Main extends Component {
       params: {
         platforms: this.state.platformSelected,
         keywords: this.state.keywords,
+        page: this.state.page,
       },
     });
 
@@ -234,18 +246,17 @@ class Main extends Component {
       mentions: res.data.mentions,
     });
 
-
-    this.state.socket.on("newMentions", data => {
+    this.state.socket.on("newMentions", (data) => {
       this.setState({
         newMentions: [...data, ...this.state.newMentions],
-      })
+      });
 
       if (!this.state.newMentionsPopupOpen) {
         this.setState({
-          snackBarOpen: true
-        })
+          snackBarOpen: true,
+        });
       }
-    })
+    });
   }
 
   sortByPopularity(mentions) {
@@ -301,12 +312,12 @@ class Main extends Component {
 
       let { data } = await axios.get("/api/mentions/", {
         params: {
-          platforms: [newlySelectedPlatform],
+          platforms: this.state.platformSelected,
           keywords: this.state.keywords,
         },
       });
 
-      const newMentions = this.state.mentions.concat(data.mentions);
+      const newMentions = data.mentions;
 
       if (this.state.sortByState == "MostRecent") {
         this.sortByDate(newMentions);
@@ -316,6 +327,8 @@ class Main extends Component {
 
       await this.setState({
         mentions: newMentions,
+        hasMore: true,
+        page: 1,
       });
     } else {
       let index = this.state.platformSelected.indexOf(newlySelectedPlatform);
@@ -348,17 +361,48 @@ class Main extends Component {
     });
   }
 
+  async loadMoreMentions() {
+    let res = await axios.get("/api/mentions", {
+      params: {
+        platforms: this.state.platformSelected,
+        keywords: this.state.keywords,
+        page: this.state.page + 1,
+      },
+    });
+
+    const { hasMore, page, mentions } = res.data;
+    if (hasMore) {
+      const updatedMentions = [...this.state.mentions, ...mentions];
+
+      if (this.state.sortByState == "MostRecent") {
+        this.sortByDate(updatedMentions);
+      } else {
+        this.sortByPopularity(updatedMentions);
+      }
+
+      this.setState({
+        hasMore,
+        page,
+        mentions: updatedMentions,
+      });
+    } else {
+      this.setState({
+        hasMore: false,
+      });
+    }
+  }
+
   handleSnackBarClick = (event) => {
     this.setState({
       snackBarOpen: false,
-      newMentionsPopupOpen: true
-    })
-  }
+      newMentionsPopupOpen: true,
+    });
+  };
 
   handlePopupWindowClose = () => {
     this.setState({
       newMentionsPopupOpen: false,
-      newMentions: []
+      newMentions: [],
     });
   };
 
@@ -377,6 +421,7 @@ class Main extends Component {
                       <ListItemAvatar
                         className={classes.platformListItemAvatar}
                       >
+                        {" "}
                         <Avatar
                           className={classes.platformAvatar}
                           src={`/imgs/${platform}_icon.png`}
@@ -419,6 +464,7 @@ class Main extends Component {
             direction={"column"}
             spacing={2}
           >
+            {" "}
             <Grid
               item
               container
@@ -431,7 +477,7 @@ class Main extends Component {
                 <SwitchSelector
                   initialSelectedIndex={
                     !this.state.sortByState ||
-                      this.state.sortByState === "MostRecent"
+                    this.state.sortByState === "MostRecent"
                       ? 0
                       : 1
                   }
@@ -457,14 +503,19 @@ class Main extends Component {
                 />
               </div>
             </Grid>
-
             {this.state.mentions.length === 0 ? (
               <h3 className={classes.instruction}>
                 Please enter a company name in the search bar, and toggle one or
                 more platforms in the left panel.
               </h3>
             ) : (
-                this.state.mentions.map((mention, index) => {
+              <InfiniteScroll
+                pageStart={0}
+                loadMore={this.loadMoreMentions}
+                hasMore={this.state.hasMore}
+                loader={<LinearProgress key={0} />}
+              >
+                {this.state.mentions.map((mention, index) => {
                   return (
                     <Grid item key={index} className={classes.mention}>
                       <Mention
@@ -477,9 +528,9 @@ class Main extends Component {
                       />
                     </Grid>
                   );
-                })
-              )}
-
+                })}
+              </InfiniteScroll>
+            )}
             <Snackbar
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               open={this.state.snackBarOpen}
@@ -488,41 +539,48 @@ class Main extends Component {
               ContentProps={{
                 classes: {
                   root: classes.snackBarBackground,
-                }
+                },
               }}
             />
           </Grid>
         </Grid>
 
-        <Dialog aria-labelledby="customized-dialog-title" open={this.state.newMentionsPopupOpen} maxWidth={'md'} fullWidth={true}>
+        <Dialog
+          aria-labelledby="customized-dialog-title"
+          open={this.state.newMentionsPopupOpen}
+          maxWidth={"md"}
+          fullWidth={true}
+        >
           <DialogTitle id="customized-dialog-title">
             Newly posted mentions
           </DialogTitle>
 
           <MuiDialogContent dividers>
-            {
-              this.state.newMentions.map((mention, index) => {
-                return (
-                  <Grid item key={index} className={classes.mention}>
-                    <Mention
-                      image={mention.image}
-                      title={mention.title}
-                      platform={mention.platform}
-                      content={mention.content}
-                      popularity={mention.popularity}
-                      date={mention.date}
-                    />
-                    {
-                      index === this.state.newMentions.length - 1 ? null : <Divider />
-                    }
-                  </Grid>
-                );
-              })
-            }
+            {this.state.newMentions.map((mention, index) => {
+              return (
+                <Grid item key={index} className={classes.mention}>
+                  <Mention
+                    image={mention.image}
+                    title={mention.title}
+                    platform={mention.platform}
+                    content={mention.content}
+                    popularity={mention.popularity}
+                    date={mention.date}
+                  />
+                  {index === this.state.newMentions.length - 1 ? null : (
+                    <Divider />
+                  )}
+                </Grid>
+              );
+            })}
           </MuiDialogContent>
 
           <MuiDialogActions>
-            <Button autoFocus onClick={this.handlePopupWindowClose} color="primary">
+            <Button
+              autoFocus
+              onClick={this.handlePopupWindowClose}
+              color="primary"
+            >
               Close
             </Button>
           </MuiDialogActions>
