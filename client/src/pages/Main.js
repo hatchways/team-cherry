@@ -1,6 +1,5 @@
 import {
   Avatar,
-  CircularProgress,
   Divider,
   Grid,
   LinearProgress,
@@ -11,8 +10,16 @@ import {
   ListItemText,
   Switch,
   Typography,
+  Snackbar,
+  Dialog,
+  Button,
+  IconButton,
 } from "@material-ui/core/";
 import { withStyles } from "@material-ui/core/styles";
+import CloseIcon from "@material-ui/icons/Close";
+import MuiDialogActions from "@material-ui/core/DialogActions";
+import MuiDialogContent from "@material-ui/core/DialogContent";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import axios from "axios";
 import React, { Component } from "react";
 import InfiniteScroll from "react-infinite-scroller";
@@ -64,6 +71,9 @@ const useStyles = (theme) => ({
   },
   mention: {
     maxWidth: "100%",
+  },
+  snackBarBackground: {
+    background: theme.palette.primary.main,
   },
 });
 
@@ -120,6 +130,16 @@ const IOSSwitch = withStyles((theme) => ({
   );
 });
 
+// Variables for "new mentions" popup window.
+const DialogTitle = withStyles(useStyles)((props) => {
+  const { children } = props;
+  return (
+    <MuiDialogTitle disableTypography>
+      <Typography variant="h6">{children}</Typography>
+    </MuiDialogTitle>
+  );
+});
+
 class Main extends Component {
   constructor(props) {
     super(props);
@@ -162,9 +182,12 @@ class Main extends Component {
       mentions: [],
       hasMore: true || false,
       page: 1,
+      newMentions: [],
       switchStates: switchStates,
       sortByState: sortByState,
       socket: socket,
+      snackBarOpen: false,
+      newMentionsPopupOpen: false,
     };
 
     this.loadMoreMentions = debounce(500, this.loadMoreMentions.bind(this));
@@ -221,6 +244,18 @@ class Main extends Component {
 
     this.setState({
       mentions: res.data.mentions,
+    });
+
+    this.state.socket.on("newMentions", (data) => {
+      this.setState({
+        newMentions: [...data, ...this.state.newMentions],
+      });
+
+      if (!this.state.newMentionsPopupOpen) {
+        this.setState({
+          snackBarOpen: true,
+        });
+      }
     });
   }
 
@@ -357,6 +392,20 @@ class Main extends Component {
     }
   }
 
+  handleSnackBarClick = (event) => {
+    this.setState({
+      snackBarOpen: false,
+      newMentionsPopupOpen: true,
+    });
+  };
+
+  handlePopupWindowClose = () => {
+    this.setState({
+      newMentionsPopupOpen: false,
+      newMentions: [],
+    });
+  };
+
   render() {
     const { classes } = this.props;
 
@@ -470,8 +519,7 @@ class Main extends Component {
                   return (
                     <Grid item key={index} className={classes.mention}>
                       <Mention
-                        key={mention.id}
-                        image={mention.image}
+                        image={mention.imageUrl}
                         title={mention.title}
                         platform={mention.platform}
                         content={mention.content}
@@ -483,8 +531,60 @@ class Main extends Component {
                 })}
               </InfiniteScroll>
             )}
+            <Snackbar
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              open={this.state.snackBarOpen}
+              message="New mentions arrived. Click to view. "
+              onClick={this.handleSnackBarClick}
+              ContentProps={{
+                classes: {
+                  root: classes.snackBarBackground,
+                },
+              }}
+            />
           </Grid>
         </Grid>
+
+        <Dialog
+          aria-labelledby="customized-dialog-title"
+          open={this.state.newMentionsPopupOpen}
+          maxWidth={"md"}
+          fullWidth={true}
+        >
+          <DialogTitle id="customized-dialog-title">
+            Newly posted mentions
+          </DialogTitle>
+
+          <MuiDialogContent dividers>
+            {this.state.newMentions.map((mention, index) => {
+              return (
+                <Grid item key={index} className={classes.mention}>
+                  <Mention
+                    image={mention.image}
+                    title={mention.title}
+                    platform={mention.platform}
+                    content={mention.content}
+                    popularity={mention.popularity}
+                    date={mention.date}
+                  />
+                  {index === this.state.newMentions.length - 1 ? null : (
+                    <Divider />
+                  )}
+                </Grid>
+              );
+            })}
+          </MuiDialogContent>
+
+          <MuiDialogActions>
+            <Button
+              autoFocus
+              onClick={this.handlePopupWindowClose}
+              color="primary"
+            >
+              Close
+            </Button>
+          </MuiDialogActions>
+        </Dialog>
       </div>
     );
   }

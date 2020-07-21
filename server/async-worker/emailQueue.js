@@ -56,7 +56,7 @@ module.exports = async function emailQueue() {
     let mailConfig = {
       service: 'gmail',
       auth: {
-        user: 'mentionscrawler123@gmail.com',
+        user: 'powerseed5044@gmail.com',
         pass: process.env.mentionsCrawlerPW
       }
     };

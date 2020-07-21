@@ -13,6 +13,7 @@ const useStyles = makeStyles(() => ({
   },
   thumbnailDiv: {
     width: "25%",
+    height: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -21,8 +22,8 @@ const useStyles = makeStyles(() => ({
     width: "3%",
   },
   thumbnailImg: {
-    maxWidth: "90%",
-    maxHeight: "90%",
+    maxWidth: "70%",
+    maxHeight: "70%",
   },
   contentDiv: {
     width: "69%",
@@ -48,12 +49,12 @@ export default function Mention(props) {
         {props.image ? (
           <img className={classes.thumbnailImg} src={props.image} alt="" />
         ) : (
-          <img
-            className={classes.thumbnailImg}
-            src={`/imgs/${props.platform}_icon.png`}
-            alt=""
-          />
-        )}
+            <img
+              className={classes.thumbnailImg}
+              src={`/imgs/${props.platform}_icon.png`}
+              alt=""
+            />
+          )}
       </div>
 
       <div className={classes.dividerDiv}></div>
