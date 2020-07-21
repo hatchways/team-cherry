@@ -3,7 +3,7 @@ const {
   validateRegisterInput,
 } = require("../../validators");
 
-const { createErrorResponse } = require("./util");
+const { createErrorResponse } = require("../util");
 
 const validateLogin = (req, res, next) => {
   const { errors, isValid } = validateLoginInput(req.body);
