@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
+const axios = require('axios')
 
 const {
   validateLogin,
@@ -20,6 +21,7 @@ router.post("/register", validateRegister, async (req, res) => {
 
   const user = await User.create({
     email: req.body.email,
+    subscriberEmail: req.body.email,
     password: req.body.password,
   });
 
@@ -36,6 +38,41 @@ router.post("/register", validateRegister, async (req, res) => {
     id: user.id,
     email: user.email,
   };
+
+  const send = async (address) => {
+    let config = {
+      headers: {
+        Authorization: `Bearer ${process.env.sendgridKey}`,
+      }
+    }
+    let data = {
+      personalizations: [
+        {
+          to: [
+            {
+              email: `${address}`,
+            },
+          ],
+        }
+      ],
+      from: {
+        email: "mentionscrawler123@gmail.com",
+        name: "Mentionscrawler Team"
+      },
+      subject: "Welcome to MentionsCrawler!",
+      content: [{
+        type: "text/plain",
+        value: "Thank you for signing up!"
+      }]
+    }
+    try {
+      await axios.post("https://api.sendgrid.com/v3/mail/send", data, config)
+    } catch (error) {
+      console.error(error, 'failing new subscriber')
+    }
+  }
+
+  await send(user.email)
 
   jwt.sign(
     payload,
