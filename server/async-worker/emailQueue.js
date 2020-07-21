@@ -41,12 +41,7 @@ module.exports = async function emailQueue() {
   /* this is the worker / processor above. This carries out the job*/
 
   const send = async (address, mentions) => {
-    // console.log('mentions json obj no await out of try', mentions)
-    let name = "john"
-    // console.log(object.is(test, mentions))
-    // console.log('not json stringify', mentions)
-    // jsonObj = JSON.stringify(mentions)
-    // console.log(jsonObj)
+    console.log(mentions)
     let config = {
       headers: {
         Authorization: `Bearer ${process.env.sendgridKey}`,
@@ -66,10 +61,10 @@ module.exports = async function emailQueue() {
         }
       ],
       from: {
-        email: "johnson.tieu@gmail.com",
+        email: "mentionscrawler123@gmail.com",
         name: "Mentionscrawler Team"
       },
-      template_id: "d-b9a2a4408d424a6c81aa6f87664c3c68",
+      template_id: "d-27ed250c5d114b5da59c3023eb45d0c8",
     }
     try {
       await axios.post("https://api.sendgrid.com/v3/mail/send", data, config)
