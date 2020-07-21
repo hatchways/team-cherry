@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { Op } = require("sequelize");
 
 const requiresAuth = require("./middleware/requiresAuth");
-const { Mention, User } = require("../models");
+const { Mention, User, UserMentions } = require("../models");
 
 router.get("/", requiresAuth, async (req, res) => {
   let output = [];
@@ -40,6 +40,11 @@ router.get("/", requiresAuth, async (req, res) => {
           },
         ],
       },
+      include: [
+        {
+          model: UserMentions,
+        },
+      ],
     });
 
     output = output.concat(mentions);

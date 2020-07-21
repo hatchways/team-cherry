@@ -1,12 +1,12 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
-const nodemailer = require('nodemailer')
+const nodemailer = require("nodemailer");
 
 const {
   validateLogin,
   validateRegister,
 } = require("./middleware/requiresFormValidation");
-const { User, Company } = require("../models");
+const { User, Company, Mention, UserMentions } = require("../models");
 const cookieConfig = require("../cookie-config");
 const { createErrorResponse } = require("./middleware/util");
 const requiresAuth = require("./middleware/requiresAuth");
@@ -42,25 +42,25 @@ router.post("/register", validateRegister, async (req, res) => {
 
   let mailOptions = {
     to: `${req.body.email}`,
-    subject: 'Account Created',
-    text: "Welcome to MentionsCrawler. You have successfully created an account.",
+    subject: "Account Created",
+    text:
+      "Welcome to MentionsCrawler. You have successfully created an account.",
   };
   let mailConfig = {
-    service: 'gmail',
+    service: "gmail",
     auth: {
-      user: 'mentionscrawler123@gmail.com',
-      pass: 'P455w0rd'
-    }
+      user: "mentionscrawler123@gmail.com",
+      pass: "P455w0rd",
+    },
   };
   nodemailer.createTransport(mailConfig).sendMail(mailOptions, (err, info) => {
     if (err) {
-      console.log(err)
+      console.log(err);
     } else {
-      console.log('success')
+      console.log("success");
       resolve(info);
     }
   });
-
 
   jwt.sign(
     payload,
@@ -119,5 +119,39 @@ router.put("/subscribe-mail/update", requiresAuth, async (req, res) => {
   // refresh the user token to bring on the email change
   res.sendStatus(204);
 });
+
+router.get("/mentions/liked", requiresAuth, async (req, res, next) => {
+  const likedMentions = await UserMentions.findAll({
+    where: {
+      UserId: req.user.id,
+      liked: true,
+    },
+    include: [{ model: Mention }],
+  });
+
+  const total = likedMentions.length;
+
+  res.json({ total, mentions: likedMentions });
+});
+
+router.post(
+  "/mentions/:mentionId/like",
+  requiresAuth,
+  async (req, res, next) => {
+    let [userMention, isNew] = await UserMentions.findOrCreate({
+      where: {
+        UserId: req.user.id,
+        MentionId: req.params.mentionId,
+      },
+    });
+
+    userMention.liked = !userMention.liked;
+    await userMention.save();
+
+    res.json({
+      mention: userMention,
+    });
+  }
+);
 
 module.exports = router;
