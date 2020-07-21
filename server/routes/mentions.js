@@ -67,4 +67,19 @@ router.get("/toggle", async (req, res) => {
   res.json({ message: "Endpoint for mention toggles" });
 });
 
+router.get("/:idAndPlatform", async (req, res) => {
+  let idAndPlatform = req.params.idAndPlatform.split("|");
+  let id = idAndPlatform[0];
+  let platform = idAndPlatform[1];
+
+  let mention = await Mention.findOne({
+    where: {
+      id: id,
+      platform: platform,
+    },
+  });
+
+  res.json({ mention: mention });
+});
+
 module.exports = router;
