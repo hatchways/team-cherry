@@ -519,6 +519,7 @@ class Main extends Component {
                   return (
                     <Grid item key={index} className={classes.mention}>
                       <Mention
+                        id={mention.id}
                         image={mention.imageUrl}
                         title={mention.title}
                         platform={mention.platform}
