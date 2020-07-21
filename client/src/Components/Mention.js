@@ -3,6 +3,7 @@ import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, IconButton } from "@material-ui/core";
 import FavoriteIcon from "@material-ui/icons/Favorite";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 
 const useStyles = makeStyles(() => ({
   Card: {
@@ -86,7 +87,7 @@ export default function Mention(props) {
             className={classes.likeIcon}
             onClick={() => props.handleLikeToggle(props.id)}
           >
-            <FavoriteIcon />
+            {props.liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
           </IconButton>
         </div>
 

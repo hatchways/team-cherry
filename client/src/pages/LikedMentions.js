@@ -42,6 +42,7 @@ const LikedMentions = (props) => {
         return (
           <Mention
             handleLikeToggle={toggleLike}
+            liked={true}
             key={mention.id}
             id={mention.id}
             image={mention.imageUrl}

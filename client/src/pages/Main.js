@@ -191,6 +191,7 @@ class Main extends Component {
     };
 
     this.loadMoreMentions = debounce(500, this.loadMoreMentions.bind(this));
+    this.toggleLike = this.toggleLike.bind(this);
   }
 
   async componentDidUpdate() {
@@ -409,11 +410,20 @@ class Main extends Component {
   async toggleLike(mentionId) {
     const res = await axios.post(`/api/users/mentions/${mentionId}/like`);
     const { mention } = res.data;
-    if (mention.liked) {
-      console.log("setState to show toggled like");
-    } else {
-      console.log("setState to show toggled unlike");
+
+    // this might need to be more efficient
+    let mentionsCopy = this.state.mentions.slice();
+    for (let i = 0; i < mentionsCopy.length; i++) {
+      let thisMention = mentionsCopy[i];
+      if (thisMention.id === mention.MentionId) {
+        thisMention.liked = !thisMention.liked;
+        break;
+      }
     }
+
+    this.setState({
+      mentions: mentionsCopy,
+    });
   }
 
   render() {
@@ -530,6 +540,7 @@ class Main extends Component {
                     <Grid item key={index} className={classes.mention}>
                       <Mention
                         handleLikeToggle={this.toggleLike}
+                        liked={mention.liked}
                         id={mention.id}
                         image={mention.imageUrl}
                         title={mention.title}

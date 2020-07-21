@@ -25,7 +25,7 @@ router.get("/", requiresAuth, async (req, res) => {
   const offset = (page - 1) * pageSize;
   const limit = pageSize;
 
-  output = [];
+  let output = [];
   for (let company of companies) {
     let mentions = await company.getMentions({
       limit,
@@ -55,6 +55,15 @@ router.get("/", requiresAuth, async (req, res) => {
       ],
       order: [["date", "DESC"]],
     });
+
+    mentions = mentions.map((mention) => {
+      let userFound = mention.UserMentions.find(
+        (um) => um.UserId == req.user.id
+      );
+      let liked = userFound && userFound.liked ? true : false;
+      return { ...mention.dataValues, liked };
+    });
+
     output = output.concat(mentions);
   }
 
