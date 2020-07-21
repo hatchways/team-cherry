@@ -406,6 +406,16 @@ class Main extends Component {
     });
   };
 
+  async toggleLike(mentionId) {
+    const res = await axios.post(`/api/users/mentions/${mentionId}/like`);
+    const { mention } = res.data;
+    if (mention.liked) {
+      console.log("setState to show toggled like");
+    } else {
+      console.log("setState to show toggled unlike");
+    }
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -519,6 +529,7 @@ class Main extends Component {
                   return (
                     <Grid item key={index} className={classes.mention}>
                       <Mention
+                        handleLikeToggle={this.toggleLike}
                         id={mention.id}
                         image={mention.imageUrl}
                         title={mention.title}

@@ -84,7 +84,7 @@ export default function Mention(props) {
           </Typography>
           <IconButton
             className={classes.likeIcon}
-            onClick={() => toggleLike(props.id)}
+            onClick={() => props.handleLikeToggle(props.id)}
           >
             <FavoriteIcon />
           </IconButton>

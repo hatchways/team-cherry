@@ -15,8 +15,8 @@ const useStyles = makeStyles((theme) => ({
 
 const LikedMentions = (props) => {
   const classes = useStyles();
-  // this might need to be refactored into a context state
   const [mentions, setMentions] = useState([]);
+
   useEffect(() => {
     async function getLikedMentions() {
       const res = await axios.get("/api/users/mentions/liked");
@@ -25,6 +25,15 @@ const LikedMentions = (props) => {
     getLikedMentions();
   }, []);
 
+  const toggleLike = async (mentionId) => {
+    console.log(mentions);
+    const res = await axios.post(`/api/users/mentions/${mentionId}/like`);
+    const { mention } = res.data;
+    if (!mention.liked) {
+      setMentions(mentions.filter((m) => m.MentionId !== mentionId));
+    }
+  };
+
   return (
     <Grid className={classes.container}>
       <h1 style={{ textAlign: "center" }}>Page for liked mentions</h1>
@@ -32,6 +41,7 @@ const LikedMentions = (props) => {
         const mention = m.Mention;
         return (
           <Mention
+            handleLikeToggle={toggleLike}
             key={mention.id}
             id={mention.id}
             image={mention.imageUrl}
