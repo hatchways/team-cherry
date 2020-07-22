@@ -1,8 +1,11 @@
 import React from "react";
+import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, ButtonBase } from "@material-ui/core";
-import Moment from 'react-moment';
+import Moment from "react-moment";
 import { useHistory } from "react-router-dom";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import { Typography, IconButton, ButtonBase } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
   CardInList: {
@@ -13,7 +16,7 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-start",
-    textAlign: "left"
+    textAlign: "left",
   },
   CardInDialog: {
     height: "auto",
@@ -24,7 +27,7 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-start",
-    textAlign: "left"
+    textAlign: "left",
   },
   thumbnailDiv: {
     width: "25%",
@@ -60,40 +63,67 @@ const useStyles = makeStyles(() => ({
   fontColorForPlatform: {
     color: "#D3D3D3",
   },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  likeIcon: {
+    position: "relative",
+    bottom: "10px",
+  },
 }));
-
 
 export default function Mention(props) {
   const classes = useStyles();
   const history = useHistory();
 
   return (
-    < ButtonBase
+    <ButtonBase
       disabled={!props.inList}
       className={props.inList ? classes.CardInList : classes.CardInDialog}
       onClick={(event) => {
         let currentUrlParams = new URLSearchParams(window.location.search);
-        history.push("/main/mentions/" + props.id + "|" + props.platform + "?" + currentUrlParams);
-      }}>
+        history.push(
+          "/main/mentions/" +
+            props.id +
+            "|" +
+            props.platform +
+            "?" +
+            currentUrlParams
+        );
+      }}
+    >
       <div className={props.inList ? classes.CardInList : classes.CardInDialog}>
         <div className={classes.thumbnailDiv}>
           {props.image ? (
             <img className={classes.thumbnailImg} src={props.image} alt="" />
           ) : (
-              <img
-                className={classes.thumbnailImg}
-                src={`/imgs/${props.platform}_icon.png`}
-                alt=""
-              />
-            )}
+            <img
+              className={classes.thumbnailImg}
+              src={`/imgs/${props.platform}_icon.png`}
+              alt=""
+            />
+          )}
         </div>
 
         <div className={classes.dividerDiv}></div>
 
         <div className={classes.contentDiv}>
-          <Typography noWrap={props.inList} gutterBottom variant="h5" component="h2">
-            {props.title}
-          </Typography>
+          <div className={classes.header}>
+            <Typography noWrap gutterBottom variant="h5" component="h2">
+              {props.title}
+            </Typography>
+            <IconButton
+              className={classes.likeIcon}
+              onClick={() => props.handleLikeToggle(props.id)}
+            >
+              {props.liked ? (
+                <FavoriteIcon style={{ fill: "red" }} />
+              ) : (
+                <FavoriteBorderIcon />
+              )}
+            </IconButton>
+          </div>
 
           <Typography
             gutterBottom
@@ -101,17 +131,27 @@ export default function Mention(props) {
             component="small"
             className={classes.fontColorForPlatform}
           >
-            {props.platform} | Popularity: {props.popularity} | <Moment format="YYYY/MM/DD HH:mm">{props.date}</Moment>
+            {props.platform} | Popularity: {props.popularity} |{" "}
+            <Moment format="YYYY/MM/DD HH:mm">{props.date}</Moment>
           </Typography>
 
-          {
-            props.inList ?
-              (props.summary ? <p className={classes.paragraphInMentionsInList}>{props.summary}</p> : <p className={classes.paragraphInMentionsInList}>{props.content}</p>)
-              :
-              <p className={classes.paragraphInMentionsInDialog}>{props.content}</p>
-          }
+          {props.inList ? (
+            props.summary ? (
+              <p className={classes.paragraphInMentionsInList}>
+                {props.summary}
+              </p>
+            ) : (
+              <p className={classes.paragraphInMentionsInList}>
+                {props.content}
+              </p>
+            )
+          ) : (
+            <p className={classes.paragraphInMentionsInDialog}>
+              {props.content}
+            </p>
+          )}
         </div>
       </div>
-    </ButtonBase >
+    </ButtonBase>
   );
 }
