@@ -53,14 +53,6 @@ const useStyles = makeStyles(() => ({
 
 export default function Mention(props) {
   const classes = useStyles();
-  const toggleLike = async (mentionId) => {
-    const res = await axios.post(`/api/users/mentions/${mentionId}/like`);
-    const { mention } = res.data;
-    if (!mention.liked) {
-      // might use a context dispatch here to signal to LikedMentions component that a mention is possibly unliked
-      console.log(`mention ${mention.id} was unliked`);
-    }
-  };
 
   return (
     <div className={classes.Card}>
