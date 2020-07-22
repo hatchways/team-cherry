@@ -3,6 +3,9 @@ const { Mention, Company } = require("../models");
 const User = require("../models/user");
 const UserCompanies = require("../models/userCompanies");
 
+
+
+
 module.exports = async function asyncWorker(io, loggedInUsers) {
   console.log("[Scraper] Calling async scraper");
 
