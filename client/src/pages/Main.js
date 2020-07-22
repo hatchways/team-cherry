@@ -411,19 +411,32 @@ class Main extends Component {
     const res = await axios.post(`/api/users/mentions/${mentionId}/like`);
     const { mention } = res.data;
 
-    // this might need to be more efficient
-    let mentionsCopy = this.state.mentions.slice();
-    for (let i = 0; i < mentionsCopy.length; i++) {
-      let thisMention = mentionsCopy[i];
-      if (thisMention.id === mention.MentionId) {
-        thisMention.liked = !thisMention.liked;
-        break;
-      }
-    }
+    const toggledMentionIndex = this.state.mentions.findIndex(
+      (m) => m.id === mentionId
+    );
+    const toggledMention = this.state.mentions[toggledMentionIndex];
 
     this.setState({
-      mentions: mentionsCopy,
+      mentions: [
+        ...this.state.mentions.slice(0, toggledMentionIndex),
+        { ...toggledMention, liked: !toggledMention.liked },
+        ...this.state.mentions.slice(toggledMentionIndex + 1),
+      ],
     });
+
+    // this might need to be more efficient
+    // let mentionsCopy = this.state.mentions.slice();
+    // for (let i = 0; i < mentionsCopy.length; i++) {
+    //   let thisMention = mentionsCopy[i];
+    //   if (thisMention.id === mention.MentionId) {
+    //     thisMention.liked = !thisMention.liked;
+    //     break;
+    //   }
+    // }
+
+    // this.setState({
+    //   mentions: mentionsCopy,
+    // });
   }
 
   render() {
