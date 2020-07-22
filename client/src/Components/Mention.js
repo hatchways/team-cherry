@@ -87,7 +87,11 @@ export default function Mention(props) {
             className={classes.likeIcon}
             onClick={() => props.handleLikeToggle(props.id)}
           >
-            {props.liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            {props.liked ? (
+              <FavoriteIcon style={{ fill: "red" }} />
+            ) : (
+              <FavoriteBorderIcon />
+            )}
           </IconButton>
         </div>
 
