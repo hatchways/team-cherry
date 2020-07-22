@@ -127,6 +127,7 @@ router.get("/mentions/liked", requiresAuth, async (req, res, next) => {
       liked: true,
     },
     include: [{ model: Mention }],
+    order: [[{ model: Mention }, "date", "DESC"]],
   });
 
   const total = likedMentions.length;
