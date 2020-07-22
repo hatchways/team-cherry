@@ -121,7 +121,17 @@ router.put("/subscribe-mail/update", requiresAuth, async (req, res) => {
 });
 
 router.get("/mentions/liked", requiresAuth, async (req, res, next) => {
+  let { page } = req.query;
+
+  page = parseInt(page);
+
+  const pageSize = 10;
+  const offset = page * pageSize;
+  const limit = pageSize;
+
   const likedMentions = await UserMentions.findAll({
+    offset,
+    limit,
     where: {
       UserId: req.user.id,
       liked: true,
@@ -131,8 +141,9 @@ router.get("/mentions/liked", requiresAuth, async (req, res, next) => {
   });
 
   const total = likedMentions.length;
+  const hasMore = total < pageSize ? false : true;
 
-  res.json({ total, mentions: likedMentions });
+  res.json({ total, hasMore, mentions: likedMentions });
 });
 
 router.post(
