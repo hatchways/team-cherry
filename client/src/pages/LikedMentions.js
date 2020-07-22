@@ -72,6 +72,7 @@ const LikedMentions = (props) => {
           const mention = m.Mention;
           return (
             <Mention
+              inList={true}
               key={mention.id}
               handleLikeToggle={toggleLike}
               liked={true}
