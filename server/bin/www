@@ -220,6 +220,6 @@ function onListening() {
   });
 
   scraperQueue(loggedInUsers);
-  // emailQueue();
+  emailQueue();
   // console.log("Listening on " + bind);
 }
