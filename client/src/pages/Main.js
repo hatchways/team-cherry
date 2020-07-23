@@ -655,6 +655,8 @@ class Main extends Component {
                 <Grid item key={index} className={classes.mention}>
                   <Mention
                     inList={true}
+                    handleLikeToggle={this.toggleLike}
+                    liked={mention.liked}
                     id={mention.id}
                     image={mention.imageUrl}
                     title={mention.title}
@@ -694,6 +696,9 @@ class Main extends Component {
             {this.state.mentionDisplayedInDialog ? (
               <Mention
                 inList={false}
+                handleLikeToggle={this.toggleLike}
+                id={this.state.mentionDisplayedInDialog.id}
+                liked={this.state.mentionDisplayedInDialog.liked}
                 image={this.state.mentionDisplayedInDialog.imageUrl}
                 title={this.state.mentionDisplayedInDialog.title}
                 platform={this.state.mentionDisplayedInDialog.platform}
