@@ -37,7 +37,7 @@ const useStyles = makeStyles(() => ({
     textAlign: "left",
   },
   thumbnailDiv: {
-    // width: "25%",
+    width: "25%",
     height: "100%",
     display: "flex",
     alignItems: "center",
@@ -50,7 +50,7 @@ const useStyles = makeStyles(() => ({
   thumbnailImg: {
     objectFit: "contain",
     maxHeight: "75%",
-    // width: "95%",
+    width: "95%",
   },
   contentDiv: {
     marginTop: "20px",
