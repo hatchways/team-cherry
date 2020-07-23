@@ -71,6 +71,7 @@ const useStyles = makeStyles(() => ({
     position: "relative",
     height: "25%",
     top: "32px",
+    right: "40px",
   },
 }));
 
@@ -84,15 +85,19 @@ export default function Mention(props) {
         disabled={!props.inList}
         className={props.inList ? classes.CardInList : classes.CardInDialog}
         onClick={(event) => {
-          let currentUrlParams = new URLSearchParams(window.location.search);
-          history.push(
-            "/main/mentions/" +
-              props.id +
-              "|" +
-              props.platform +
-              "?" +
-              currentUrlParams
-          );
+          if (props.inLiked) {
+            props.toggleLikedDialog();
+          } else {
+            let currentUrlParams = new URLSearchParams(window.location.search);
+            history.push(
+              "/main/mentions/" +
+                props.id +
+                "|" +
+                props.platform +
+                "?" +
+                currentUrlParams
+            );
+          }
         }}
       >
         <div
@@ -117,16 +122,6 @@ export default function Mention(props) {
               <Typography noWrap gutterBottom variant="h5" component="h2">
                 {props.title}
               </Typography>
-              {/* <IconButton
-              className={classes.likeIcon}
-              onClick={() => props.handleLikeToggle(props.id)}
-            >
-              {props.liked ? (
-                <FavoriteIcon style={{ fill: "red" }} />
-              ) : (
-                <FavoriteBorderIcon />
-              )}
-            </IconButton> */}
             </div>
 
             <Typography
@@ -161,11 +156,13 @@ export default function Mention(props) {
         className={classes.likeIcon}
         onClick={() => props.handleLikeToggle(props.id)}
       >
-        {props.liked ? (
-          <FavoriteIcon style={{ fill: "red" }} />
-        ) : (
-          <FavoriteBorderIcon />
-        )}
+        {props.inList ? (
+          props.liked ? (
+            <FavoriteIcon style={{ fill: "red" }} />
+          ) : (
+            <FavoriteBorderIcon />
+          )
+        ) : null}
       </IconButton>
     </Grid>
   );
