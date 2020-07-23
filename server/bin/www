@@ -11,11 +11,17 @@ var app = require("../app");
 var http = require("http");
 var db = require("../db");
 const asyncWorker = require("../async-worker");
-const scraperQueue = require('../async-worker/scraperQueue')
-const emailQueue = require('../async-worker/emailQueue')
+const scraperQueue = require("../async-worker/scraperQueue");
+const emailQueue = require("../async-worker/emailQueue");
+const socket = require("socket.io");
+const cookie = require("cookie");
+const jwt = require("jsonwebtoken");
+
 /* Sets up the PostgreSQL database connection. */
 
 const force = false;
+// const force = true;
+
 async function databaseTest() {
   try {
     await db.authenticate();
@@ -102,8 +108,118 @@ function onError(error) {
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-  scraperQueue()
-  emailQueue()
+  // scraperQueue();
+  // emailQueue();
   // console.log("Listening on " + bind);
   // setInterval(asyncWorker, 5000);
+
+  console.log("Listening on " + bind);
+
+  // Setup Socket.io
+  var io = socket(server);
+  let loggedInUsers = [];
+  io.on("connection", function (socket) {
+    let token = cookie.parse(socket.request.headers.cookie).token;
+
+    jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
+      if (err) {
+        console.log(
+          "Token authentication failed for socket id: " +
+          socket.id +
+          ". Disconnected. "
+        );
+        socket.disconnect();
+      } else {
+        let keywords = socket.handshake.query.keywords;
+        if (!keywords) {
+          keywords = "";
+        }
+        let platformSelected = socket.handshake.query.platformSelected;
+        if (platformSelected) {
+          platformSelected = platformSelected.split(",");
+        } else {
+          platformSelected = [];
+        }
+
+        loggedInUsers.push({
+          socket: socket,
+          userId: decoded.id,
+          keywords: keywords,
+          platformSelected: platformSelected,
+        });
+
+        // For testing only.
+        // console.log("After connect: ");
+        // console.log(loggedInUsers);
+        // var clients = Object.keys(io.sockets.sockets);
+        // console.log(clients);
+      }
+    });
+
+    socket.on("disconnect", (reason) => {
+      let index = -1;
+
+      for (let i = 0; i < loggedInUsers.length; i++) {
+        if (loggedInUsers[i].socket.id === socket.id) {
+          index = i;
+          break;
+        }
+      }
+
+      if (index !== -1) {
+        loggedInUsers.splice(index, 1);
+      } else {
+        console.log("Error: cannot find user when disconnecting. ");
+      }
+
+      // For testing only.
+      // console.log("After leave: ");
+      // console.log(loggedInUsers);
+      // var clients = Object.keys(io.sockets.sockets);
+      // console.log(clients);
+    });
+
+    socket.on("setKeywords", (data) => {
+      let index = -1;
+
+      for (let i = 0; i < loggedInUsers.length; i++) {
+        if (loggedInUsers[i].socket.id === socket.id) {
+          index = i;
+          break;
+        }
+      }
+
+      if (index !== -1) {
+        let keywords = data.keywords;
+        if (!keywords) {
+          keywords = "";
+        }
+
+        loggedInUsers[index].keywords = keywords;
+      } else {
+        console.log("Error: cannot find user when setting keywords. ");
+      }
+    });
+
+    socket.on("setPlatformSelected", (data) => {
+      let index = -1;
+
+      for (let i = 0; i < loggedInUsers.length; i++) {
+        if (loggedInUsers[i].socket.id === socket.id) {
+          index = i;
+          break;
+        }
+      }
+
+      if (index !== -1) {
+        loggedInUsers[index].platformSelected = data.platformSelected;
+      } else {
+        console.log("Error: cannot find user when setting platformSelected. ");
+      }
+    });
+  });
+
+  scraperQueue(loggedInUsers);
+  // emailQueue();
+  // console.log("Listening on " + bind);
 }

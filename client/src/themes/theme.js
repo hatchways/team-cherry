@@ -7,6 +7,14 @@ export const theme = createMuiTheme({
     h1: {
       fontWeight: '900',
       fontSize: '25px'
+    },
+    h2: {
+      fontWeight: '900',
+      fontSize: '15px'
+    },
+    h3: {
+      fontWeight: '900',
+      fontSize: '12px'
     }
   },
   palette: {
@@ -16,6 +24,9 @@ export const theme = createMuiTheme({
       dark: '#465ba9',
       contrastText: '#fff',
       //could customize the h1 variant as well
+    },
+    secondary: {
+      main: '#fff',
     },
     background: {
       default: "#fafbff",

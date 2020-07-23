@@ -3,21 +3,34 @@ const { Op } = require("sequelize");
 
 const requiresAuth = require("./middleware/requiresAuth");
 const { Mention, User } = require("../models");
+const NodeCache = require("node-cache");
 
 router.get("/", requiresAuth, async (req, res) => {
-  let output = [];
-  let { keywords, platforms } = req.query;
+  let { keywords, platforms, page } = req.query;
   if (!platforms) {
     platforms = [];
   }
-  const searchQuery = `%${keywords}%`;
-  const user = await User.findByPk(req.user.id);
+  if (!keywords) {
+    keywords = "";
+  }
 
+  const searchQuery = `%${keywords}%`;
+  page = parseInt(page) || 1;
+
+  const user = await User.findByPk(req.user.id);
   const companies = await user.getCompanies();
+
+  // pagination variables
+  const pageSize = Math.ceil(20 / companies.length); // number of companies should never exceed page size(20)
+  const offset = (page - 1) * pageSize;
+  const limit = pageSize;
+
+  output = [];
   for (let company of companies) {
     let mentions = await company.getMentions({
+      limit,
+      offset,
       where: {
-        // note: passing the array directly into `where` will implicitly use [Op.in]
         // is the mention from one of the toggled platforms?
         platform: platforms,
 
@@ -25,22 +38,25 @@ router.get("/", requiresAuth, async (req, res) => {
         [Op.or]: [
           {
             title: {
-              [Op.like]: searchQuery,
+              [Op.iLike]: searchQuery,
             },
           },
           {
             content: {
-              [Op.like]: searchQuery,
+              [Op.iLike]: searchQuery,
             },
           },
         ],
       },
+      order: [["date", "DESC"]],
     });
-
     output = output.concat(mentions);
   }
 
-  res.json({ mentions: output });
+  const count = output.length;
+  const hasMore = count ? true : false;
+
+  res.json({ page, hasMore, count, mentions: output });
 });
 
 router.get("/email-list", async (req, res) => {
@@ -49,6 +65,21 @@ router.get("/email-list", async (req, res) => {
 
 router.get("/toggle", async (req, res) => {
   res.json({ message: "Endpoint for mention toggles" });
+});
+
+router.get("/:idAndPlatform", async (req, res) => {
+  let idAndPlatform = req.params.idAndPlatform.split("|");
+  let id = idAndPlatform[0];
+  let platform = idAndPlatform[1];
+
+  let mention = await Mention.findOne({
+    where: {
+      id: id,
+      platform: platform,
+    },
+  });
+
+  res.json({ mention: mention });
 });
 
 module.exports = router;

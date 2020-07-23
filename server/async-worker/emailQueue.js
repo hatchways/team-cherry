@@ -73,10 +73,12 @@ module.exports = async function emailQueue() {
     }
   }
 
+
   sendEmail.process(async (job) => {
     const companyMentions = {}
     let oneWeekPrev = new Date()
     let pastDate = oneWeekPrev.getDate() - 7;
+
 
     oneWeekPrev.setDate(pastDate)
     //get all companies here
@@ -124,8 +126,10 @@ module.exports = async function emailQueue() {
     send(job.data.subscriberEmail, companyMentions)
   })
 
+
   sendEmail.on('completed', async (job, result) => {
     console.log(`newsletter sent to ${job.data.subscriberEmail} `)
   })
   setQueues([getEmails, sendEmail])
+
 }

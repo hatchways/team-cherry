@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   AppBar,
@@ -6,13 +6,31 @@ import {
   IconButton,
   Typography,
   Grid,
+  Container,
+  Button
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import SettingsIcon from "@material-ui/icons/Settings";
 import TextField from "@material-ui/core/Input";
 import { getUser } from "../utils/localStorage";
+import { DebounceInput } from "react-debounce-input";
+import { useHistory } from "react-router-dom";
+
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
+  redirectContainer: {
+    display: 'flex',
+    whiteSpace: "nowrap"
+  },
+  redirectText: {
+    display: 'flex',
+    alignItems: 'center',
+    marginRight: '20px'
+  },
+  redirectButton: {
+    borderRadius: '25px'
+  },
   fontColorForMentions: {
     color: "white",
   },
@@ -22,7 +40,6 @@ const useStyles = makeStyles(() => ({
   AppBar: {
     height: "5.4em",
     boxShadow: "none",
-    position: "fixed",
   },
   LogoGrid: {
     display: "flex",
@@ -61,6 +78,52 @@ const useStyles = makeStyles(() => ({
 
 export default function Header() {
   const classes = useStyles();
+  const history = useHistory();
+  const [keywords, setKeywords] = useState("");
+  const [redirect, setRedirect] = useState('')
+
+  useEffect(() => {
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    let keywords = currentUrlParams.get("keywords");
+    if (!keywords) {
+      keywords = ""
+    }
+    setKeywords(keywords);
+  }, []);
+
+  const handleSearchBar = async (event) => {
+    // Set keywords into URL params.
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    currentUrlParams.set("keywords", event.target.value);
+    history.push(window.location.pathname + "?" + currentUrlParams.toString());
+  };
+  let pathName = window.location.pathname
+  useEffect(() => {
+    if (pathName != '/login') {
+      setRedirect('Log In')
+    }
+    else {
+      setRedirect('Sign Up')
+    }
+  }, [pathName])
+
+  const redirectTo = () => {
+    if (pathName != '/login') {
+      setRedirect('Sign Up')
+      history.push('/login')
+    }
+    else {
+      setRedirect('Log In')
+      history.push('/signup')
+    }
+  }
+  // const pathname = window.location.pathname
+  // if (pathname === '/login') {
+  //   console.log(pathname)
+  //   setRedirect('on')
+  // }
+
+
   return (
     <div>
       <AppBar className={classes.AppBar}>
@@ -74,26 +137,48 @@ export default function Header() {
             </Grid>
 
             {getUser() ? (
-              <Grid item xs={6} className={classes.SearchBarGrid}>
-                <div className={classes.SeacrhBarDiv}>
-                  <TextField
-                    disableUnderline={true}
-                    className={classes.TextField}
-                  />
-                  <SearchIcon className={classes.SearchIcon} />
-                </div>
-              </Grid>
+              <React.Fragment>
+                <Grid item xs={6} className={classes.SearchBarGrid}>
+                  <div className={classes.SeacrhBarDiv}>
+                    <DebounceInput
+                      element={TextField}
+                      debounceTimeout={300}
+                      className={classes.TextField}
+                      disableUnderline={true}
+                      onChange={handleSearchBar}
+                      value={keywords}
+                    />
+                    <SearchIcon className={classes.SearchIcon} />
+                  </div>
+                </Grid>
+                <Grid item xs={2} className={classes.SettingsIcon}>
+                  <Link to="/settings">
+                    <IconButton color="inherit">
+                      <SettingsIcon />
+                    </IconButton>
+                  </Link>
+                </Grid>
+              </React.Fragment>
             ) : (
-              <Grid>
-                <div></div>
-              </Grid>
-            )}
+                <Grid>
+                  <Container className={classes.redirectContainer}>
+                    <Typography variant='h2' className={classes.redirectText}>
+                      {redirect === 'Log In' ? 'Already have an account?' : "Don't have an account?"}
+                    </Typography>
+                    <Button
+                      className={classes.redirectButton}
+                      variant="outlined"
+                      color="secondary"
+                      onClick={redirectTo}
+                    >
+                      <Typography variant='h3'>
+                        {redirect}
+                      </Typography>
 
-            <Grid item xs={2} className={classes.SettingsIcon}>
-              <IconButton color="inherit">
-                <SettingsIcon />
-              </IconButton>
-            </Grid>
+                    </Button>
+                  </Container>
+                </Grid>
+              )}
           </Grid>
         </Toolbar>
       </AppBar>

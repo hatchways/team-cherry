@@ -1,22 +1,34 @@
-import React, { Component } from "react";
-import Mention from "../components/Mention";
-import axios from "axios";
-import SwitchSelector from "react-switch-selector";
-import { withStyles } from "@material-ui/core/styles";
 import {
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-  Switch,
   Avatar,
-  ListItemAvatar,
   Divider,
   Grid,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
   ListItemSecondaryAction,
+  ListItemText,
+  Switch,
+  Typography,
+  Snackbar,
+  Dialog,
+  Button,
+  IconButton,
 } from "@material-ui/core/";
+import { withStyles } from "@material-ui/core/styles";
+import CloseIcon from "@material-ui/icons/Close";
+import MuiDialogActions from "@material-ui/core/DialogActions";
+import MuiDialogContent from "@material-ui/core/DialogContent";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import axios from "axios";
+import React, { Component } from "react";
+import InfiniteScroll from "react-infinite-scroller";
+import SwitchSelector from "react-switch-selector";
+import io from "socket.io-client";
 import { uuid } from "uuidv4";
-import Header from "../components/Header";
+import { debounce } from "throttle-debounce";
+
+import Mention from "../components/Mention";
 
 const useStyles = (theme) => ({
   RootGridContainer: {
@@ -59,6 +71,9 @@ const useStyles = (theme) => ({
   },
   mention: {
     maxWidth: "100%",
+  },
+  snackBarBackground: {
+    background: theme.palette.primary.main,
   },
 });
 
@@ -115,6 +130,16 @@ const IOSSwitch = withStyles((theme) => ({
   );
 });
 
+// Variables for "new mentions" popup window.
+const DialogTitle = withStyles(useStyles)((props) => {
+  const { children } = props;
+  return (
+    <MuiDialogTitle disableTypography>
+      <Typography variant="h6">{children}</Typography>
+    </MuiDialogTitle>
+  );
+});
+
 class Main extends Component {
   constructor(props) {
     super(props);
@@ -127,55 +152,189 @@ class Main extends Component {
       splitSelectedPlatforms = selectedPlatformsInURL.split(",");
     }
 
+    let keywords = currentUrlParams.get("keywords");
+    if (!keywords) {
+      keywords = "";
+    }
+    let sortByState = currentUrlParams.get("sortBy");
+    if (!sortByState) {
+      sortByState = "MostRecent";
+    }
+
     let allPlatforms = ["Reddit", "Twitter", "Facebook"];
     let switchStates = [];
     allPlatforms.forEach((item) => {
       switchStates[item] = splitSelectedPlatforms.includes(item);
     });
 
+    // Setup WebSocket
+    var socket = io.connect("http://localhost:3000/", {
+      query: {
+        keywords: keywords,
+        platformSelected: splitSelectedPlatforms,
+      },
+    });
+
     this.state = {
       allPlatforms: allPlatforms,
       platformSelected: [...splitSelectedPlatforms],
+      keywords: keywords,
       mentions: [],
+      hasMore: true || false,
+      page: 1,
+      newMentions: [],
       switchStates: switchStates,
+      sortByState: sortByState,
+      socket: socket,
+      snackBarOpen: false,
+      newMentionsPopupOpen: false,
+      idAndPlatformForMentionDisplayedInDialog: props.match.params.idAndPlatform,
+      singleMentionPopupOpen: false,
+      mentionDisplayedInDialog: null
     };
+
+    this.loadMoreMentions = debounce(500, this.loadMoreMentions.bind(this));
+  }
+
+  async componentDidUpdate() {
+    console.log("componentDidUpdate here");
+
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    let keywords = currentUrlParams.get("keywords");
+    if (!keywords) {
+      keywords = "";
+    }
+
+    if (this.state.keywords !== keywords) {
+      let { data } = await axios.get("/api/mentions", {
+        params: {
+          platforms: this.state.platformSelected,
+          keywords: keywords,
+        },
+      });
+
+      if (this.state.sortByState === "MostRecent") {
+        this.sortByDate(data.mentions);
+      } else {
+        this.sortByPopularity(data.mentions);
+      }
+
+      this.setState({
+        mentions: data.mentions,
+        keywords: keywords,
+        page: 1,
+        hasMore: true,
+      });
+
+      this.state.socket.emit("setKeywords", {
+        keywords: this.state.keywords,
+      });
+    }
+
+    if (this.props.match.params.idAndPlatform) {
+      if (this.state.idAndPlatformForMentionDisplayedInDialog !== this.props.match.params.idAndPlatform) {
+        console.log("if");
+
+        let { data } = await axios.get("/api/mentions/" + this.props.match.params.idAndPlatform)
+
+        if (data) {
+          this.setState({
+            mentionDisplayedInDialog: data.mention,
+            singleMentionPopupOpen: true,
+            idAndPlatformForMentionDisplayedInDialog: this.props.match.params.idAndPlatform
+          })
+        }
+      }
+    }
+    else {
+      if (this.state.idAndPlatformForMentionDisplayedInDialog) {
+        console.log("else");
+        this.setState({
+          mentionDisplayedInDialog: null,
+          singleMentionPopupOpen: false,
+          idAndPlatformForMentionDisplayedInDialog: null
+        })
+      }
+    }
   }
 
   async componentDidMount() {
     let res = await axios.get("/api/mentions", {
       params: {
         platforms: this.state.platformSelected,
-        keywords: "",
+        keywords: this.state.keywords,
+        page: this.state.page,
       },
     });
+
+    if (this.state.sortByState === "MostRecent") {
+      this.sortByDate(res.data.mentions);
+    } else {
+      this.sortByPopularity(res.data.mentions);
+    }
+
     this.setState({
       mentions: res.data.mentions,
     });
+
+    this.state.socket.on("newMentions", (data) => {
+      this.setState({
+        newMentions: [...data, ...this.state.newMentions],
+      });
+
+      if (!this.state.newMentionsPopupOpen) {
+        this.setState({
+          snackBarOpen: true,
+        });
+      }
+    })
+
+    if (this.state.idAndPlatformForMentionDisplayedInDialog) {
+      let { data } = await axios.get("/api/mentions/" + this.state.idAndPlatformForMentionDisplayedInDialog)
+      if (data) {
+        await this.setState({
+          mentionDisplayedInDialog: data.mention,
+          singleMentionPopupOpen: true
+        })
+      }
+    }
   }
 
   sortByPopularity(mentions) {
     mentions.sort((a, b) => {
       return b.popularity - a.popularity;
     });
-    return mentions;
   }
 
   sortByDate(mentions) {
     mentions.sort((a, b) => {
-      return b.date - a.date;
+      if (new Date(b.date) > new Date(a.date)) {
+        return 1;
+      } else {
+        return -1;
+      }
     });
-    return mentions;
   }
 
-  sortToggle(event) {
+  sortToggle(value) {
     let sortedMentions = this.state.mentions;
-    if (event === "Most Recent") {
-      sortedMentions = this.sortByDate(this.state.mentions);
+    if (value === "MostRecent") {
+      this.sortByDate(sortedMentions);
     } else {
-      sortedMentions = this.sortByPopularity(this.state.mentions);
+      this.sortByPopularity(sortedMentions);
     }
     this.setState({
       mentions: sortedMentions,
+    });
+
+    this.setState({
+      sortByState: value,
+    });
+
+    let currentUrlParams = new URLSearchParams(this.props.location.search);
+    currentUrlParams.set("sortBy", value);
+    this.props.history.push({
+      search: currentUrlParams.toString(),
     });
   }
 
@@ -194,16 +353,23 @@ class Main extends Component {
 
       let { data } = await axios.get("/api/mentions/", {
         params: {
-          platforms: [newlySelectedPlatform],
-          keywords: "",
+          platforms: this.state.platformSelected,
+          keywords: this.state.keywords,
         },
       });
 
-      const newMentions = this.state.mentions.concat(data.mentions);
+      const newMentions = data.mentions;
 
-      let sortedMentions = this.sortByDate(newMentions);
+      if (this.state.sortByState === "MostRecent") {
+        this.sortByDate(newMentions);
+      } else {
+        this.sortByPopularity(newMentions);
+      }
+
       await this.setState({
-        mentions: sortedMentions,
+        mentions: newMentions,
+        hasMore: true,
+        page: 1,
       });
     } else {
       let index = this.state.platformSelected.indexOf(newlySelectedPlatform);
@@ -225,19 +391,87 @@ class Main extends Component {
     }
 
     // Add the selected platforms in to the query params.
-    let currentUrlParams = new URLSearchParams();
+    let currentUrlParams = new URLSearchParams(window.location.search);
     currentUrlParams.set("platforms", this.state.platformSelected);
     this.props.history.push(
       window.location.pathname + "?" + currentUrlParams.toString()
     );
+
+    this.state.socket.emit("setPlatformSelected", {
+      platformSelected: this.state.platformSelected,
+    });
   }
+
+  async loadMoreMentions() {
+    let res = await axios.get("/api/mentions", {
+      params: {
+        platforms: this.state.platformSelected,
+        keywords: this.state.keywords,
+        page: this.state.page + 1,
+      },
+    });
+
+    const { hasMore, page, mentions } = res.data;
+    if (hasMore) {
+      const updatedMentions = [...this.state.mentions, ...mentions];
+
+      if (this.state.sortByState == "MostRecent") {
+        this.sortByDate(updatedMentions);
+      } else {
+        this.sortByPopularity(updatedMentions);
+      }
+
+      this.setState({
+        hasMore,
+        page,
+        mentions: updatedMentions,
+      });
+    } else {
+      this.setState({
+        hasMore: false,
+      });
+    }
+  }
+
+  handleSnackBarClick = (event) => {
+    let updatedMentions = [...this.state.mentions, ...this.state.newMentions]
+
+    if (this.state.sortByState === "MostRecent") {
+      this.sortByDate(updatedMentions);
+    } else {
+      this.sortByPopularity(updatedMentions);
+    }
+
+    this.setState({
+      snackBarOpen: false,
+      newMentionsPopupOpen: true,
+      mentions: updatedMentions,
+    })
+  }
+
+  handleNewMentionsPopupClose = () => {
+    this.setState({
+      newMentionsPopupOpen: false,
+      newMentions: [],
+    });
+  };
+
+  handleSingleMentionPopupClose = () => {
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    this.props.history.push("/main" + "?" + currentUrlParams);
+
+    this.setState({
+      singleMentionPopupOpen: false,
+      idAndPlatformForMentionDisplayedInDialog: null,
+      mentionDisplayedInDialog: null
+    });
+  };
 
   render() {
     const { classes } = this.props;
 
     return (
       <div>
-        <Header />
         <Grid container>
           <Grid item xs={3} container className={classes.leftPanelGrid}>
             <List dense className={classes.leftPanelList}>
@@ -248,6 +482,7 @@ class Main extends Component {
                       <ListItemAvatar
                         className={classes.platformListItemAvatar}
                       >
+                        {" "}
                         <Avatar
                           className={classes.platformAvatar}
                           src={`/imgs/${platform}_icon.png`}
@@ -290,6 +525,7 @@ class Main extends Component {
             direction={"column"}
             spacing={2}
           >
+            {" "}
             <Grid
               item
               container
@@ -300,19 +536,25 @@ class Main extends Component {
               <h1>My mentions</h1>
               <div className={classes.SwitchSelector}>
                 <SwitchSelector
-                  onChange={(event) => {
-                    this.sortToggle(event);
+                  initialSelectedIndex={
+                    !this.state.sortByState ||
+                      this.state.sortByState === "MostRecent"
+                      ? 0
+                      : 1
+                  }
+                  onChange={(value) => {
+                    this.sortToggle(value);
                   }}
                   options={[
                     {
                       label: "Most recent",
-                      value: "Most Recent",
+                      value: "MostRecent",
                       selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
                     {
                       label: "Most popular",
-                      value: "Most popular",
+                      value: "MostPopular",
                       selectedBackgroundColor: "#6583f2",
                       selectedFontColor: "white",
                     },
@@ -322,28 +564,131 @@ class Main extends Component {
                 />
               </div>
             </Grid>
-
             {this.state.mentions.length === 0 ? (
               <h3 className={classes.instruction}>
                 Please enter a company name in the search bar, and toggle one or
                 more platforms in the left panel.
               </h3>
             ) : (
-              this.state.mentions.map((mention, index) => {
+                <InfiniteScroll
+                  pageStart={0}
+                  loadMore={this.loadMoreMentions}
+                  hasMore={this.state.hasMore}
+                  loader={<LinearProgress key={0} />}
+                >
+                  {this.state.mentions.map((mention, index) => {
+                    return (
+                      <Grid item key={index} className={classes.mention}>
+                        <Mention
+                          inList={true}
+                          id={mention.id}
+                          image={mention.imageUrl}
+                          title={mention.title}
+                          platform={mention.platform}
+                          content={mention.content}
+                          popularity={mention.popularity}
+                          date={mention.date}
+                          url={mention.url}
+                          summary={mention.summary}
+                          sentiment={mention.sentiment}
+                        />
+                      </Grid>
+                    );
+                  })}
+                </InfiniteScroll>
+              )}
+            <Snackbar
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              open={this.state.snackBarOpen}
+              message="New mentions arrived. Click to view. "
+              onClick={this.handleSnackBarClick}
+              ContentProps={{
+                classes: {
+                  root: classes.snackBarBackground,
+                },
+              }}
+            />
+          </Grid>
+        </Grid>
+
+        <Dialog
+          aria-labelledby="customized-dialog-title"
+          open={this.state.newMentionsPopupOpen}
+          maxWidth={"md"}
+          fullWidth={true}
+        >
+          <DialogTitle id="customized-dialog-title">
+            Newly posted mentions
+          </DialogTitle>
+
+          <MuiDialogContent dividers>
+            {
+              this.state.newMentions.map((mention, index) => {
                 return (
                   <Grid item key={index} className={classes.mention}>
                     <Mention
-                      image={mention.image}
+                      inList={true}
+                      id={mention.id}
+                      image={mention.imageUrl}
                       title={mention.title}
                       platform={mention.platform}
                       content={mention.content}
+                      popularity={mention.popularity}
+                      date={mention.date}
+                      url={mention.url}
+                      summary={mention.summary}
+                      sentiment={mention.sentiment}
                     />
+                    {
+                      index === this.state.newMentions.length - 1 ? null : <Divider />
+                    }
                   </Grid>
                 );
               })
-            )}
-          </Grid>
-        </Grid>
+            }
+          </MuiDialogContent>
+
+          <MuiDialogActions>
+            <Button autoFocus onClick={this.handleNewMentionsPopupClose} color="primary">
+              Close
+            </Button>
+          </MuiDialogActions>
+        </Dialog>
+
+        <Dialog aria-labelledby="customized-dialog-title" open={this.state.singleMentionPopupOpen} maxWidth={'md'} fullWidth={true}>
+          <MuiDialogContent>
+            {
+              this.state.mentionDisplayedInDialog ?
+                <Mention
+                  inList={false}
+                  image={this.state.mentionDisplayedInDialog.imageUrl}
+                  title={this.state.mentionDisplayedInDialog.title}
+                  platform={this.state.mentionDisplayedInDialog.platform}
+                  content={this.state.mentionDisplayedInDialog.content}
+                  popularity={this.state.mentionDisplayedInDialog.popularity}
+                  date={this.state.mentionDisplayedInDialog.date}
+                  url={this.state.mentionDisplayedInDialog.url}
+                  summary={this.state.mentionDisplayedInDialog.summary}
+                  sentiment={this.state.mentionDisplayedInDialog.sentiment}
+
+                />
+                :
+                null
+            }
+
+          </MuiDialogContent>
+
+          <Divider style={{ marginTop: "20px" }}></Divider>
+
+          <MuiDialogActions>
+            <Button onClick={() => { window.open(this.state.mentionDisplayedInDialog.url) }} color="primary">
+              Original Post
+            </Button>
+            <Button onClick={this.handleSingleMentionPopupClose} color="primary">
+              Close
+            </Button>
+          </MuiDialogActions>
+        </Dialog>
       </div>
     );
   }
