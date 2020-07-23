@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles, Grid, LinearProgress } from "@material-ui/core";
+import {
+  Grid,
+  LinearProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  makeStyles,
+} from "@material-ui/core";
+import axios from "axios";
 import InfiniteScroll from "react-infinite-scroller";
 import { debounce } from "throttle-debounce";
-import axios from "axios";
 
 import Mention from "../components/Mention";
+import MentionDialog from "../components/liked-mentions/MentionDialog";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -21,6 +29,8 @@ const LikedMentions = (props) => {
     mentions: [],
     page: 0,
     hasMore: true,
+    dialogOpen: false,
+    dialogMention: {},
   });
 
   useEffect(() => {
@@ -59,9 +69,23 @@ const LikedMentions = (props) => {
     }
   };
 
+  const toggleDialog = (mention) => {
+    setState({ ...state, dialogOpen: true, dialogMention: mention });
+  };
+
+  const dialogClose = () => {
+    setState({ ...state, dialogOpen: false, dialogMention: {} });
+  };
+
   return (
     <Grid className={classes.container}>
-      <h1 style={{ textAlign: "center" }}>Page for liked mentions</h1>
+      <h1 style={{ textAlign: "center" }}>Your Liked Mentions</h1>
+      <MentionDialog
+        open={state.dialogOpen}
+        handleClose={dialogClose}
+        mention={state.dialogMention}
+        toggleLike={toggleLike}
+      />
       <InfiniteScroll
         pageState={state.page}
         loadMore={debouncedLoader}
@@ -72,6 +96,8 @@ const LikedMentions = (props) => {
           const mention = m.Mention;
           return (
             <Mention
+              inLiked
+              toggleLikedDialog={() => toggleDialog(mention)}
               inList={true}
               key={mention.id}
               handleLikeToggle={toggleLike}
@@ -86,7 +112,7 @@ const LikedMentions = (props) => {
             />
           );
         })}
-      </InfiniteScroll>
+      </InfiniteScroll>{" "}
     </Grid>
   );
 };
