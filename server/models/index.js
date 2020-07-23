@@ -1,6 +1,6 @@
 const User = require("./user");
 const Mention = require("./mention");
-const Company = require("./Company");
+const Company = require("./company");
 const CompanyMentions = require("./companyMentions");
 const UserCompanies = require("./userCompanies");
 const UserMentions = require("./userMentions");
