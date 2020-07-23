@@ -1,14 +1,12 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
-
-const axios = require('axios')
-
+const axios = require("axios");
 
 const {
   validateLogin,
   validateRegister,
 } = require("./middleware/requiresFormValidation");
-const { User, Company } = require("../models");
+const { User, Company, Mention, UserMentions } = require("../models");
 const cookieConfig = require("../cookie-config");
 const { createErrorResponse } = require("./util");
 const requiresAuth = require("./middleware/requiresAuth");
@@ -42,13 +40,12 @@ router.post("/register", validateRegister, async (req, res) => {
     email: user.email,
   };
 
-
   const send = async (address) => {
     let config = {
       headers: {
         Authorization: `Bearer ${process.env.sendgridKey}`,
-      }
-    }
+      },
+    };
     let data = {
       personalizations: [
         {
@@ -57,27 +54,28 @@ router.post("/register", validateRegister, async (req, res) => {
               email: `${address}`,
             },
           ],
-        }
+        },
       ],
       from: {
         email: "mentionscrawler123@gmail.com",
-        name: "Mentionscrawler Team"
+        name: "Mentionscrawler Team",
       },
       subject: "Welcome to MentionsCrawler!",
-      content: [{
-        type: "text/plain",
-        value: "Thank you for signing up!"
-      }]
-    }
+      content: [
+        {
+          type: "text/plain",
+          value: "Thank you for signing up!",
+        },
+      ],
+    };
     try {
-      await axios.post("https://api.sendgrid.com/v3/mail/send", data, config)
+      await axios.post("https://api.sendgrid.com/v3/mail/send", data, config);
     } catch (error) {
-      console.error(error, 'failing new subscriber')
+      console.error(error, "failing new subscriber");
     }
-  }
+  };
 
-  await send(user.email)
-
+  await send(user.email);
 
   jwt.sign(
     payload,
@@ -136,5 +134,51 @@ router.put("/subscribe-mail/update", requiresAuth, async (req, res) => {
   // refresh the user token to bring on the email change
   res.sendStatus(204);
 });
+
+router.get("/mentions/liked", requiresAuth, async (req, res, next) => {
+  let { page } = req.query;
+
+  page = parseInt(page);
+
+  const pageSize = 10;
+  const offset = page * pageSize;
+  const limit = pageSize;
+
+  const likedMentions = await UserMentions.findAll({
+    offset,
+    limit,
+    where: {
+      UserId: req.user.id,
+      liked: true,
+    },
+    include: [{ model: Mention }],
+    order: [[{ model: Mention }, "date", "DESC"]],
+  });
+
+  const total = likedMentions.length;
+  const hasMore = total < pageSize ? false : true;
+
+  res.json({ total, hasMore, mentions: likedMentions });
+});
+
+router.post(
+  "/mentions/:mentionId/like",
+  requiresAuth,
+  async (req, res, next) => {
+    let [userMention, isNew] = await UserMentions.findOrCreate({
+      where: {
+        UserId: req.user.id,
+        MentionId: req.params.mentionId,
+      },
+    });
+
+    userMention.liked = !userMention.liked;
+    await userMention.save();
+
+    res.json({
+      mention: userMention,
+    });
+  }
+);
 
 module.exports = router;

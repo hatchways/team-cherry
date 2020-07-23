@@ -188,12 +188,14 @@ class Main extends Component {
       socket: socket,
       snackBarOpen: false,
       newMentionsPopupOpen: false,
-      idAndPlatformForMentionDisplayedInDialog: props.match.params.idAndPlatform,
+      idAndPlatformForMentionDisplayedInDialog:
+        props.match.params.idAndPlatform,
       singleMentionPopupOpen: false,
-      mentionDisplayedInDialog: null
+      mentionDisplayedInDialog: null,
     };
 
     this.loadMoreMentions = debounce(500, this.loadMoreMentions.bind(this));
+    this.toggleLike = this.toggleLike.bind(this);
   }
 
   async componentDidUpdate() {
@@ -232,28 +234,33 @@ class Main extends Component {
     }
 
     if (this.props.match.params.idAndPlatform) {
-      if (this.state.idAndPlatformForMentionDisplayedInDialog !== this.props.match.params.idAndPlatform) {
+      if (
+        this.state.idAndPlatformForMentionDisplayedInDialog !==
+        this.props.match.params.idAndPlatform
+      ) {
         console.log("if");
 
-        let { data } = await axios.get("/api/mentions/" + this.props.match.params.idAndPlatform)
+        let { data } = await axios.get(
+          "/api/mentions/" + this.props.match.params.idAndPlatform
+        );
 
         if (data) {
           this.setState({
             mentionDisplayedInDialog: data.mention,
             singleMentionPopupOpen: true,
-            idAndPlatformForMentionDisplayedInDialog: this.props.match.params.idAndPlatform
-          })
+            idAndPlatformForMentionDisplayedInDialog: this.props.match.params
+              .idAndPlatform,
+          });
         }
       }
-    }
-    else {
+    } else {
       if (this.state.idAndPlatformForMentionDisplayedInDialog) {
         console.log("else");
         this.setState({
           mentionDisplayedInDialog: null,
           singleMentionPopupOpen: false,
-          idAndPlatformForMentionDisplayedInDialog: null
-        })
+          idAndPlatformForMentionDisplayedInDialog: null,
+        });
       }
     }
   }
@@ -287,15 +294,17 @@ class Main extends Component {
           snackBarOpen: true,
         });
       }
-    })
+    });
 
     if (this.state.idAndPlatformForMentionDisplayedInDialog) {
-      let { data } = await axios.get("/api/mentions/" + this.state.idAndPlatformForMentionDisplayedInDialog)
+      let { data } = await axios.get(
+        "/api/mentions/" + this.state.idAndPlatformForMentionDisplayedInDialog
+      );
       if (data) {
         await this.setState({
           mentionDisplayedInDialog: data.mention,
-          singleMentionPopupOpen: true
-        })
+          singleMentionPopupOpen: true,
+        });
       }
     }
   }
@@ -434,7 +443,7 @@ class Main extends Component {
   }
 
   handleSnackBarClick = (event) => {
-    let updatedMentions = [...this.state.mentions, ...this.state.newMentions]
+    let updatedMentions = [...this.state.mentions, ...this.state.newMentions];
 
     if (this.state.sortByState === "MostRecent") {
       this.sortByDate(updatedMentions);
@@ -446,8 +455,8 @@ class Main extends Component {
       snackBarOpen: false,
       newMentionsPopupOpen: true,
       mentions: updatedMentions,
-    })
-  }
+    });
+  };
 
   handleNewMentionsPopupClose = () => {
     this.setState({
@@ -463,9 +472,27 @@ class Main extends Component {
     this.setState({
       singleMentionPopupOpen: false,
       idAndPlatformForMentionDisplayedInDialog: null,
-      mentionDisplayedInDialog: null
+      mentionDisplayedInDialog: null,
     });
   };
+
+  async toggleLike(mentionId) {
+    const res = await axios.post(`/api/users/mentions/${mentionId}/like`);
+    const { mention } = res.data;
+
+    const toggledMentionIndex = this.state.mentions.findIndex(
+      (m) => m.id === mentionId
+    );
+    const toggledMention = this.state.mentions[toggledMentionIndex];
+
+    this.setState({
+      mentions: [
+        ...this.state.mentions.slice(0, toggledMentionIndex),
+        { ...toggledMention, liked: !toggledMention.liked },
+        ...this.state.mentions.slice(toggledMentionIndex + 1),
+      ],
+    });
+  }
 
   render() {
     const { classes } = this.props;
@@ -538,7 +565,7 @@ class Main extends Component {
                 <SwitchSelector
                   initialSelectedIndex={
                     !this.state.sortByState ||
-                      this.state.sortByState === "MostRecent"
+                    this.state.sortByState === "MostRecent"
                       ? 0
                       : 1
                   }
@@ -570,33 +597,35 @@ class Main extends Component {
                 more platforms in the left panel.
               </h3>
             ) : (
-                <InfiniteScroll
-                  pageStart={0}
-                  loadMore={this.loadMoreMentions}
-                  hasMore={this.state.hasMore}
-                  loader={<LinearProgress key={0} />}
-                >
-                  {this.state.mentions.map((mention, index) => {
-                    return (
-                      <Grid item key={index} className={classes.mention}>
-                        <Mention
-                          inList={true}
-                          id={mention.id}
-                          image={mention.imageUrl}
-                          title={mention.title}
-                          platform={mention.platform}
-                          content={mention.content}
-                          popularity={mention.popularity}
-                          date={mention.date}
-                          url={mention.url}
-                          summary={mention.summary}
-                          sentiment={mention.sentiment}
-                        />
-                      </Grid>
-                    );
-                  })}
-                </InfiniteScroll>
-              )}
+              <InfiniteScroll
+                pageStart={0}
+                loadMore={this.loadMoreMentions}
+                hasMore={this.state.hasMore}
+                loader={<LinearProgress key={0} />}
+              >
+                {this.state.mentions.map((mention, index) => {
+                  return (
+                    <Grid item key={index} className={classes.mention}>
+                      <Mention
+                        inList={true}
+                        handleLikeToggle={this.toggleLike}
+                        liked={mention.liked}
+                        id={mention.id}
+                        image={mention.imageUrl}
+                        title={mention.title}
+                        platform={mention.platform}
+                        content={mention.content}
+                        popularity={mention.popularity}
+                        date={mention.date}
+                        url={mention.url}
+                        summary={mention.summary}
+                        sentiment={mention.sentiment}
+                      />
+                    </Grid>
+                  );
+                })}
+              </InfiniteScroll>
+            )}
             <Snackbar
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               open={this.state.snackBarOpen}
@@ -622,69 +651,84 @@ class Main extends Component {
           </DialogTitle>
 
           <MuiDialogContent dividers>
-            {
-              this.state.newMentions.map((mention, index) => {
-                return (
-                  <Grid item key={index} className={classes.mention}>
-                    <Mention
-                      inList={true}
-                      id={mention.id}
-                      image={mention.imageUrl}
-                      title={mention.title}
-                      platform={mention.platform}
-                      content={mention.content}
-                      popularity={mention.popularity}
-                      date={mention.date}
-                      url={mention.url}
-                      summary={mention.summary}
-                      sentiment={mention.sentiment}
-                    />
-                    {
-                      index === this.state.newMentions.length - 1 ? null : <Divider />
-                    }
-                  </Grid>
-                );
-              })
-            }
+            {this.state.newMentions.map((mention, index) => {
+              return (
+                <Grid item key={index} className={classes.mention}>
+                  <Mention
+                    inList={true}
+                    handleLikeToggle={this.toggleLike}
+                    liked={mention.liked}
+                    id={mention.id}
+                    image={mention.imageUrl}
+                    title={mention.title}
+                    platform={mention.platform}
+                    content={mention.content}
+                    popularity={mention.popularity}
+                    date={mention.date}
+                    url={mention.url}
+                    summary={mention.summary}
+                    sentiment={mention.sentiment}
+                  />
+                  {index === this.state.newMentions.length - 1 ? null : (
+                    <Divider />
+                  )}
+                </Grid>
+              );
+            })}
           </MuiDialogContent>
 
           <MuiDialogActions>
-            <Button autoFocus onClick={this.handleNewMentionsPopupClose} color="primary">
+            <Button
+              autoFocus
+              onClick={this.handleNewMentionsPopupClose}
+              color="primary"
+            >
               Close
             </Button>
           </MuiDialogActions>
         </Dialog>
 
-        <Dialog aria-labelledby="customized-dialog-title" open={this.state.singleMentionPopupOpen} maxWidth={'md'} fullWidth={true}>
+        <Dialog
+          aria-labelledby="customized-dialog-title"
+          open={this.state.singleMentionPopupOpen}
+          maxWidth={"md"}
+          fullWidth={true}
+        >
           <MuiDialogContent>
-            {
-              this.state.mentionDisplayedInDialog ?
-                <Mention
-                  inList={false}
-                  image={this.state.mentionDisplayedInDialog.imageUrl}
-                  title={this.state.mentionDisplayedInDialog.title}
-                  platform={this.state.mentionDisplayedInDialog.platform}
-                  content={this.state.mentionDisplayedInDialog.content}
-                  popularity={this.state.mentionDisplayedInDialog.popularity}
-                  date={this.state.mentionDisplayedInDialog.date}
-                  url={this.state.mentionDisplayedInDialog.url}
-                  summary={this.state.mentionDisplayedInDialog.summary}
-                  sentiment={this.state.mentionDisplayedInDialog.sentiment}
-
-                />
-                :
-                null
-            }
-
+            {this.state.mentionDisplayedInDialog ? (
+              <Mention
+                inList={false}
+                handleLikeToggle={this.toggleLike}
+                id={this.state.mentionDisplayedInDialog.id}
+                liked={this.state.mentionDisplayedInDialog.liked}
+                image={this.state.mentionDisplayedInDialog.imageUrl}
+                title={this.state.mentionDisplayedInDialog.title}
+                platform={this.state.mentionDisplayedInDialog.platform}
+                content={this.state.mentionDisplayedInDialog.content}
+                popularity={this.state.mentionDisplayedInDialog.popularity}
+                date={this.state.mentionDisplayedInDialog.date}
+                url={this.state.mentionDisplayedInDialog.url}
+                summary={this.state.mentionDisplayedInDialog.summary}
+                sentiment={this.state.mentionDisplayedInDialog.sentiment}
+              />
+            ) : null}
           </MuiDialogContent>
 
           <Divider style={{ marginTop: "20px" }}></Divider>
 
           <MuiDialogActions>
-            <Button onClick={() => { window.open(this.state.mentionDisplayedInDialog.url) }} color="primary">
+            <Button
+              onClick={() => {
+                window.open(this.state.mentionDisplayedInDialog.url);
+              }}
+              color="primary"
+            >
               Original Post
             </Button>
-            <Button onClick={this.handleSingleMentionPopupClose} color="primary">
+            <Button
+              onClick={this.handleSingleMentionPopupClose}
+              color="primary"
+            >
               Close
             </Button>
           </MuiDialogActions>
