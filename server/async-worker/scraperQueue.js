@@ -16,12 +16,12 @@ module.exports = async function scraperQueue(loggedInUsers) {
   })
 
 
-  // const companyScraper = new Queue('companyscrape', {
-  //   redis: {
-  //     host: '127.0.0.1',
-  //     port: 6379,
-  //   }
-  // })
+  const companyScraper = new Queue('companyscrape', {
+    redis: {
+      host: '127.0.0.1',
+      port: 6379,
+    }
+  })
 
 
   asyncMentions.add([], { repeat: { cron: ' */10 * * * * *' } })
@@ -36,10 +36,10 @@ module.exports = async function scraperQueue(loggedInUsers) {
   });
 
 
-  // companyScraper.process(async (job) => {
-  //   job.data.mentions = await callScraper(job.data.name)
-  //   //gets new mentions from scraper for each company here
-  // })
+  companyScraper.process(async (job) => {
+    job.data.mentions = await callScraper(job.data.name)
+    //gets new mentions from scraper for each company here
+  })
 
 
   companyScraper.on('completed', async (job, result) => {

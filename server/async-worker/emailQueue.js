@@ -41,7 +41,6 @@ module.exports = async function emailQueue() {
   /* this is the worker / processor above. This carries out the job*/
 
   const send = async (address, mentions) => {
-    console.log(mentions)
     let config = {
       headers: {
         Authorization: `Bearer ${process.env.sendgridKey}`,
@@ -67,7 +66,7 @@ module.exports = async function emailQueue() {
       template_id: "d-27ed250c5d114b5da59c3023eb45d0c8",
     }
     try {
-      // await axios.post("https://api.sendgrid.com/v3/mail/send", data, config)
+      await axios.post("https://api.sendgrid.com/v3/mail/send", data, config)
     } catch (error) {
       console.error(error, 'failing here>>>>>>>')
     }
