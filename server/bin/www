@@ -109,8 +109,8 @@ function onError(error) {
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-  scraperQueue();
-  emailQueue();
+  // scraperQueue();
+  // emailQueue();
   // console.log("Listening on " + bind);
   // setInterval(asyncWorker, 5000);
 
@@ -126,8 +126,8 @@ function onListening() {
       if (err) {
         console.log(
           "Token authentication failed for socket id: " +
-            socket.id +
-            ". Disconnected. "
+          socket.id +
+          ". Disconnected. "
         );
         socket.disconnect();
       } else {

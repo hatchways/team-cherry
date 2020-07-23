@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
+const axios = require("axios");
 
 const {
   validateLogin,
@@ -40,27 +40,42 @@ router.post("/register", validateRegister, async (req, res) => {
     email: user.email,
   };
 
-  let mailOptions = {
-    to: `${req.body.email}`,
-    subject: "Account Created",
-    text:
-      "Welcome to MentionsCrawler. You have successfully created an account.",
-  };
-  let mailConfig = {
-    service: "gmail",
-    auth: {
-      user: "mentionscrawler123@gmail.com",
-      pass: "P455w0rd",
-    },
-  };
-  nodemailer.createTransport(mailConfig).sendMail(mailOptions, (err, info) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("success");
-      resolve(info);
+  const send = async (address) => {
+    let config = {
+      headers: {
+        Authorization: `Bearer ${process.env.sendgridKey}`,
+      },
+    };
+    let data = {
+      personalizations: [
+        {
+          to: [
+            {
+              email: `${address}`,
+            },
+          ],
+        },
+      ],
+      from: {
+        email: "mentionscrawler123@gmail.com",
+        name: "Mentionscrawler Team",
+      },
+      subject: "Welcome to MentionsCrawler!",
+      content: [
+        {
+          type: "text/plain",
+          value: "Thank you for signing up!",
+        },
+      ],
+    };
+    try {
+      await axios.post("https://api.sendgrid.com/v3/mail/send", data, config);
+    } catch (error) {
+      console.error(error, "failing new subscriber");
     }
-  });
+  };
+
+  await send(user.email);
 
   jwt.sign(
     payload,

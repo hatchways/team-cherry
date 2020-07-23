@@ -2,6 +2,9 @@ const Queue = require('bull');
 const { Mention, Company, User, CompanyMentions } = require("../models");
 const UserCompanies = require("../models/userCompanies")
 const callScraper = require("../scraper");
+const Sentiment = require('sentiment');
+const sentiment = new Sentiment();
+
 
 module.exports = async function scraperQueue(loggedInUsers) {
   //Declaring both queues in redis below. asyncMentions adds companies as jobs for companyscraper. Companyscraper does the scraping and adds to db + gets list of users for that company.
@@ -12,12 +15,14 @@ module.exports = async function scraperQueue(loggedInUsers) {
     }
   })
 
-  const companyScraper = new Queue('companyscrape', {
-    redis: {
-      host: '127.0.0.1',
-      port: 6379,
-    }
-  })
+
+  // const companyScraper = new Queue('companyscrape', {
+  //   redis: {
+  //     host: '127.0.0.1',
+  //     port: 6379,
+  //   }
+  // })
+
 
   asyncMentions.add([], { repeat: { cron: ' */10 * * * * *' } })
   //adds a job for scraping each company every so often (set at 10 seconds)
@@ -30,10 +35,12 @@ module.exports = async function scraperQueue(loggedInUsers) {
     })
   });
 
-  companyScraper.process(async (job) => {
-    job.data.mentions = await callScraper(job.data.name)
-    //gets new mentions from scraper for each company here
-  })
+
+  // companyScraper.process(async (job) => {
+  //   job.data.mentions = await callScraper(job.data.name)
+  //   //gets new mentions from scraper for each company here
+  // })
+
 
   companyScraper.on('completed', async (job, result) => {
     let newMentions = [];
@@ -54,7 +61,8 @@ module.exports = async function scraperQueue(loggedInUsers) {
           popularity: m.popularity,
           imageUrl: m.image,
           summary: m.summary,
-          url: m.url
+          url: m.url,
+          sentiment: sentiment.analyze(m.title + m.content).comparative
         },
       });
 

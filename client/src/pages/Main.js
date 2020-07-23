@@ -199,7 +199,7 @@ class Main extends Component {
   }
 
   async componentDidUpdate() {
-    console.log("componentDidUpdate");
+    console.log("componentDidUpdate here");
 
     let currentUrlParams = new URLSearchParams(window.location.search);
     let keywords = currentUrlParams.get("keywords");
@@ -619,6 +619,7 @@ class Main extends Component {
                         date={mention.date}
                         url={mention.url}
                         summary={mention.summary}
+                        sentiment={mention.sentiment}
                       />
                     </Grid>
                   );
@@ -666,6 +667,7 @@ class Main extends Component {
                     date={mention.date}
                     url={mention.url}
                     summary={mention.summary}
+                    sentiment={mention.sentiment}
                   />
                   {index === this.state.newMentions.length - 1 ? null : (
                     <Divider />
@@ -707,6 +709,7 @@ class Main extends Component {
                 date={this.state.mentionDisplayedInDialog.date}
                 url={this.state.mentionDisplayedInDialog.url}
                 summary={this.state.mentionDisplayedInDialog.summary}
+                sentiment={this.state.mentionDisplayedInDialog.sentiment}
               />
             ) : null}
           </MuiDialogContent>
