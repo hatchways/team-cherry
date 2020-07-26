@@ -3,15 +3,15 @@ const { Sequelize } = require("sequelize");
 const dbName =
   process.env.NODE_ENV === "test"
     ? "test-db"
-    : process.env.DB_name || "db name not set";
+    : "dngcenu1n502d";
 
 const logging = false;
 
 const sequelize = new Sequelize(
   dbName,
-  process.env.DB_username || "postgres",
-  process.env.DB_password || "password",
-  { host: "localhost", dialect: "postgres", logging }
+  "mikclidtuuqvwd",
+  "f7193bbe1f29065476fdb33eb9440489a9fa61f997cc781741e76686d22d290d",
+  { host: "ec2-18-235-109-97.compute-1.amazonaws.com", dialect: "postgres", logging }
 );
 
 module.exports = sequelize;

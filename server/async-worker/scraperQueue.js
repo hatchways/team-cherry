@@ -10,21 +10,21 @@ module.exports = async function scraperQueue(loggedInUsers) {
   //Declaring both queues in redis below. asyncMentions adds companies as jobs for companyscraper. Companyscraper does the scraping and adds to db + gets list of users for that company.
   const asyncMentions = new Queue('companies', {
     redis: {
-      host: '127.0.0.1',
-      port: 6379,
+      host: 'ec2-52-86-134-232.compute-1.amazonaws.com',
+      port: 26209,
     }
   })
 
 
   const companyScraper = new Queue('companyscrape', {
     redis: {
-      host: '127.0.0.1',
-      port: 6379,
+      host: 'ec2-52-86-134-232.compute-1.amazonaws.com',
+      port: 26209,
     }
   })
 
 
-  asyncMentions.add([], { repeat: { cron: ' */10 * * * * *' } })
+  asyncMentions.add([], { repeat: { cron: ' */60 * * * * *' } })
   //adds a job for scraping each company every so often (set at 10 seconds)
 
   asyncMentions.process(async () => {

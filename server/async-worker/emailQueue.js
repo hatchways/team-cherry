@@ -22,7 +22,7 @@ module.exports = async function emailQueue() {
   })
 
 
-  getEmails.add([], { repeat: { cron: ' */45 * * * * *' } });
+  getEmails.add([], { repeat: { cron: '0 0 * * Sun' } });
   /*This is a job. Parameters are items for worker func to process the job, and the configuration for when job should be repeated.*/
 
   getEmails.process(async () => {

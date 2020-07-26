@@ -15,13 +15,9 @@ async function redditCrawler(companyName) {
     sort: "relevance",
   });
 
-  // const subreddit = await scraper.getSubreddit("hearthstone");
-  // const topPosts = await subreddit.getNew();
-
   let data = [];
 
   topPosts.forEach((post) => {
-    // if (post.title.includes(companyName) || post.selftext.includes(companyName)) {
     // If a post doesn't have a thumbnail picture, set its "thumbnail" to be null.
     if (post.thumbnail.substr(0, 8) !== "https://") {
       post.thumbnail = null;
