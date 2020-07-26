@@ -22,7 +22,7 @@ router.post("/register", validateRegister, async (req, res) => {
 
   const user = await User.create({
     email: req.body.email,
-    subscriberEmail: req.body.email,
+    // subscriberEmail: req.body.email,
     password: req.body.password,
   });
 
