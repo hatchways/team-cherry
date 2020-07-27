@@ -16,10 +16,10 @@ module.exports = async function asyncWorker(io, loggedInUsers) {
     for (let m of mentions) {
       [mention, isNew] = await Mention.findOrCreate({
         where: {
-          id: m.id,
+          id: m.id + m.platform,
         },
         defaults: {
-          id: m.id,
+          id: m.id + m.platform,
           title: m.title,
           platform: m.platform,
           date: m.date,
