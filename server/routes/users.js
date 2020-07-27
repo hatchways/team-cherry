@@ -135,6 +135,22 @@ router.put("/subscribe-mail/update", requiresAuth, async (req, res) => {
   res.sendStatus(204);
 });
 
+router.put("/subscribe-mail/opt-in", requiresAuth, async (req, res) => {
+  const user = await User.findByPk(req.user.id);
+  user.emailOptIn = true;
+  await user.save();
+
+  res.sendStatus(204);
+});
+
+router.put("/subscribe-mail/opt-out", requiresAuth, async (req, res) => {
+  const user = await User.findByPk(req.user.id);
+  user.emailOptIn = false;
+  await user.save();
+
+  res.sendStatus(204);
+});
+
 router.get("/mentions/liked", requiresAuth, async (req, res, next) => {
   let { page } = req.query;
 
