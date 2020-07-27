@@ -22,7 +22,7 @@ module.exports = async function emailQueue() {
   })
 
 
-  getEmails.add([], { repeat: { cron: ' */45 * * * * *' } });
+  getEmails.add([], { repeat: { cron: ' 0 13 * * 6' } });
   /*This is a job. Parameters are items for worker func to process the job, and the configuration for when job should be repeated.*/
 
   getEmails.process(async () => {
@@ -66,7 +66,7 @@ module.exports = async function emailQueue() {
       template_id: "d-27ed250c5d114b5da59c3023eb45d0c8",
     }
     try {
-      await axios.post("https://api.sendgrid.com/v3/mail/send", data, config)
+      // await axios.post("https://api.sendgrid.com/v3/mail/send", data, config)
     } catch (error) {
       console.error(error, 'failing here>>>>>>>')
     }

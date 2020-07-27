@@ -10,7 +10,7 @@ const User = db.define("User", {
   },
   subscriberEmail: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     unique: true,
   },
   password: {
