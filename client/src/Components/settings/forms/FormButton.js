@@ -6,7 +6,7 @@ const FormButton = ({ classes, label, onClick, color }) => {
     <Button
       variant="contained"
       color={color}
-      className={classes.btn}
+      className={{ ...classes.btn }}
       onClick={onClick}
     >
       {label}

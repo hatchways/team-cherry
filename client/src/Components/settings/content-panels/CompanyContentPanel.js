@@ -41,6 +41,11 @@ const useStyles = makeStyles((theme) => ({
     width: "12%",
     borderRadius: "25px",
   },
+  emailButtonsContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "35%",
+  },
 }));
 
 const CompanyContentPanel = (props) => {
