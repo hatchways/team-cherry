@@ -24,6 +24,10 @@ const User = db.define("User", {
       return () => this.getDataValue("password");
     },
   },
+  emailOptIn: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 // custom instance methods
