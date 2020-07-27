@@ -140,7 +140,7 @@ router.put("/subscribe-mail/opt-in", requiresAuth, async (req, res) => {
   user.emailOptIn = true;
   await user.save();
 
-  res.sendStatus(204);
+  res.json({ optIn: user.emailOptIn });
 });
 
 router.put("/subscribe-mail/opt-out", requiresAuth, async (req, res) => {
@@ -148,7 +148,7 @@ router.put("/subscribe-mail/opt-out", requiresAuth, async (req, res) => {
   user.emailOptIn = false;
   await user.save();
 
-  res.sendStatus(204);
+  res.json({ optIn: user.emailOptIn });
 });
 
 router.get("/mentions/liked", requiresAuth, async (req, res, next) => {
