@@ -7,7 +7,7 @@ module.exports = async (req, res, next) => {
   if (!token) {
     return createErrorResponse(res, 401, { message: "Forbidden" });
   } else {
-    jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+    jwt.verify(token, "secret", (err, decodedToken) => {
       if (err) {
         return createErrorResponse(res, 401, {
           message: "Unable to decode token",

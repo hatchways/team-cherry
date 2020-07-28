@@ -118,7 +118,7 @@ function onListening() {
   io.on("connection", function (socket) {
     let token = cookie.parse(socket.request.headers.cookie).token;
 
-    jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
+    jwt.verify(token, "secret", function (err, decoded) {
       if (err) {
         console.log(
           "Token authentication failed for socket id: " +
@@ -204,7 +204,7 @@ function onListening() {
     });
   });
 
-  // scraperQueue(loggedInUsers);
+  scraperQueue(loggedInUsers);
   // emailQueue();
   console.log("Listening on " + bind);
 }
