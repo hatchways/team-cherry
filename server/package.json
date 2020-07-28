@@ -6,7 +6,10 @@
     "dev": "nodemon ./bin/www",
     "debug": "nodemon  --inspect ./bin/www",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --exit --timeout 30000",
-    "scraper": "nodemon ./crawlers/index"
+    "build": "cd .. && cd client && npm run build",
+    "install-client": "cd .. && cd client && npm install",
+    "heroku-postbuild": "npm run install-client && npm run build",
+    "start": "node app.js"
   },
   "dependencies": {
     "@sendgrid/mail": "^7.2.1",

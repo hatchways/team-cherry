@@ -13,6 +13,10 @@ const { UI } = require('bull-board')
 
 var app = express();
 
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static("client/build"));
+}
+
 app.use('/admin/queues', UI)
 app.use(logger("dev"));
 app.use(json());
