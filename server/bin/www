@@ -204,7 +204,7 @@ function onListening() {
     });
   });
 
-  scraperQueue(loggedInUsers);
+  // scraperQueue(loggedInUsers);
   // emailQueue();
   console.log("Listening on " + bind);
 }

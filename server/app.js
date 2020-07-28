@@ -10,19 +10,21 @@ const companyRoutes = require("./routes/company");
 const { json, urlencoded } = express;
 const { UI } = require('bull-board')
 
-
 var app = express();
-
-if (process.env.NODE_ENV == "production") {
-  app.use(express.static("client/build"));
-}
 
 app.use('/admin/queues', UI)
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(join(__dirname, "public")));
+
+
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static("client/build"));
+}
+else {
+  app.use(express.static(join(__dirname, "public")));
+}
 
 app.use("/api/users", authRoutes);
 app.use("/api/mentions", mentionsRoutes);
