@@ -40,46 +40,46 @@ router.post("/register", validateRegister, async (req, res) => {
     email: user.email,
   };
 
-  const send = async (address) => {
-    let config = {
-      headers: {
-        Authorization: `Bearer ${process.env.sendgridKey}`,
-      },
-    };
-    let data = {
-      personalizations: [
-        {
-          to: [
-            {
-              email: `${address}`,
-            },
-          ],
-        },
-      ],
-      from: {
-        email: "mentionscrawler123@gmail.com",
-        name: "Mentionscrawler Team",
-      },
-      subject: "Welcome to MentionsCrawler!",
-      content: [
-        {
-          type: "text/plain",
-          value: "Thank you for signing up!",
-        },
-      ],
-    };
-    try {
-      await axios.post("https://api.sendgrid.com/v3/mail/send", data, config);
-    } catch (error) {
-      console.error(error, "failing new subscriber");
-    }
-  };
+  // const send = async (address) => {
+  //   let config = {
+  //     headers: {
+  //       Authorization: `Bearer ${process.env.sendgridKey}`,
+  //     },
+  //   };
+  //   let data = {
+  //     personalizations: [
+  //       {
+  //         to: [
+  //           {
+  //             email: `${address}`,
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //     from: {
+  //       email: "mentionscrawler123@gmail.com",
+  //       name: "Mentionscrawler Team",
+  //     },
+  //     subject: "Welcome to MentionsCrawler!",
+  //     content: [
+  //       {
+  //         type: "text/plain",
+  //         value: "Thank you for signing up!",
+  //       },
+  //     ],
+  //   };
+  //   try {
+  //     await axios.post("https://api.sendgrid.com/v3/mail/send", data, config);
+  //   } catch (error) {
+  //     console.error(error, "failing new subscriber");
+  //   }
+  // };
 
-  await send(user.email);
+  // await send(user.email);
 
   jwt.sign(
     payload,
-    process.env.JWT_SECRET,
+    "secret",
     { expiresIn: 31556926 },
     (err, token) => {
       res

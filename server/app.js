@@ -9,6 +9,7 @@ const mentionsRoutes = require("./routes/mentions");
 const companyRoutes = require("./routes/company");
 const { json, urlencoded } = express;
 const { UI } = require('bull-board')
+var path = require('path');
 
 var app = express();
 
@@ -20,7 +21,7 @@ app.use(cookieParser());
 
 
 if (process.env.NODE_ENV == "production") {
-  app.use(express.static("client/build"));
+  app.use(express.static(path.join(__dirname, 'build')));
 }
 else {
   app.use(express.static(join(__dirname, "public")));
