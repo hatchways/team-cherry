@@ -3,9 +3,9 @@ const snoowrap = require("snoowrap");
 async function redditCrawler(companyName) {
   const scraper = new snoowrap({
     userAgent: "A random string",
-    clientId: "Sg2CMs5WPfvvQg",
-    clientSecret: "Aa_PoLpV0n7Jz-i-PeFbhWfGLvk",
-    refreshToken: "404869046306-cbx4wyQaNuYznytlQiv-WIBUaN4",
+    clientId: process.env.Reddit_clientId,
+    clientSecret: process.env.Reddit_clientSecret,
+    refreshToken: process.env.Reddit_refreshToken,
   });
 
   const subreddit = await scraper.getSubreddit("all");
