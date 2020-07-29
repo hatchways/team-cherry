@@ -19,17 +19,19 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use("/api/users", authRoutes);
+app.use("/api/mentions", mentionsRoutes);
+app.use("/api/company", companyRoutes);
 
 if (process.env.NODE_ENV == "production") {
   app.use(express.static(path.join(__dirname, 'build')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(`${__dirname}/build/index.html`));
+  });
 }
 else {
   app.use(express.static(join(__dirname, "public")));
 }
-
-app.use("/api/users", authRoutes);
-app.use("/api/mentions", mentionsRoutes);
-app.use("/api/company", companyRoutes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -168,7 +168,7 @@ class Main extends Component {
     });
 
     // Setup WebSocket
-    var socket = io.connect("http://localhost:3000/", {
+    var socket = io.connect("https://mentioncrawler.herokuapp.com/", {
       query: {
         keywords: keywords,
         platformSelected: splitSelectedPlatforms,
@@ -199,8 +199,6 @@ class Main extends Component {
   }
 
   async componentDidUpdate() {
-    console.log("componentDidUpdate here");
-
     let currentUrlParams = new URLSearchParams(window.location.search);
     let keywords = currentUrlParams.get("keywords");
     if (!keywords) {

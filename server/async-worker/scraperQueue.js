@@ -12,8 +12,13 @@ module.exports = async function scraperQueue(loggedInUsers) {
     redis: {
       host: 'ec2-52-86-134-232.compute-1.amazonaws.com',
       port: 26209,
-      password: "p03800edb5a753a12a21ff9aa0d1ad79205f4ffb4162add74baebb8fbf5bcd069"
+      password: "p03800edb5a753a12a21ff9aa0d1ad79205f4ffb4162add74baebb8fbf5bcd069",
+      connectTimeout: 10000
     }
+    // redis: {
+    //   host: '127.0.0.1',
+    //   port: 6379,
+    // }
   })
 
 
@@ -21,8 +26,13 @@ module.exports = async function scraperQueue(loggedInUsers) {
     redis: {
       host: 'ec2-52-86-134-232.compute-1.amazonaws.com',
       port: 26209,
-      password: "p03800edb5a753a12a21ff9aa0d1ad79205f4ffb4162add74baebb8fbf5bcd069"
+      password: "p03800edb5a753a12a21ff9aa0d1ad79205f4ffb4162add74baebb8fbf5bcd069",
+      connectTimeout: 10000
     }
+    // redis: {
+    //   host: '127.0.0.1',
+    //   port: 6379,
+    // }
   })
 
 
@@ -68,16 +78,18 @@ module.exports = async function scraperQueue(loggedInUsers) {
         },
       });
 
-      let existRelationship = await CompanyMentions.findOne({
-        where: {
-          MentionId: mention.id,
-          CompanyId: company.id
-        }
-      })
+      if (company) {
+        let existRelationship = await CompanyMentions.findOne({
+          where: {
+            MentionId: mention.id,
+            CompanyId: company.id
+          }
+        })
 
-      if (!existRelationship) {
-        await company.addMention(mention)
-        newMentions.push(mention);
+        if (!existRelationship) {
+          await company.addMention(mention)
+          newMentions.push(mention);
+        }
       }
     }
 

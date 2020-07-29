@@ -2,12 +2,11 @@ const twitter = require("twitter");
 
 async function twitterCrawler(companyName) {
   var client = new twitter({
-    consumer_key: process.env.Twitter_consumer_key,
-    consumer_secret: process.env.Twitter_consumer_secret,
-    bearer_token: process.env.Twitter_bearer_token,
+    consumer_key: "vYce3hIwk9M2p5PhxBPBDalxs",
+    consumer_secret: "XMQcxSefGf9jvWsPXBIExZlAUu1Hfh01rj7f9elJkre6BXQiGl",
+    bearer_token: "AAAAAAAAAAAAAAAAAAAAABroGAEAAAAArgQru6f3AurVv7EUxAuCV%2FIEAJI%3D8TAOjjbUlVvEg3k8vFaHMqCCd5vULYBfiyI1KrnnJnvB4fcvmW",
   });
-
-  let tweets = await client.get("tweets/search/30day/hatchways", {
+  let tweets = await client.get("tweets/search/30day/development", {
     query: companyName,
   });
 

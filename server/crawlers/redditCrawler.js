@@ -2,10 +2,10 @@ const snoowrap = require("snoowrap");
 
 async function redditCrawler(companyName) {
   const scraper = new snoowrap({
-    userAgent: process.env.Reddit_userAgent,
-    clientId: process.env.Reddit_clientId,
-    clientSecret: process.env.Reddit_clientSecret,
-    refreshToken: process.env.Reddit_refreshToken,
+    userAgent: "A random string",
+    clientId: "Sg2CMs5WPfvvQg",
+    clientSecret: "Aa_PoLpV0n7Jz-i-PeFbhWfGLvk",
+    refreshToken: "404869046306-cbx4wyQaNuYznytlQiv-WIBUaN4",
   });
 
   const subreddit = await scraper.getSubreddit("all");
@@ -15,9 +15,14 @@ async function redditCrawler(companyName) {
     sort: "relevance",
   });
 
+  // const subreddit = await scraper.getSubreddit("hearthstone");
+  // const topPosts = await subreddit.getNew();
+
   let data = [];
 
   topPosts.forEach((post) => {
+    // console.log(post);
+
     // If a post doesn't have a thumbnail picture, set its "thumbnail" to be null.
     if (post.thumbnail.substr(0, 8) !== "https://") {
       post.thumbnail = null;

@@ -16,12 +16,13 @@ const emailQueue = require("../async-worker/emailQueue");
 const socket = require("socket.io");
 const cookie = require("cookie");
 const jwt = require("jsonwebtoken");
+const twitterCrawler = require("../crawlers/twitterCrawler");
 
 /* Sets up the PostgreSQL database connection. */
 
-// const force = false;
+// const force = true;
 const alter = true;
-const force = true;
+const force = false;
 
 async function databaseTest() {
   try {
@@ -204,6 +205,7 @@ function onListening() {
     });
   });
 
+  // setInterval(twitterCrawler, 10000, "Nike");
   scraperQueue(loggedInUsers);
   // emailQueue();
   console.log("Listening on " + bind);
