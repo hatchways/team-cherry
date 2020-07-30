@@ -57,7 +57,7 @@ async function nytCrawler(companyName) {
       const articleId = article._id.slice(14)
       mention.id = articleId
       if (!article.multimedia[0]) {
-        mention.image = ''
+        mention.image = null
       }
       else mention.image = `https://static01.nyt.com/${article.multimedia[0].url}`
       data.push(mention)
