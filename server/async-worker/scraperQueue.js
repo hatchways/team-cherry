@@ -3,8 +3,9 @@ const { Mention, Company, User, CompanyMentions } = require("../models");
 const UserCompanies = require("../models/userCompanies")
 const callScraper = require("../scraper");
 const Sentiment = require('sentiment');
-const sentiment = new Sentiment();
+const { setQueues } = require('bull-board')
 
+const sentiment = new Sentiment();
 
 module.exports = async function scraperQueue(loggedInUsers) {
   //Declaring both queues in redis below. asyncMentions adds companies as jobs for companyscraper. Companyscraper does the scraping and adds to db + gets list of users for that company.
@@ -24,10 +25,11 @@ module.exports = async function scraperQueue(loggedInUsers) {
   })
 
 
-  asyncMentions.add([], { repeat: { cron: ' */10 * * * * *' } })
+  asyncMentions.add([], { repeat: { cron: '* * * * *' } })
   //adds a job for scraping each company every so often (set at 10 seconds)
 
   asyncMentions.process(async () => {
+    console.log('get new mentions')
     const companies = await Company.findAll()
     companies.forEach((currentCompany) => {
       companyScraper.add(currentCompany)
@@ -65,7 +67,6 @@ module.exports = async function scraperQueue(loggedInUsers) {
           sentiment: sentiment.analyze(m.title + m.content).comparative
         },
       });
-
       let existRelationship = await CompanyMentions.findOne({
         where: {
           MentionId: mention.id,
@@ -127,4 +128,5 @@ module.exports = async function scraperQueue(loggedInUsers) {
   // asyncMentions.on('completed', (job, result) => {
   //   console.log('companies added to companyscraper')
   // })
+  setQueues([asyncMentions, companyScraper])
 }
