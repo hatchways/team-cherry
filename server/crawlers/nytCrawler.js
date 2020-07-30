@@ -45,16 +45,17 @@ async function nytCrawler(companyName) {
     const articles = apiCall.data.response.docs
     articles.forEach((article) => {
       const mention = {
-        id: article._id,
+        // id: article._id,
         title: article.headline.main,
         popularity: 100,
         content: article.lead_paragraph,
         date: article.pub_date,
-        platform: article.source,
+        platform: "The New York Times",
         url: article.web_url,
         summary: article.lead_paragraph
       }
-      // image: `https://static01.nyt.com/${article.multimedia[0].url}`,
+      const articleId = article._id.slice(14)
+      mention.id = articleId
       if (!article.multimedia[0]) {
         mention.image = ''
       }
