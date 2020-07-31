@@ -26,7 +26,7 @@ const Mention = db.define("Mention", {
     type: DataTypes.INTEGER,
   },
   url: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   },
   summary: {
     type: DataTypes.TEXT,
