@@ -220,9 +220,8 @@ function onListening() {
       }
     });
   });
-
   scraperQueue(loggedInUsers);
   emailQueue();
-  nytCrawler('apple')
+
   // console.log("Listening on " + bind);
 }

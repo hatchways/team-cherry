@@ -1,7 +1,14 @@
 const axios = require('axios')
-
+const moment = require('moment')
 async function nytCrawler(companyName) {
   try {
+    const today = moment().format('L')
+    let formattedArray = today.split('/')
+    let formattedCurrDate = formattedArray[2] + formattedArray[0] + formattedArray[1]
+
+    const oneWeekPrev = moment().subtract(10, 'days').calendar()
+    let oneWeekFormattedArray = oneWeekPrev.split('/')
+    let formattedPrevDate = oneWeekFormattedArray[2] + oneWeekFormattedArray[0] + oneWeekFormattedArray[1]
 
     //formatting company name in case there's spaces
     let formattedName = ''
@@ -11,34 +18,6 @@ async function nytCrawler(companyName) {
       }
       else formattedName += letter
     }
-
-    //setting dates for one week prev and today to fit nyt api convention
-    let oneWeekPrev = new Date()
-    let pastDate = oneWeekPrev.getDate() - 7;
-    oneWeekPrev.setDate(pastDate)
-    const prevYear = oneWeekPrev.getFullYear().toString()
-    let convertedPrevMonth = (oneWeekPrev.getMonth() + 1).toString()
-    if (convertedPrevMonth.length === 1) {
-      convertedPrevMonth = `0${convertedPrevMonth}`
-    }
-    let convertedPrevDay = oneWeekPrev.getDate().toString()
-    if (convertedPrevDay.length === 1) {
-      convertedPrevDay = `0${convertedPrevDay}`
-    }
-    let formattedPrevDate = prevYear + convertedPrevMonth + convertedPrevDay
-
-    let today = new Date()
-    const currentYear = today.getFullYear().toString()
-    let convertedCurrMonth = (today.getMonth() + 1).toString()
-    if (convertedCurrMonth.length === 1) {
-      convertedCurrMonth = `0${convertedCurrMonth}`
-    }
-    let convertedCurrDay = today.getDate().toString()
-    if (convertedCurrDay.length === 1) {
-      convertedCurrDay = `0${convertedCurrDay}`
-    }
-    let formattedCurrDate = currentYear + convertedCurrMonth + convertedCurrDay
-
 
     const data = []
     const apiCall = await axios.get(`https://api.nytimes.com/svc/search/v2/articlesearch.json?begin_date=${formattedPrevDate}&end_date=${formattedCurrDate}&q=${formattedName}&sort=relevance&api-key=${process.env.nyt_key}`)
