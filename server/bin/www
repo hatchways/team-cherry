@@ -16,6 +16,7 @@ const emailQueue = require("../async-worker/emailQueue");
 const socket = require("socket.io");
 const cookie = require("cookie");
 const jwt = require("jsonwebtoken");
+const { nytCrawler } = require('../crawlers')
 
 /* Sets up the PostgreSQL database connection. */
 
@@ -219,8 +220,8 @@ function onListening() {
       }
     });
   });
-
   scraperQueue(loggedInUsers);
   emailQueue();
+
   // console.log("Listening on " + bind);
 }
