@@ -1,9 +1,9 @@
-const { DataTypes } = require("sequelize");
-const db = require("../db");
+const { DataTypes } = require('sequelize');
+const db = require('../db');
 
-const Mention = db.define("Mention", {
+const Mention = db.define('Mention', {
   id: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     primaryKey: true,
   },
   title: {
@@ -20,7 +20,7 @@ const Mention = db.define("Mention", {
     defaultValue: Date.now(),
   },
   imageUrl: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   },
   popularity: {
     type: DataTypes.INTEGER,

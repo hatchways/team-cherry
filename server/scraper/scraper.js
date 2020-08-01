@@ -1,4 +1,9 @@
-const { redditCrawler, twitterCrawler, nytCrawler } = require("../crawlers");
+const {
+  redditCrawler,
+  twitterCrawler,
+  nytCrawler,
+  newsApiCrawler,
+} = require('../crawlers');
 
 module.exports = function ScraperManager() {
   this.run = async function run(companyName) {
@@ -10,8 +15,16 @@ module.exports = function ScraperManager() {
     const redditMentions = await redditCrawler(companyName);
     // const twitterMentions = await twitterCrawler(companyName);
     const twitterMentions = [];
-    const nytMentions = await nytCrawler(companyName)
-    results = results.concat(redditMentions, twitterMentions, nytMentions);
+    const nytMentions = await nytCrawler(companyName);
+    console.log('calling news api crawler');
+    const newsApiMentions = await newsApiCrawler(companyName);
+    console.log('finished newsApi crawler');
+    results = results.concat(
+      redditMentions,
+      twitterMentions,
+      nytMentions,
+      newsApiMentions
+    );
     return results;
   };
 };
