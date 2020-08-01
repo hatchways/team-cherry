@@ -1,11 +1,12 @@
-const axios = require("axios");
-const moment = require("moment");
+const axios = require('axios');
+const moment = require('moment');
 
 // url params
-const lastWeek = moment().subtract(1, "weeks").format("YYYY-DD-MM");
+const lastWeek = moment().subtract(1, 'weeks').format('YYYY-DD-MM');
 const sources =
-  "business-insider,cnn,abc-news,ars-technica,associated-press,cbs-news,engadget,fortune,google-news,hacker-news,techcrunch";
+  'business-insider,cnn,abc-news,ars-technica,associated-press,cbs-news,engadget,fortune,hacker-news,techcrunch';
 const pageSize = 100;
+const page = 1;
 const key = process.env.newsApiKey;
 
 const createEndpoint = (company, source) =>
@@ -19,7 +20,7 @@ module.exports = async function newsApiScrape(company) {
   } = await axios.get(url);
 
   output = articles.map((article) => {
-    const destructuredUrl = article.url.split("/");
+    const destructuredUrl = article.url.split('/');
     // get the last portion of the destructured url and use it as the mention's id
     const [id] = destructuredUrl.slice(-1);
     return {
@@ -31,7 +32,7 @@ module.exports = async function newsApiScrape(company) {
       platform: article.source.name,
       url: article.url,
       popularity: 0, // temporary val
-      summary: article.description.replace(/(<([^>]+)>)/gi, "").trim(), // need to relieve html tagging and extra white space
+      summary: article.description.replace(/(<([^>]+)>)/gi, '').trim(), // need to relieve html tagging and extra white space
     };
   });
 
