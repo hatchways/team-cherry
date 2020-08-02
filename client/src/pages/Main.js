@@ -161,7 +161,15 @@ class Main extends Component {
       sortByState = "MostRecent";
     }
 
-    let allPlatforms = ["Reddit", "Twitter", "Facebook", "Business Insider"];
+    let allPlatforms = [
+      "Reddit",
+      "Twitter",
+      "Facebook",
+      "Business Insider",
+      "The New York Times",
+      "ABC News",
+      "Engadget",
+    ];
     let switchStates = [];
     allPlatforms.forEach((item) => {
       switchStates[item] = splitSelectedPlatforms.includes(item);
