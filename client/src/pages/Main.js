@@ -161,7 +161,7 @@ class Main extends Component {
       sortByState = "MostRecent";
     }
 
-    let allPlatforms = ["Reddit", "Twitter", "Facebook"];
+    let allPlatforms = ["Reddit", "Twitter", "Facebook", "Business Insider"];
     let switchStates = [];
     allPlatforms.forEach((item) => {
       switchStates[item] = splitSelectedPlatforms.includes(item);
@@ -512,7 +512,7 @@ class Main extends Component {
                         {" "}
                         <Avatar
                           className={classes.platformAvatar}
-                          src={`/imgs/${platform}_icon.png`}
+                          src={`/imgs/${platform.split(" ").join("")}_icon.png`}
                         />
                       </ListItemAvatar>
 
